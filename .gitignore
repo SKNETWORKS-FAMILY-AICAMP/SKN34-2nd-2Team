@@ -12,3 +12,9 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+
+# 대용량 데이터 파일 및 노트북 실행 캐시 제외
+data/
+models/
+modeling/catboost_info/
+.ipynb_checkpoints/
