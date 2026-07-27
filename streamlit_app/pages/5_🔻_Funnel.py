@@ -7,6 +7,7 @@ import streamlit as st
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from theme import apply_theme, get_plotly_template, section_header, next_page_link, highlight
+from data_loader import load_csv
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -18,7 +19,7 @@ section_header(
     "1~5단계는 전체 회원(members_v3) 기준 순차 부분집합. 6단계(재구독)는 라벨 있는 코호트로 모집단이 축소됩니다.",
 )
 
-funnel = pd.read_csv(DATA_DIR / "funnel.csv")
+funnel = load_csv(DATA_DIR / "funnel.csv")
 
 colors = ["#2a78d6"] * 5 + ["#eb6834"]
 fig = go.Figure(go.Funnel(
@@ -38,7 +39,7 @@ display_df.columns = ["단계", "인원수", "분모(직전 단계)", "직전 �
 st.dataframe(display_df, width="stretch", hide_index=True)
 
 st.warning(
-    "6단계(재구독)는 다른 단계와 모집단이 다릅니다 (주황색 막대). 라벨이 있는 2월/3월 만료 코호트로 한정된 결과입니다.",
+    "6단계(재구독)는 다른 단계와 모집단이 다릅니다 (주황색 막대). 라벨이 있는 2월 만료 코호트로 한정된 결과입니다.",
     icon="⚠️",
 )
 

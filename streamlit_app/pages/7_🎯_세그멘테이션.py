@@ -1,16 +1,14 @@
-import json
 import sys
 from pathlib import Path
 
-import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from theme import apply_theme, get_plotly_template, section_header, next_page_link, highlight
+from data_loader import load_csv, load_json
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-GRID = "#e1e0d9"
 
 st.set_page_config(page_title="세그멘테이션", page_icon="🎯", layout="wide")
 apply_theme()
@@ -20,11 +18,17 @@ section_header(
     "SHAP 값을 개별 피처 단위로 봐서, 고위험 고객 각각의 \"이탈 위험을 가장 크게 밀어올린 피처\"로 세그먼트를 만듭니다.",
 )
 st.warning("규칙 기반(SHAP 최댓값) 세그멘테이션입니다. 실제 원인이나 효과가 검증된 액션이 아니라 방향성 제안입니다.", icon="⚠️")
+st.caption(
+    "⚠️ 이 페이지의 '고위험 고객' 수는 SHAP 계산 비용 때문에 테스트 split에서 뽑은 5,000명 샘플 기준입니다. "
+    "💰 LTV & Priority 페이지의 고위험 인구(전체 라벨 코호트 기준, 수만 명 단위)와는 모집단 규모가 다르니 "
+    "두 수치를 직접 비교하지 마세요."
+)
 
-meta = json.loads((DATA_DIR / "segmentation_meta.json").read_text(encoding="utf-8"))
-segmentation = pd.read_csv(DATA_DIR / "segmentation.csv")
+meta = load_json(DATA_DIR / "segmentation_meta.json")
+segmentation = load_csv(DATA_DIR / "segmentation.csv")
 
-st.metric("고위험 고객", f"{meta['high_risk_n']:,}명", f"샘플 {meta['sample_n']:,}명 중 {meta['high_risk_n']/meta['sample_n']*100:.1f}%")
+st.metric("고위험 고객 (샘플 기준)", f"{meta['high_risk_n']:,}명",
+          f"샘플 {meta['sample_n']:,}명 중 {meta['high_risk_n']/meta['sample_n']*100:.1f}%", delta_color="off")
 
 fig = go.Figure(go.Bar(
     x=segmentation["count"], y=segmentation["driver_feature"], orientation="h", marker_color="#2a78d6",

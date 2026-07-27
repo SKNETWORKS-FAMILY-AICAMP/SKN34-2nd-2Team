@@ -1,23 +1,14 @@
-import json
 from pathlib import Path
 
-import pandas as pd
 import streamlit as st
 
 from theme import apply_theme, section_header, ticker_banner, animated_metric, next_page_link
+from data_loader import load_json
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 
 st.set_page_config(page_title="KKBOX 이탈 예측 프로젝트", page_icon="🎧", layout="wide")
 apply_theme()
-
-COLORS = {
-    "primary": "#2a78d6",
-    "secondary": "#eb6834",
-    "good": "#0ca30c",
-    "critical": "#d03b3b",
-    "muted": "#898781",
-}
 
 section_header(
     "Churn Prediction",
@@ -28,14 +19,14 @@ section_header(
     'target="_blank" rel="noopener">Kaggle - WSDM KKBox\'s Churn Prediction Challenge</a>',
 )
 
-eda = json.loads((DATA_DIR / "eda_summary.json").read_text(encoding="utf-8"))
+eda = load_json(DATA_DIR / "eda_summary.json")
 
-# 이미 검증된 수치들 (modeling/02_optuna_tuning, analytics/01_sql_feature_mart에서 확인된 값)
-MODEL_TEST_AUC = 0.9434
+# 이미 검증된 수치들 (modeling/03_model_comparison, analytics/01_sql_feature_mart에서 확인된 값)
+MODEL_TEST_AUC = 0.9915
 SQL_SPEEDUP_X = 17.4  # DuckDB 104.5s vs pandas 청크 1820s
 
 ticker_banner([
-    f"🎧 라벨 있는 유저 <b>{eda['pooled_labeled_users']:,}</b>명",
+    f"🎧 라벨 있는 유저 <b>{eda['labeled_users']:,}</b>명",
     f"💳 결제 기록 <b>{eda['transactions']['rows_dedup']:,}</b>행",
     f"🎵 청취 로그 <b>{eda['user_logs']['size_gb']}GB</b> / <b>{eda['user_logs']['rows']:,}</b>행",
     f"🤖 LightGBM test AUC <b>{MODEL_TEST_AUC}</b>",
@@ -46,7 +37,7 @@ ticker_banner([
 st.subheader("프로젝트 한눈에 보기")
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    animated_metric("라벨 있는 유저", eda["pooled_labeled_users"], suffix="명")
+    animated_metric("라벨 있는 유저", eda["labeled_users"], suffix="명")
 with col2:
     animated_metric("원본 결제 기록", eda["transactions"]["rows_dedup"], suffix="행")
 with col3:

@@ -1,4 +1,3 @@
-import json
 import sys
 from pathlib import Path
 
@@ -8,17 +7,18 @@ import streamlit as st
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from theme import apply_theme, get_plotly_template, section_header, next_page_link, highlight
+from data_loader import load_json
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-COLORS = {"primary": "#2a78d6", "secondary": "#eb6834", "muted": "#898781", "grid": "#e1e0d9"}
+PRIMARY_COLOR = "#2a78d6"
 
 st.set_page_config(page_title="EDA 개요", page_icon="📊", layout="wide")
 apply_theme()
 section_header("Data Foundations", "📊 EDA 개요", "`EDA/*.ipynb` 4개 노트북에서 검증한 원본 데이터 규모와 품질 이슈")
 
-eda = json.loads((DATA_DIR / "eda_summary.json").read_text(encoding="utf-8"))
+eda = load_json(DATA_DIR / "eda_summary.json")
 
-tab1, tab2, tab3 = st.tabs(["데이터 규모", "라벨(train/train_v2)", "데이터 품질 이슈"])
+tab1, tab2, tab3 = st.tabs(["데이터 규모", "라벨(train.csv)", "데이터 품질 이슈"])
 
 with tab1:
     rows = pd.DataFrame([
@@ -27,7 +27,7 @@ with tab1:
         {"파일": "user_logs.csv", "행 수": eda["user_logs"]["rows"]},
     ])
     fig = go.Figure(go.Bar(
-        x=rows["파일"], y=rows["행 수"], marker_color=COLORS["primary"],
+        x=rows["파일"], y=rows["행 수"], marker_color=PRIMARY_COLOR,
         text=[f"{v:,}" for v in rows["행 수"]], textposition="outside",
     ))
     fig.update_layout(
@@ -39,19 +39,19 @@ with tab1:
     st.plotly_chart(fig, width="stretch")
 
 with tab2:
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("train.csv (2017-02 만료 코호트)", f"{eda['train']['rows']:,}행",
-                   f"이탈률 {eda['train']['churn_rate']*100:.1f}%")
-    with col2:
-        st.metric("train_v2.csv (2017-03 만료 코호트)", f"{eda['train_v2']['rows']:,}행",
-                   f"이탈률 {eda['train_v2']['churn_rate']*100:.1f}%")
+    v2 = eda["train_v2_removed"]
+    st.metric("train.csv (2017-02 만료 코호트)", f"{eda['train']['rows']:,}행",
+               f"이탈률 {eda['train']['churn_rate']*100:.1f}%", delta_color="off")
 
-    st.metric("두 코호트 간 유저 중복", f"{eda['cohort_overlap_users']:,}명",
-              f"겹치는 유저 라벨 일치율 {eda['label_agreement_rate']*100:.1f}%")
     st.markdown(
-        f"중복 유저가 88~91%로 매우 높아, 시간 기반 분할 대신 {highlight('유저 그룹 기준 stratified 분할')}을 사용했습니다 "
-        f"(최종 라벨 있는 유저 {eda['pooled_labeled_users']:,}명).",
+        f"원래는 `train_v2.csv`(2017-03 만료 코호트, {v2['rows']:,}행, 이탈률 {v2['churn_rate']*100:.1f}%)를 "
+        f"함께 풀링해서 썼습니다. 그런데 raw 데이터에 3월 실적 원본(`transactions_v2.csv`/`user_logs_v2.csv`)이 "
+        f"없어 3월 코호트의 피처를 실제 3월 말 기준으로 계산할 방법이 없었고, 두 코호트를 msno 기준으로만 "
+        f"병합한 결과 겹치는 유저 {v2['cohort_overlap_users']:,}명 중 라벨 불일치가 "
+        f"{v2['label_conflict_users']:,}명(일치율 {v2['label_agreement_rate']*100:.1f}%)이나 발생했습니다 — "
+        f"즉 {highlight('동일한 피처값에 서로 다른 정답이 붙는 문제')}가 있어, `train_v2.csv`를 제거하고 "
+        f"`train.csv` 단일 코호트만 사용하도록 정리했습니다. "
+        f"(유저 1명당 라벨이 1개뿐이라, stratified 분할이 곧 유저 그룹 분할입니다.)",
         unsafe_allow_html=True,
     )
 

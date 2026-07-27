@@ -7,7 +7,7 @@ streamlit_app/data/ 아래에 작은 파일로 저장한다.
 대시보드 자체는 이 폴더의 파일만 읽으므로, 30GB 원본이나 196만행 테이블을
 직접 로드하지 않는다 (추후 배포 시에도 이 폴더만 있으면 됨).
 
-실행: python prepare_data.py  (프로젝트 루트가 아니라 streamlit_app/ 안에서 실행)
+실행: python prepare_data.py  (경로가 모두 __file__ 기준이라 어느 작업 디렉터리에서 실행해도 무방)
 """
 import json
 import pickle
@@ -48,11 +48,19 @@ eda_summary = {
     "transactions": {"rows_raw": 21547746, "rows_dedup": 21544407, "duplicate_rows": 3339, "unique_users": 2363626},
     "user_logs": {"rows": 392106543, "size_gb": 30, "unique_users": 5234111},
     "train": {"rows": 992931, "churn_rate": 0.0639, "cohort_month": "2017-02"},
-    "train_v2": {"rows": 970960, "churn_rate": 0.0899, "cohort_month": "2017-03"},
-    "cohort_overlap_users": 881701,
-    "label_agreement_rate": 0.9478,
-    "pooled_labeled_users": 1082190,
+    "labeled_users": 992931,
     "risk_threshold": RISK_THRESHOLD,
+    # train_v2.csv(2017-03 코호트)는 원래 풀링해서 썼으나, raw 데이터에 3월 실적 원본
+    # (transactions_v2.csv/user_logs_v2.csv)이 없어 3월 코호트 피처를 정확히 계산할 수 없었고,
+    # msno 기준 병합 결과 겹치는 유저의 5.2%(45,990명)가 "동일 피처, 다른 라벨"이 되는 문제가 있어 제거함.
+    "train_v2_removed": {
+        "rows": 970960,
+        "churn_rate": 0.0899,
+        "cohort_month": "2017-03",
+        "cohort_overlap_users": 881701,
+        "label_agreement_rate": 0.9478,
+        "label_conflict_users": 45990,
+    },
 }
 save_json("eda_summary.json", eda_summary)
 
@@ -117,7 +125,8 @@ cohort_raw = con.sql(f"""
 cohort_sizes = cohort_raw[cohort_raw["month_offset"] == 0].set_index("cohort_month")["active_users"]
 pivot = cohort_raw.pivot(index="cohort_month", columns="month_offset", values="active_users")
 retention_pct = pivot.div(cohort_sizes, axis=0) * 100
-retention_pct = retention_pct[retention_pct.index <= pd.Timestamp("2016-02-01")]
+cutoff_month_start = pd.Timestamp(CUTOFF_DATE.year, CUTOFF_DATE.month, 1)
+retention_pct = retention_pct[retention_pct.index <= cutoff_month_start - pd.DateOffset(months=12)]
 retention_pct.index = retention_pct.index.strftime("%Y-%m")
 retention_pct.reset_index().rename(columns={"index": "cohort_month"}).to_csv(OUT_DIR / "retention_cohort.csv", index=False)
 print(f"저장: retention_cohort.csv ({len(retention_pct)} cohorts)")
@@ -212,8 +221,16 @@ FEATURE_COLS = [c for c in df.columns if c not in DROP_COLS]
 df["churn_proba"] = model.predict(df[FEATURE_COLS])
 user_churn_proba = df.groupby("msno")["churn_proba"].mean().rename("churn_proba")
 
-txn = pd.read_csv(PROCESSED_DIR / "features_transactions.csv", usecols=["msno", "total_amount_paid", "txn_count"])
-txn["avg_monthly_revenue"] = txn["total_amount_paid"] / txn["txn_count"].clip(lower=1)
+txn = pd.read_csv(
+    PROCESSED_DIR / "features_transactions.csv",
+    usecols=["msno", "total_amount_paid", "txn_count", "last_payment_plan_days"],
+)
+txn["avg_revenue_per_txn"] = txn["total_amount_paid"] / txn["txn_count"].clip(lower=1)
+# last_payment_plan_days가 30일이 아닌 유저(7일/90일/연간 등)를 그대로 "월평균"으로 부르면 왜곡되므로,
+# 마지막 플랜 일수 기준(0일 이상치는 실제 관측된 최소 유효 플랜 7일로 바닥)으로 30일 환산한다.
+# analytics/04_ltv.ipynb와 동일 로직.
+plan_days_for_norm = txn["last_payment_plan_days"].clip(lower=7)
+txn["avg_monthly_revenue"] = txn["avg_revenue_per_txn"] / (plan_days_for_norm / 30)
 ltv_df = txn.merge(user_churn_proba, on="msno", how="inner")
 ltv_df["churn_proba_floored"] = ltv_df["churn_proba"].clip(lower=0.01)
 ltv_df["expected_lifetime_months"] = (1 / ltv_df["churn_proba_floored"]).clip(upper=60)
@@ -244,26 +261,9 @@ save_csv("ltv_top_priority.csv", top_priority)
 
 # 8. 세부 세그멘테이션 (analytics/06과 동일 로직, SHAP 샘플 재사용)
 print("=== 8. Segmentation ===")
-CATEGORY_MAP = {
-    "결제/구독 상태": [
-        "last_plan_list_price", "last_is_auto_renew", "last_actual_amount_paid", "last_payment_plan_days",
-        "auto_renew_rate", "cancel_rate", "cancel_count", "avg_discount", "days_to_expire",
-        "total_amount_paid", "payment_method_nunique", "plan_days_nunique", "txn_count",
-        "days_since_last_txn", "has_transaction_record",
-    ],
-    "청취 활동 감소": [
-        "d7_active_days", "d30_active_days", "d90_active_days", "full_active_days",
-        "d7_avg_num_unq", "d30_avg_num_unq", "d90_avg_num_unq", "full_avg_num_unq",
-        "d7_avg_total_secs", "d30_avg_total_secs", "d90_avg_total_secs", "full_avg_total_secs",
-        "d7_completion_rate", "d30_completion_rate", "d90_completion_rate", "full_completion_rate",
-        "trend_secs_recent15_vs_prior15", "has_log_activity",
-    ],
-    "고객 프로필": ["city", "registered_via", "gender", "bd_clean", "bd_is_missing", "tenure_days", "has_member_record"],
-}
 feature_cols = shap_data["feature_cols"]
 shap_values = shap_data["shap_values"]
 pred_proba = shap_data["pred_proba"]
-msno_arr = shap_data["msno"]
 
 shap_df_raw = pd.DataFrame(shap_values, columns=feature_cols)
 high_risk_mask = pred_proba >= RISK_THRESHOLD
@@ -292,5 +292,12 @@ segment_table["suggested_action"] = segment_table.index.map(lambda f: action_map
 segment_table = segment_table.reset_index().rename(columns={"index": "driver_feature"})
 save_csv("segmentation.csv", segment_table)
 save_json("segmentation_meta.json", {"high_risk_n": int(high_risk_mask.sum()), "sample_n": len(pred_proba)})
+
+
+# 9. A/B 테스트 설계 문서 복사 (대시보드가 streamlit_app/ 바깥을 읽지 않도록 자기완결적으로 유지)
+print("=== 9. A/B 테스트 설계 문서 ===")
+ab_test_doc_src = ROOT / "analytics" / "07_ab_test_design.md"
+shutil.copy(ab_test_doc_src, OUT_DIR / "07_ab_test_design.md")
+print("저장: 07_ab_test_design.md")
 
 print("\n모든 대시보드 데이터 준비 완료 ->", OUT_DIR)

@@ -7,8 +7,9 @@ from scipy import stats
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from theme import apply_theme, section_header, next_page_link
+from data_loader import load_text
 
-DOC_PATH = Path(__file__).resolve().parent.parent.parent / "analytics" / "07_ab_test_design.md"
+DOC_PATH = Path(__file__).resolve().parent.parent / "data" / "07_ab_test_design.md"
 
 st.set_page_config(page_title="A/B 테스트 설계", page_icon="🧪", layout="wide")
 apply_theme()
@@ -19,7 +20,7 @@ st.error(
     icon="🚫",
 )
 
-st.markdown(DOC_PATH.read_text(encoding="utf-8"))
+st.markdown(load_text(DOC_PATH))
 
 st.divider()
 st.subheader("📐 표본수 계산기 (직접 계산)")
@@ -27,7 +28,7 @@ st.caption("위 문서의 표본수 표와 동일한 공식(두 비율 z-검정,
 
 calc_col1, calc_col2 = st.columns(2)
 with calc_col1:
-    baseline_pct = st.slider("Control 베이스라인 비율 (%)", min_value=1.0, max_value=99.0, value=92.3, step=0.1)
+    baseline_pct = st.slider("Control 베이스라인 비율 (%)", min_value=1.0, max_value=99.0, value=93.6, step=0.1)
     mde_pp = st.slider("최소 탐지 효과 MDE (%p)", min_value=0.5, max_value=30.0, value=2.0, step=0.5)
 with calc_col2:
     alpha = st.select_slider("유의수준 α (양측)", options=[0.10, 0.05, 0.025, 0.01], value=0.05)

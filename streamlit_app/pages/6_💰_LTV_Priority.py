@@ -1,14 +1,13 @@
-import json
 import sys
 from pathlib import Path
 
-import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from theme import apply_theme, get_plotly_template, section_header, next_page_link, highlight
+from data_loader import load_csv, load_json
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -21,14 +20,19 @@ section_header(
 )
 st.latex(r"LTV \approx \text{Average Monthly Revenue} \times \text{Expected Lifetime}")
 st.warning(
-    "LTV는 근사치입니다 (avg_monthly_revenue = 총결제액/결제횟수, "
-    "expected_lifetime = 1/이탈확률의 상수 이탈률 근사, 상한 60개월). "
+    "LTV는 근사치입니다 (avg_monthly_revenue = 결제 1건당 평균 금액을 마지막 결제 플랜 일수 기준 "
+    "30일로 환산한 값, expected_lifetime = 1/이탈확률의 상수 이탈률 근사, 상한 60개월, 할인율 미반영). "
     "Kaplan-Meier 등 생존분석 기반 정밀 LTV가 아닙니다.",
     icon="⚠️",
 )
+st.caption(
+    "🎯 세그멘테이션 페이지의 '고위험 고객' 수(SHAP 샘플 5,000명 기준)와 이 페이지의 고위험 인구"
+    "(전체 라벨 코호트 992,931명 기준)는 모집단 규모가 달라 직접 비교할 수 없습니다."
+)
 
-ltv_summary = json.loads((DATA_DIR / "ltv_summary.json").read_text(encoding="utf-8"))
-ltv_sample = pd.read_csv(DATA_DIR / "ltv_sample.csv")
+ltv_summary = load_json(DATA_DIR / "ltv_summary.json")
+ltv_sample = load_csv(DATA_DIR / "ltv_sample.csv")
+n_zero_revenue = int((ltv_sample["ltv_approx"] <= 0).sum())
 
 SEGMENT_COLORS = {"고위험/고가치": "#e34948", "고위험/저가치": "#eda100", "저위험/고가치": "#1baf7a", "저위험/저가치": "#2a78d6"}
 
@@ -55,6 +59,11 @@ with tab2d:
         margin=dict(t=110, l=10, r=10, b=10),
     )
     st.plotly_chart(fig, width="stretch")
+    if n_zero_revenue:
+        st.caption(
+            f"⚠️ 매출이 0인 {n_zero_revenue}명은 y축이 로그 스케일이라 이 차트에 표시되지 않습니다 "
+            f"(전체 샘플 {len(ltv_sample):,}명 중 {len(ltv_sample) - n_zero_revenue:,}명만 표시)."
+        )
 
 with tab3d:
     st.caption("이탈확률 × 월평균매출 × 예상 잔존개월(3축)을 마우스로 회전/확대해서 볼 수 있습니다. 데이터는 왼쪽 2D 뷰와 동일합니다.")
@@ -84,7 +93,7 @@ with tab3d:
 
 st.subheader("고위험/고가치 상위 20명 (예시)")
 st.caption("실제 액션을 취한 것이 아니라 우선순위 후보군 식별 데모입니다.")
-top_priority = pd.read_csv(DATA_DIR / "ltv_top_priority.csv")
+top_priority = load_csv(DATA_DIR / "ltv_top_priority.csv")
 st.dataframe(
     top_priority.style.format({
         "churn_proba": "{:.3f}", "avg_monthly_revenue": "{:,.0f}",
