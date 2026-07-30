@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>딥러닝(MLP) vs 기존 모델 비교 리포트</title>
+<style>
+  :root{
+    --bg:#f9f9f7; --surface:#ffffff; --ink:#0b0b0b; --ink-2:#52514e; --ink-3:#898781;
+    --line:#e1e0d9; --blue:#2a78d6; --orange:#eb6834; --green:#1baf7a; --red:#d03b3b;
+    --code-bg:#f4f3ef;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;line-height:1.65;}
+  .wrap{max-width:840px;margin:0 auto;padding:40px 28px 80px;}
+  header.hero{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:28px;}
+  header.hero .kicker{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.04em;text-transform:uppercase;}
+  header.hero h1{font-size:24px;margin:8px 0 6px;}
+  header.hero .sub{color:var(--ink-2);font-size:13.5px;}
+  h2{font-size:18px;margin-top:38px;margin-bottom:8px;padding-bottom:8px;border-bottom:2px solid var(--ink);}
+  p.lead{color:var(--ink-2);font-size:13.5px;margin:6px 0 16px;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0;}
+  table.spec{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;}
+  table.spec th,table.spec td{border:1px solid var(--line);padding:7px 10px;text-align:left;}
+  table.spec th{background:var(--code-bg);font-weight:700;}
+  table.spec tr.hot td{background:#fff6f1;font-weight:700;}
+  table.spec tr.dl td{background:#eaf2fc;}
+  .hbar-chart{display:flex;flex-direction:column;gap:9px;margin:14px 0;}
+  .hbar-row{display:grid;grid-template-columns:150px 1fr 60px;align-items:center;gap:8px;}
+  .hbar-label{font-size:12px;font-weight:600;}
+  .hbar-track{background:var(--code-bg);border-radius:4px;height:22px;overflow:hidden;}
+  .hbar-fill{height:100%;border-radius:4px;background:var(--blue);}
+  .hbar-fill.dl{background:var(--orange);}
+  .hbar-value{font-size:11px;text-align:right;font-variant-numeric:tabular-nums;}
+  .arch-box{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:12.3px;font-family:'DejaVu Sans Mono',Consolas,monospace;white-space:pre-wrap;}
+  .insight{background:#fff2ea;border:1px solid #f3ded3;border-radius:10px;padding:14px 16px;font-size:13px;margin:14px 0;}
+  .insight b{display:block;font-size:12.5px;color:#a8431a;margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em;}
+  footer{margin-top:40px;font-size:11px;color:var(--ink-3);text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">SKN-2nd-2team · Modeling</div>
+  <h1>딥러닝(MLP) 모델 실제 학습 &amp; 기존 모델 비교</h1>
+  <div class="sub">model_table_final.csv(99만 행) · 기존 ohe_scaler.pkl 재사용 · test AUC 기준 비교</div>
+</header>
+
+<div class="card">
+  <b>학습 환경 요약</b>
+  <div class="arch-box">아키텍처: Linear(68→128) → BatchNorm → ReLU → Dropout(0.3)
+          → Linear(128→64) → BatchNorm → ReLU → Dropout(0.2)
+          → Linear(64→32) → ReLU → Linear(32→1)
+손실함수: BCEWithLogitsLoss (pos_weight = 불균형 보정, churn 비율 6.39%)
+옵티마이저: Adam(lr=1e-3, weight_decay=1e-5) + ReduceLROnPlateau
+학습/검증/테스트: train 695,051 / valid 148,940 / test 148,940 (기존 split 그대로)
+전처리: models/ohe_scaler.pkl의 OneHotEncoder+StandardScaler 그대로 재사용 (누수 없음)
+40 epoch 학습, valid AUC 기준 best checkpoint 채택 (threshold는 valid F1-최적점)</div>
+</div>
+
+<h2>Test 세트 기준 전체 비교</h2>
+<table class="spec">
+  <tr><th>순위</th><th>모델</th><th>AUC</th><th>PR-AUC</th><th>F1</th><th>Precision</th><th>Recall</th></tr>
+  <tr class="hot"><td>1</td><td>CatBoost</td><td>0.9916</td><td>0.9014</td><td>0.8044</td><td>0.7759</td><td>0.8352</td></tr>
+  <tr><td>2</td><td>LightGBM</td><td>0.9915</td><td>0.9066</td><td>0.8118</td><td>0.7696</td><td>0.8589</td></tr>
+  <tr><td>3</td><td>XGBoost</td><td>0.9908</td><td>0.8993</td><td>0.8004</td><td>0.7893</td><td>0.8119</td></tr>
+  <tr class="dl"><td>4</td><td><b>DeepLearning (MLP)</b></td><td><b>0.9893</b></td><td><b>0.8897</b></td><td><b>0.7928</b></td><td><b>0.7388</b></td><td><b>0.8553</b></td></tr>
+  <tr><td>5</td><td>RandomForest</td><td>0.9849</td><td>0.8532</td><td>0.7764</td><td>0.6915</td><td>0.8850</td></tr>
+  <tr><td>6</td><td>LogisticRegression</td><td>0.9649</td><td>0.7108</td><td>0.6800</td><td>0.6312</td><td>0.7370</td></tr>
+</table>
+
+<div class="hbar-chart">
+  <div class="hbar-row"><span class="hbar-label">CatBoost</span><div class="hbar-track"><div class="hbar-fill" style="width:99.16%"></div></div><span class="hbar-value">0.9916</span></div>
+  <div class="hbar-row"><span class="hbar-label">LightGBM</span><div class="hbar-track"><div class="hbar-fill" style="width:99.15%"></div></div><span class="hbar-value">0.9915</span></div>
+  <div class="hbar-row"><span class="hbar-label">XGBoost</span><div class="hbar-track"><div class="hbar-fill" style="width:99.08%"></div></div><span class="hbar-value">0.9908</span></div>
+  <div class="hbar-row"><span class="hbar-label">MLP (딥러닝)</span><div class="hbar-track"><div class="hbar-fill dl" style="width:98.93%"></div></div><span class="hbar-value">0.9893</span></div>
+  <div class="hbar-row"><span class="hbar-label">RandomForest</span><div class="hbar-track"><div class="hbar-fill" style="width:98.49%"></div></div><span class="hbar-value">0.9849</span></div>
+  <div class="hbar-row"><span class="hbar-label">LogisticRegression</span><div class="hbar-track"><div class="hbar-fill" style="width:96.49%"></div></div><span class="hbar-value">0.9649</span></div>
+</div>
+<p class="lead">막대 길이는 AUC 값 자체(0.96~0.99 구간이라 육안 차이는 작아 보이지만 실제로는 유의미한 순위 차이)를 표시했습니다.</p>
+
+<h2>인사이트</h2>
+<div class="insight">
+  <b>딥러닝이 GBM 계열보다 살짝 낮게 나온 이유</b>
+  이 프로젝트 피처(가입/결제/청취 로그를 집계한 정형 피처 68개)는 "며칠 남았는가", "결제액이 얼마인가" 같은 임계값·구간 기반 규칙에 잘 반응하는 성격이 강해요. LightGBM/CatBoost 같은 트리 기반 모델은 이런 임계값 분기를 자연스럽게 학습하고, 결측치·이상치에도 상대적으로 강건합니다. 반면 MLP는 전부 연속적인 가중합으로 학습하기 때문에 이런 규칙성을 흉내내려면 더 많은 데이터·튜닝이 필요해요. 이건 이 프로젝트만의 문제가 아니라, 정형(tabular) 데이터에서는 딥러닝이 GBM을 잘 못 이긴다는 게 캐글 등에서 널리 알려진 경향이라, 결과 자체가 이상한 게 아니라 오히려 기대와 일치하는 결과입니다.
+</div>
+<div class="insight">
+  <b>그래도 딥러닝을 비교표에 넣는 의미</b>
+  "우리는 GBM만 쓴 게 아니라 딥러닝도 직접 학습·비교해봤고, 정형 데이터에서는 GBM이 더 낫다는 걸 실험으로 확인했다"는 것 자체가 모델 선택 근거를 뒷받침하는 결과예요. 실제 서비스에 넣는 최종 모델은 지금처럼 LightGBM(test AUC 0.9915)을 그대로 쓰는 게 맞고, 이 MLP 비교는 "왜 LightGBM을 골랐는지"에 대한 근거 자료로 쓰시면 됩니다.
+</div>
+
+<h2>산출물</h2>
+<table class="spec">
+  <tr><th>파일</th><th>내용</th></tr>
+  <tr><td><code>deep_learning/train_dl_model.py</code></td><td>학습 스크립트 (재현 가능)</td></tr>
+  <tr><td><code>deep_learning/churn_mlp.pt</code></td><td>학습된 PyTorch 모델 가중치</td></tr>
+  <tr><td><code>deep_learning/dl_model_meta.json</code></td><td>아키텍처·threshold·best epoch 메타정보</td></tr>
+  <tr><td><code>deep_learning/dl_model_result.csv</code></td><td>DL 모델의 train/valid/test 지표</td></tr>
+  <tr><td><code>models/model_comparison_with_dl.csv</code></td><td>기존 5개 모델 + DL 모델 통합 비교표</td></tr>
+</table>
+
+<footer>SKN-2nd-2team · KKBOX 이탈방지 — 딥러닝 모델 비교 리포트</footer>
+</div>
+</body>
+</html>
