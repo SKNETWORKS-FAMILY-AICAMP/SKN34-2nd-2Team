@@ -22,4 +22,5 @@ modeling/catboost_info/
 # 개인 연습용 폴더 (팀 레포와 분리, git 추적 제외)
 practice-answer/
 practice-blank/
-
+deep_learning/
+frontend/
