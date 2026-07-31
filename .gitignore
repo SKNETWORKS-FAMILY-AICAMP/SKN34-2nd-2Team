@@ -4,7 +4,7 @@ venv/
 ENV/
 
 # 환경변수(비밀키) 파일 제외
-.env.example
+.env
 
 # Python 및 OS 캐시 파일 제외
 __pycache__/
@@ -24,3 +24,4 @@ practice-answer/
 practice-blank/
 deep_learning/
 frontend/
+backend/scoring/output/ 
