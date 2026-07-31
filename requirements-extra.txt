@@ -1,12 +1,11 @@
-# mysql_pipeline/ + deep_learning/ 에서만 추가로 필요한 패키지.
+# deep_learning/ 에서만 추가로 필요한 패키지 (PyMySQL/python-dotenv/pyarrow는
+# 이제 backend/도 같이 쓰는 핵심 패키지라 requirements.txt로 옮겼습니다).
 # 기존 requirements.txt는 건드리지 않고, 아래를 추가 설치하세요:
 #   pip install -r requirements-extra.txt
 
-# --- MySQL 연동 (mysql_pipeline/) ---
-PyMySQL==1.1.1          # SQLAlchemy용 MySQL 드라이버
-python-dotenv==1.0.1    # .env 에서 MYSQL_* 접속 정보 로드
-pyarrow==24.0.0          # model_table_final 로컬 스냅샷을 parquet로 저장/로드 (mysql_pipeline/03, deep_learning/*)
-
-# --- 딥러닝 (deep_learning/) ---
-tensorflow==2.17.0       # Tabular MLP (Keras). PyTorch를 선호하면 torch로 대체 가능
-
+# --- 딥러닝 (deep_learning/train_dl_model.py, PyTorch 기반) ---
+# tensorflow는 실제로 어디서도 import하는 곳이 없고(코드 전체 검색 결과 0건),
+# numpy==2.4.6과도 버전이 충돌해서 삭제했습니다. 지금 쓰는 건 torch예요.
+# 버전은 지금 venv에 이미 깔려있는 걸 그대로 쓰시면 되고, 나중에 정확히 고정하고
+# 싶으면 `pip show torch` 결과 알려주세요.
+torch

@@ -23,5 +23,6 @@ modeling/catboost_info/
 practice-answer/
 practice-blank/
 deep_learning/
-frontend/
-backend/scoring/output/ 
+
+# 스코어링 결과 대용량 CSV 제외 (GitHub 100MB 제한)
+backend/scoring/output/
