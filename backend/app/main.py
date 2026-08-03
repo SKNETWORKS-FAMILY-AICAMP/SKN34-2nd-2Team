@@ -13,10 +13,11 @@ from app.routers import admin_router, auth_router, me_router
 
 app = FastAPI(title="KKBOX Churn Serving API")
 
-# React 개발 서버 기본 포트(Vite=5173, CRA=3000) 둘 다 허용해둠 — 실제 배포 시 좁혀주세요.
+# React 개발 서버 기본 포트(Vite=5173, CRA=3000)와, HTML 파일을 file://로 직접 열 때
+# 브라우저가 보내는 origin("null")까지 허용해둠 — 실제 배포 시 좁혀주세요.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "null"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

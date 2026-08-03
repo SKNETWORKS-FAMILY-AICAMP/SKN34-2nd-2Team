@@ -69,3 +69,15 @@ CREATE TABLE IF NOT EXISTS retention_cohort (
   pct           DECIMAL(5,1),
   PRIMARY KEY (cohort_month, month_offset)
 );
+
+-- 관리자가 개별 고객에게 보낸 액션(발표 데모용) — "리마인드 발송"/"할인 오퍼 발송" 버튼을
+-- 누르면 여기 기록되고, 그 msno로 고객이 로그인하면 GET /me/actions로 조회해서
+-- 소비자 앱 알림함에 보여준다. 실제 이메일/푸시 발송은 하지 않음.
+CREATE TABLE IF NOT EXISTS customer_actions (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  msno        VARCHAR(64) NOT NULL,
+  action_type ENUM('reminder','discount_offer') NOT NULL,
+  sent_by     VARCHAR(255),
+  sent_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_msno (msno)
+);

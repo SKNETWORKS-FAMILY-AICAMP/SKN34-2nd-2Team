@@ -1,14 +1,16 @@
-"""GET /admin/* — 운영자 전용. 고객 목록(필터+페이지네이션)과 KPI 요약."""
+"""GET /admin/* — 운영자 전용. 고객 목록(필터+페이지네이션)과 KPI 요약, 고객별 액션 발송."""
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import text
 
 from app.auth import require_staff
 from db import get_engine
-from app.schemas import CustomerListResponse, KpiResponse
+from app.schemas import ActionRequest, CustomerListResponse, KpiResponse
 
 router = APIRouter()
+
+VALID_ACTION_TYPES = {"reminder", "discount_offer"}
 
 
 @router.get("/customers", response_model=CustomerListResponse)
@@ -70,3 +72,29 @@ def kpis(_: dict = Depends(require_staff)):
         "segment_drivers": [dict(r) for r in segment_drivers],
         "retention_cohort": [dict(r) for r in retention_cohort],
     }
+
+
+@router.post("/customers/{msno}/actions")
+def send_customer_action(msno: str, body: ActionRequest, staff: dict = Depends(require_staff)):
+    """관리자가 특정 고객에게 리마인드/할인 오퍼를 "발송"한 것으로 기록.
+    실제 이메일/푸시 발송은 하지 않고, DB에 기록만 남긴다 — 그 msno로 고객 로그인하면
+    /me/actions에서 이 기록을 조회해 소비자 앱 알림함에 보여준다."""
+    if body.action_type not in VALID_ACTION_TYPES:
+        raise HTTPException(status_code=400, detail="action_type은 reminder 또는 discount_offer여야 합니다")
+
+    engine = get_engine()
+    with engine.begin() as conn:
+        exists = conn.execute(
+            text("SELECT msno FROM customer_churn_scores WHERE msno = :msno"), {"msno": msno}
+        ).first()
+        if not exists:
+            raise HTTPException(status_code=404, detail="존재하지 않는 msno입니다")
+        conn.execute(
+            text(
+                "INSERT INTO customer_actions (msno, action_type, sent_by) "
+                "VALUES (:msno, :action_type, :sent_by)"
+            ),
+            {"msno": msno, "action_type": body.action_type, "sent_by": staff.get("sub")},
+        )
+
+    return {"status": "sent", "msno": msno, "action_type": body.action_type}

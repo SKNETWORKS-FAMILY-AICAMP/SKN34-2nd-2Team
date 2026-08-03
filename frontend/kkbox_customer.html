@@ -3,302 +3,282 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KKBOX 이탈방지 프론트 데모 (React)</title>
+<title>KKBOX 이탈방지 고객모드 데모 (React)</title>
 <style>
 body { margin:0; }
 .viz-root {
-  --surface-1: #fcfcfb;
-  --page-plane: #f9f9f7;
-  --text-primary: #0b0b0b;
-  --text-secondary: #52514e;
-  --muted-ink: #898781;
-  --gridline: #e1e0d9;
-  --baseline: #c3c2b7;
-  --border-hairline: rgba(11, 11, 11, 0.1);
-  --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
-  --seq-250: #86b6ef;
-  --seq-350: #5598e7;
-  --seq-450: #2a78d6;
-  --seq-550: #1c5cab;
-  --status-good: #0ca30c;
-  --status-warning: #fab219;
-  --status-serious: #ec835a;
-  --status-critical: #d03b3b;
-  --success-text: #006300;
+  --mg: #1ed760;             /* 브랜드 그린 (스포티파이/멜론 느낌의 포인트 컬러) */
+  --mg-dark: #17ad4b;
+  --mg-tint: rgba(30,215,96,0.14);
+  --bg: #0a0a0c;              /* 메인 콘텐츠 배경 */
+  --bg-side: #000000;         /* 사이드바 배경 */
+  --surface: #181818;         /* 카드 */
+  --surface-hover: #242424;
+  --surface-2: #121214;       /* 톱바/플레이어바 */
+  --text: #ffffff;
+  --text-soft: #b3b3b3;
+  --text-mute: #6a6a6e;
+  --line: rgba(255,255,255,0.08);
+  --danger: #ff5b5b;
+  --danger-tint: rgba(255,91,91,0.14);
+  --gold: #ffd166;
+  --gold-tint: rgba(255,209,102,0.16);
+  --indigo: #6f6ff0;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: var(--page-plane);
-  color: var(--text-primary);
+  font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 #root { min-height: 100vh; }
+button { font-family: inherit; }
+::selection { background: var(--mg); color: #000; }
 
-.app-root { display: flex; flex-direction: column; min-height: 100vh; }
-
-.top-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 28px; background: var(--surface-1); border-bottom: 1px solid var(--border-hairline);
-  position: sticky; top: 0; z-index: 10;
+/* ---------- 로그인 ---------- */
+.cx-login-wrap {
+  min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(30,215,96,0.20), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(111,111,240,0.16), transparent 45%),
+    #0a0a0c;
+  padding: 20px;
 }
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-mark {
-  width: 34px; height: 34px; border-radius: 9px; background: var(--series-1); color: #fff;
-  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px;
+.cx-login-card {
+  width: 100%; max-width: 400px; background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 20px; padding: 34px 28px; box-shadow: 0 30px 70px rgba(0,0,0,0.55);
 }
-.brand-title { font-weight: 700; font-size: 14.5px; color: var(--text-primary); }
-.brand-sub { font-size: 11.5px; color: var(--muted-ink); }
-
-.tab-nav { display: flex; gap: 4px; background: var(--page-plane); border-radius: 10px; padding: 4px; }
-.tab-btn {
-  border: none; background: transparent; padding: 8px 18px; border-radius: 8px; font-size: 13px;
-  font-weight: 600; color: var(--text-secondary); cursor: pointer;
+.cx-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.cx-logo-mark {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--mg); color: #05170a;
+  display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 19px;
 }
-.tab-btn.tab-active { background: var(--series-1); color: #fff; }
+.cx-logo-word { font-weight: 800; font-size: 18px; letter-spacing: -0.3px; color: var(--text); }
+.cx-logo-sub { font-size: 12px; color: var(--text-soft); margin: 8px 0 26px; line-height: 1.5; }
 
-.main-content { flex: 1; padding: 22px 28px 40px 28px; max-width: 1180px; margin: 0 auto; width: 100%; }
-.section-intro { font-size: 13px; color: var(--text-secondary); margin: 0 0 16px 0; }
-.small-muted { font-size: 11.5px; color: var(--muted-ink); }
-
-.page-footer {
-  font-size: 10.5px; color: var(--muted-ink); text-align: center; padding: 14px 20px 24px 20px;
-  border-top: 1px solid var(--border-hairline); background: var(--surface-1);
+.cx-field-label { font-size: 11.5px; font-weight: 700; color: var(--text-soft); margin-bottom: 7px; display: block; text-transform: uppercase; letter-spacing: 0.3px; }
+.cx-input {
+  width: 100%; border: 1.5px solid var(--line); border-radius: 6px; padding: 13px 14px; font-size: 13.5px;
+  background: #121214; color: var(--text); margin-bottom: 16px;
 }
-
-/* ---------- phone mockups ---------- */
-.phone-row { display: flex; gap: 22px; flex-wrap: wrap; justify-content: flex-start; }
-.phone-frame { width: 260px; }
-.phone-statusbar {
-  display: flex; justify-content: space-between; font-size: 10px; color: #fff;
-  background: #1a1a19; padding: 5px 14px; border-radius: 20px 20px 0 0; font-weight: 600;
+.cx-input::placeholder { color: var(--text-mute); }
+.cx-input:focus { outline: none; border-color: var(--text); }
+.cx-submit {
+  width: 100%; border: none; border-radius: 999px; padding: 14px 0; font-size: 14.5px; font-weight: 800;
+  background: var(--mg); color: #05170a; cursor: pointer; transition: transform .1s ease, background .15s ease;
 }
-.phone-screen {
-  background: var(--surface-1); border: 1px solid var(--border-hairline); border-top: none;
-  border-radius: 0 0 20px 20px; min-height: 420px; padding: 0;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+.cx-submit:hover:not(:disabled) { background: #23e56b; transform: scale(1.02); }
+.cx-submit:disabled { opacity: 0.5; cursor: default; }
+.cx-sample-grid { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 18px; }
+.cx-sample-btn {
+  text-align: left; border: 1px solid var(--line); background: #121214; border-radius: 10px;
+  padding: 11px 13px; font-size: 12px; cursor: pointer; color: var(--text);
 }
-.phone-caption { text-align: center; font-size: 11.5px; color: var(--text-secondary); margin-top: 8px; font-weight: 600; }
-
-.app-body { padding: 14px 14px 18px 14px; }
-.app-header { font-weight: 700; font-size: 14px; margin-bottom: 12px; }
-
-.reminder-banner {
-  display: flex; align-items: flex-start; gap: 8px; background: #fff2ea; border: 1px solid #f3ded3;
-  border-radius: 10px; padding: 10px 12px; position: relative;
+.cx-sample-btn:hover { border-color: var(--mg); background: #161b17; }
+.cx-sample-btn b { display: block; font-size: 10.5px; color: var(--mg); margin-bottom: 3px; }
+.cx-sample-code { font-family: 'DejaVu Sans Mono', monospace; font-size: 9.5px; color: var(--text-mute); word-break: break-all; }
+.cx-error {
+  background: var(--danger-tint); border: 1px solid rgba(255,91,91,0.4); color: #ff8a8a; font-size: 11.5px;
+  border-radius: 9px; padding: 10px 12px; margin-bottom: 12px;
 }
-.reminder-icon { font-size: 18px; }
-.reminder-text b { font-size: 12.5px; display: block; }
-.reminder-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.cx-login-footnote { font-size: 10.5px; color: var(--text-mute); text-align: center; margin-top: 20px; line-height: 1.6; }
+.cx-login-footnote a, .cx-login-footnote b { color: var(--text-soft); }
 
-.row { display: flex; align-items: center; }
-.gap8 { gap: 8px; }
-
-.btn {
-  border: none; border-radius: 7px; padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer;
-}
-.btn-primary { background: var(--series-2); color: #fff; }
-.btn-ghost { background: #fff; color: var(--series-2); border: 1.3px solid var(--series-2); }
-.btn-sm { padding: 6px 11px; font-size: 11px; }
-
-.tier-toggle { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
-.pill {
-  border: 1px solid var(--border-hairline); background: #fff; border-radius: 14px; padding: 4px 11px;
-  font-size: 10.5px; cursor: pointer; color: var(--text-secondary);
-}
-.pill-active { background: var(--series-1); color: #fff; border-color: var(--series-1); }
-
-.mock-card-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
-.mock-card {
-  background: var(--page-plane); border: 1px solid var(--gridline); border-radius: 8px; padding: 9px 11px; font-size: 11.5px;
+/* ---------- 앱 셸 (온라인/데스크톱 기본, 좁은 화면에서는 모바일 앱처럼 변신) ---------- */
+.cx-app {
+  min-height: 100vh; display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 64px 1fr;
+  grid-template-areas: "side top" "side main";
+  background: var(--bg);
 }
 
-.report-title { font-weight: 700; font-size: 13.5px; margin-bottom: 10px; }
-.report-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
-.report-tile {
-  background: var(--page-plane); border: 1px solid var(--gridline); border-radius: 9px; padding: 8px 6px; text-align: center;
+/* 좌측 내비게이션 — 전체 높이를 차지하는 진짜 사이드바 */
+.cx-nav {
+  grid-area: side; grid-row: 1 / span 2; background: var(--bg-side); padding: 20px 12px;
+  display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; align-self: start;
 }
-.report-emoji { font-size: 15px; }
-.report-num { font-weight: 800; font-size: 12.5px; margin-top: 3px; }
-.report-label { font-size: 9.5px; color: var(--muted-ink); margin-top: 1px; }
-.delta-up { font-size: 9px; color: var(--success-text); font-weight: 700; margin-top: 2px; }
-
-.winback-hero {
-  display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
-  background: #eefaf1; border: 1px solid #cdeed7; border-radius: 10px; padding: 14px;
+.cx-nav-logo { display: flex; align-items: center; gap: 10px; padding: 6px 12px 22px; }
+.cx-nav-logo .cx-logo-mark { width: 30px; height: 30px; font-size: 14px; }
+.cx-nav-logo-word { font-weight: 800; font-size: 15px; letter-spacing: -0.2px; }
+.cx-navbtn {
+  border: none; background: none; padding: 11px 13px; display: flex; flex-direction: row; align-items: center;
+  gap: 14px; cursor: pointer; color: var(--text-soft); font-size: 13.5px; font-weight: 700; border-radius: 6px; text-align: left;
+  transition: color .1s ease;
 }
-.winback-hero b { font-size: 13px; }
+.cx-navbtn:hover { color: var(--text); }
+.cx-navbtn .cx-navicon { font-size: 18px; width: 20px; text-align: center; }
+.cx-navbtn.cx-nav-active { color: var(--text); }
+.cx-nav-spacer { flex: 1; }
+.cx-nav-foot { padding: 10px 13px; border-top: 1px solid var(--line); margin-top: 8px; }
+.cx-nav-seg { font-size: 10px; color: var(--text-mute); margin-bottom: 6px; }
+.cx-nav-seg b { color: var(--mg); }
 
-.chip {
-  display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 10px;
-  background: #ece9fb; color: #4a3d99;
+/* 상단 바 — 검색 필(장식용) + 프로필 칩 */
+.cx-topbar {
+  grid-area: top; position: sticky; top: 0; z-index: 30;
+  background: rgba(10,10,12,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px;
 }
-.chip-sm { font-size: 9.5px; padding: 1px 7px; }
-.chip-accent { background: #fff2ea; color: #a8431a; }
-.chip-good { background: #e6f6e6; color: var(--success-text); }
-.chip-warning { background: #fff3d6; color: #8a5e00; }
-.chip-critical { background: #fbdcd6; color: #a8281a; }
-
-/* ---------- dashboard ---------- */
-.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
-.kpi-row-2x2 { grid-template-columns: 1fr 1fr; }
-
-.stat-tile {
-  background: var(--surface-1); border: 1px solid var(--border-hairline); border-radius: 10px; padding: 12px 14px;
-  border-left: 3px solid var(--baseline);
+.cx-searchpill {
+  flex: 1; max-width: 380px; display: flex; align-items: center; gap: 9px; background: var(--surface);
+  border-radius: 999px; padding: 9px 16px; color: var(--text-mute); font-size: 12.5px;
 }
-.stat-tile.stat-good { border-left-color: var(--status-good); }
-.stat-tile.stat-warning { border-left-color: var(--status-warning); }
-.stat-tile.stat-critical { border-left-color: var(--status-critical); }
-.stat-tile.stat-muted { border-left-color: var(--muted-ink); }
-.stat-label { font-size: 10.5px; color: var(--muted-ink); margin-bottom: 4px; }
-.stat-value { font-size: 19px; font-weight: 800; color: var(--text-primary); }
-.stat-sub { font-size: 10px; color: var(--text-secondary); margin-top: 3px; }
-
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
-.panel {
-  background: var(--surface-1); border: 1px solid var(--border-hairline); border-radius: 12px; padding: 16px 18px; margin-bottom: 18px;
+.cx-topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.cx-icon-btn {
+  position: relative; border: none; background: var(--surface); color: var(--text); width: 34px; height: 34px;
+  border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
-.panel-title { font-weight: 700; font-size: 13px; margin-bottom: 12px; color: var(--text-primary); }
-
-/* horizontal bar chart */
-.hbar-chart { display: flex; flex-direction: column; gap: 9px; }
-.hbar-row { display: grid; grid-template-columns: 150px 1fr 70px; align-items: center; gap: 8px; }
-.hbar-label { display: flex; flex-direction: column; overflow: hidden; }
-.hbar-label-main { font-size: 11px; color: var(--text-primary); font-weight: 600; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-.hbar-label-sub { font-size: 9px; color: var(--muted-ink); font-family: 'DejaVu Sans Mono', monospace; }
-.hbar-track { background: var(--page-plane); border-radius: 4px; overflow: hidden; position: relative; }
-.hbar-fill { height: 100%; border-radius: 4px; min-width: 3px; }
-.hbar-value { font-size: 10.5px; color: var(--text-secondary); text-align: right; font-variant-numeric: tabular-nums; }
-
-/* line chart */
-.line-chart { width: 100%; height: auto; }
-.gridline { stroke: var(--gridline); stroke-width: 1; }
-.axis-label { font-size: 9px; fill: var(--muted-ink); }
-.point-label { font-size: 9.5px; fill: var(--text-primary); font-weight: 700; }
-.line-mark { stroke: var(--series-1); stroke-width: 2; }
-.line-dot { fill: var(--series-1); stroke: var(--surface-1); stroke-width: 2; }
-
-/* action center */
-.action-center { display: flex; flex-direction: column; }
-.ac-filters { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 14px; flex-wrap: wrap; }
-.filter-block { display: flex; flex-direction: column; gap: 4px; }
-.filter-label { font-size: 10px; color: var(--muted-ink); font-weight: 700; }
-.select {
-  border: 1px solid var(--border-hairline); border-radius: 7px; padding: 6px 9px; font-size: 11.5px;
-  background: #fff; color: var(--text-primary);
+.cx-icon-btn:hover { background: var(--surface-hover); }
+.cx-icon-badge {
+  position: absolute; top: -3px; right: -3px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px;
 }
-.filter-count { font-size: 11.5px; color: var(--text-secondary); margin-left: auto; }
-.filter-count b { color: var(--series-2); font-size: 13px; }
-
-.ac-body { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
-.ac-table-wrap { border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; max-height: 340px; overflow-y: auto; }
-.ac-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-.ac-table thead th {
-  position: sticky; top: 0; background: var(--page-plane); text-align: left; padding: 7px 9px;
-  font-size: 10px; color: var(--muted-ink); border-bottom: 1px solid var(--gridline);
+.cx-profile-chip {
+  display: flex; align-items: center; gap: 8px; background: var(--surface); border: none; border-radius: 999px;
+  padding: 4px 14px 4px 4px; cursor: pointer; color: var(--text);
 }
-.ac-table tbody td { padding: 7px 9px; border-bottom: 1px solid var(--gridline); }
-.ac-table tbody tr { cursor: pointer; }
-.ac-table tbody tr:hover { background: var(--page-plane); }
-.ac-table tbody tr.row-selected { background: #eaf2fc; }
-.mono-cell { font-family: 'DejaVu Sans Mono', monospace; font-size: 10px; color: var(--text-secondary); }
+.cx-profile-chip:hover { background: var(--surface-hover); }
+.cx-profile-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--indigo); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+.cx-profile-chip span { font-size: 12px; font-weight: 700; }
 
-.detail-panel { background: var(--page-plane); border-radius: 8px; padding: 12px 14px; }
-.detail-empty { background: var(--page-plane); border-radius: 8px; padding: 24px; text-align: center; color: var(--muted-ink); font-size: 11.5px; }
-.detail-id { font-family: 'DejaVu Sans Mono', monospace; font-size: 11px; color: var(--text-secondary); }
-.detail-sub-title { font-size: 10.5px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; }
+.cx-content { grid-area: main; padding: 26px 32px 110px; overflow-y: auto; }
+.cx-content-inner { max-width: 1100px; }
+.cx-section-title { font-weight: 800; font-size: 22px; margin: 6px 0 18px; letter-spacing: -0.4px; color: var(--text); }
+.cx-muted { font-size: 12px; color: var(--text-mute); line-height: 1.6; }
 
-/* ---------- 쿠폰함 ---------- */
-.coupon-card {
-  border-radius: 12px; padding: 14px 16px; color: #fff; position: relative; overflow: hidden;
-  background: linear-gradient(135deg, var(--series-1), #1c5cab);
+/* 하단 미니 플레이어 바 (데스크톱 전용 장식) */
+.cx-playerbar {
+  position: fixed; left: 240px; right: 0; bottom: 0; height: 78px; z-index: 25;
+  background: var(--surface-2); border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
 }
-.coupon-card.tier-low { background: linear-gradient(135deg, var(--series-3), #0c8a5e); }
-.coupon-card .coupon-badge { font-size: 9.5px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 2px 8px; border-radius: 10px; display: inline-block; }
-.coupon-card .coupon-title { font-size: 16px; font-weight: 800; margin: 8px 0 2px; }
-.coupon-card .coupon-desc { font-size: 11px; opacity: 0.92; }
-.coupon-card .coupon-code {
-  margin-top: 10px; font-family: 'DejaVu Sans Mono', monospace; font-size: 12px; font-weight: 700;
-  background: rgba(255,255,255,0.16); border: 1px dashed rgba(255,255,255,0.5); border-radius: 7px;
-  padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;
+.cx-playerbar-track { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; max-width: 320px; }
+.cx-playerbar-cover { width: 48px; height: 48px; border-radius: 6px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; }
+.cx-playerbar-meta { min-width: 0; }
+.cx-playerbar-title { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-playerbar-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-playerbar-mid { flex: 1.4; display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: 480px; }
+.cx-playerbar-controls { display: flex; align-items: center; gap: 18px; }
+.cx-playerbar-controls span { color: var(--text-soft); font-size: 15px; cursor: pointer; }
+.cx-play-fab-mid {
+  width: 30px; height: 30px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center;
+  justify-content: center; font-size: 12px; cursor: pointer;
 }
-.coupon-expire { font-size: 9.5px; margin-top: 8px; opacity: 0.85; }
-.coupon-list-mini { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.coupon-mini-row { display: flex; justify-content: space-between; align-items: center; background: var(--page-plane); border: 1px solid var(--gridline); border-radius: 8px; padding: 8px 10px; font-size: 11px; }
+.cx-playerbar-progress { width: 100%; display: flex; align-items: center; gap: 8px; }
+.cx-playerbar-progress span { font-size: 9.5px; color: var(--text-mute); }
+.cx-progress-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+.cx-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--text); border-radius: 2px; }
+.cx-playerbar-vol { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px; color: var(--text-soft); font-size: 14px; }
+.cx-vol-track { width: 80px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.14); position: relative; }
+.cx-vol-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 65%; background: var(--text-soft); border-radius: 2px; }
 
-/* ---------- 취향 기반 추천 ---------- */
-.taste-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
-.taste-tag { font-size: 10.5px; font-weight: 700; padding: 4px 10px; border-radius: 12px; background: #ece9fb; color: #4a3d99; }
-.taste-tag .pct { opacity: 0.7; font-weight: 600; margin-left: 3px; }
-.taste-track { display: flex; align-items: center; gap: 10px; background: var(--page-plane); border: 1px solid var(--gridline); border-radius: 8px; padding: 8px 10px; margin-top: 7px; }
-.taste-track .cover { width: 30px; height: 30px; border-radius: 6px; background: var(--series-1); flex: 0 0 30px; display:flex; align-items:center; justify-content:center; color:#fff; font-size: 13px; }
-.taste-track .meta { flex: 1; }
-.taste-track .meta b { display: block; font-size: 11.5px; }
-.taste-track .meta span { font-size: 9.5px; color: var(--muted-ink); }
-.match-badge { font-size: 9px; font-weight: 800; color: var(--success-text); background: #e6f6e6; padding: 2px 7px; border-radius: 8px; }
-
-/* ---------- LTV 우선순위 리스트 ---------- */
-.priority-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
-.priority-table th { text-align: left; padding: 6px 8px; font-size: 9.5px; color: var(--muted-ink); border-bottom: 1px solid var(--gridline); }
-.priority-table td { padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
-.priority-rank { font-weight: 800; color: var(--series-2); }
-
-/* ---------- 로그인 / 회원가입 화면 ---------- */
-.login-shell {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  background: var(--page-plane); padding: 20px;
-}
-.login-card {
-  width: 100%; max-width: 380px; background: var(--surface-1); border: 1px solid var(--border-hairline);
-  border-radius: 16px; padding: 28px 26px; box-shadow: 0 8px 28px rgba(0,0,0,0.06);
-}
-.login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
-.login-title { font-weight: 700; font-size: 15px; }
-.login-sub { font-size: 11.5px; color: var(--muted-ink); margin-top: 2px; }
-
-.mode-toggle { display: flex; gap: 4px; background: var(--page-plane); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
-.mode-btn {
-  flex: 1; border: none; background: transparent; padding: 9px 0; border-radius: 8px; font-size: 12.5px;
-  font-weight: 700; color: var(--text-secondary); cursor: pointer; text-align: center;
-}
-.mode-btn.mode-active { background: var(--series-1); color: #fff; }
-
-.form-tab-row { display: flex; gap: 14px; margin-bottom: 16px; border-bottom: 1px solid var(--border-hairline); }
-.form-tab { border: none; background: none; padding: 0 0 9px 0; font-size: 12.5px; font-weight: 700; color: var(--muted-ink); cursor: pointer; border-bottom: 2px solid transparent; }
-.form-tab.form-tab-active { color: var(--series-1); border-bottom-color: var(--series-1); }
-
-.field-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; }
-.field-label { font-size: 10.5px; font-weight: 700; color: var(--muted-ink); }
-.text-input {
-  border: 1px solid var(--border-hairline); border-radius: 8px; padding: 9px 11px; font-size: 12.5px;
-  background: #fff; color: var(--text-primary); width: 100%;
-}
-.text-input:focus { outline: 2px solid var(--series-1); outline-offset: 1px; }
-
-.login-submit { width: 100%; padding: 10px 0; font-size: 12.8px; margin-top: 4px; }
-.login-error {
-  background: #fdecea; border: 1px solid #f3c6c1; color: #a8291a; font-size: 11.5px;
-  border-radius: 8px; padding: 8px 11px; margin-bottom: 13px;
+@media (max-width: 860px) {
+  .cx-app { grid-template-columns: 1fr; grid-template-rows: 60px 1fr; grid-template-areas: "top" "main"; }
+  .cx-nav {
+    grid-row: auto; position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: auto; z-index: 30;
+    background: #0a0a0c; border-top: 1px solid var(--line); flex-direction: row; padding: 4px 0; gap: 0;
+  }
+  .cx-nav-logo, .cx-nav-spacer, .cx-nav-foot { display: none; }
+  .cx-navbtn { flex: 1; flex-direction: column; gap: 3px; padding: 7px 0 9px; border-radius: 0; color: var(--text-mute); font-size: 10px; }
+  .cx-navbtn.cx-nav-active { color: var(--mg); }
+  .cx-searchpill span:last-child { display: none; }
+  .cx-content { padding: 16px 16px 90px; }
+  .cx-content-inner { max-width: 100%; }
+  .cx-playerbar { display: none; }
 }
 
-.msno-sample-grid { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; margin-bottom: 14px; }
-.msno-sample-btn {
-  text-align: left; border: 1px solid var(--border-hairline); background: #fff; border-radius: 8px;
-  padding: 9px 11px; font-size: 11.5px; cursor: pointer; color: var(--text-primary);
+/* ---------- 홈: 히어로 배너 ---------- */
+.cx-hero {
+  border-radius: 16px; padding: 26px 28px 28px; color: #fff; position: relative; overflow: hidden; margin-bottom: 24px;
+  background:
+    linear-gradient(120deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+    linear-gradient(135deg, var(--mg) 0%, #0c6b2e 100%);
 }
-.msno-sample-btn:hover { border-color: var(--series-1); }
-.msno-sample-btn b { display: block; font-size: 10px; color: var(--series-1); margin-bottom: 2px; }
-.msno-sample-code { font-family: 'DejaVu Sans Mono', monospace; font-size: 9.5px; color: var(--muted-ink); word-break: break-all; }
-
-.logout-btn {
-  border: 1px solid var(--border-hairline); background: #fff; color: var(--text-secondary);
-  border-radius: 7px; padding: 7px 13px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+.cx-hero.cx-hero-danger {
+  background:
+    linear-gradient(120deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
+    linear-gradient(135deg, #ff8a5b 0%, #b3273a 100%);
 }
+.cx-hero-badge { font-size: 10.5px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 12px; border-radius: 10px; display: inline-block; letter-spacing: 0.2px; }
+.cx-hero-title { font-size: 26px; font-weight: 900; margin: 14px 0 6px; line-height: 1.3; letter-spacing: -0.4px; max-width: 640px; }
+.cx-hero-sub { font-size: 12.5px; opacity: 0.9; line-height: 1.6; }
+.cx-hero-cta { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+.cx-btn {
+  border: none; border-radius: 999px; padding: 11px 22px; font-size: 12.5px; font-weight: 800; cursor: pointer;
+  transition: transform .1s ease;
+}
+.cx-btn:hover { transform: scale(1.03); }
+.cx-btn-white { background: #fff; color: #000; }
+.cx-btn-ghost-white { background: rgba(0,0,0,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.55); }
 
+.cx-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.cx-stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 15px 12px; text-align: center; transition: background .15s ease; }
+.cx-stat-tile:hover { background: var(--surface-hover); }
+.cx-stat-emoji { font-size: 16px; }
+.cx-stat-value { font-weight: 800; font-size: 14px; margin-top: 6px; color: var(--text); }
+.cx-stat-label { font-size: 10px; color: var(--text-mute); margin-top: 3px; }
+
+.cx-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-bottom: 20px; }
+.cx-card-title { font-weight: 800; font-size: 15px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--text); }
+.cx-link-btn { border: none; background: none; color: var(--text-soft); font-size: 11.5px; font-weight: 700; cursor: pointer; }
+.cx-link-btn:hover { color: var(--text); text-decoration: underline; }
+
+/* ---------- 추천(취향) ---------- */
+.cx-badge-vip { font-size: 9.5px; font-weight: 800; background: var(--gold-tint); color: var(--gold); padding: 3px 9px; border-radius: 8px; }
+.cx-tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+.cx-tag { font-size: 10.5px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text-soft); }
+
+/* 앨범 커버 카드 그리드 — 스포티파이 스타일: 호버 시 확대되는 플로팅 재생 버튼 */
+.cx-track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+.cx-track-grid.cx-track-grid-sm { grid-template-columns: repeat(auto-fill, minmax(126px, 1fr)); gap: 16px; }
+.cx-track-card { display: flex; flex-direction: column; gap: 10px; cursor: pointer; padding: 10px; margin: -10px; border-radius: 8px; transition: background .15s ease; }
+.cx-track-card:hover { background: var(--surface-hover); }
+.cx-track-cover-lg {
+  width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 36px; color: #fff; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+.cx-track-grid-sm .cx-track-cover-lg { font-size: 26px; }
+.cx-play-fab {
+  position: absolute; right: 8px; bottom: 8px; width: 38px; height: 38px; border-radius: 50%; background: var(--mg);
+  color: #05170a; display: flex; align-items: center; justify-content: center; font-size: 13px;
+  opacity: 0; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+}
+.cx-track-card:hover .cx-play-fab { opacity: 1; transform: translateY(0); }
+.cx-track-card-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-track-card-artist { font-size: 11px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- 혜택(쿠폰) ---------- */
+.cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0c6b2e 100%); box-shadow: 0 16px 40px rgba(30,215,96,0.18); }
+.cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f6ff0 0%, #34348f 100%); box-shadow: 0 16px 40px rgba(111,111,240,0.18); }
+.cx-coupon-badge { font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 11px; border-radius: 10px; display: inline-block; }
+.cx-coupon-title { font-size: 19px; font-weight: 900; margin: 12px 0 4px; letter-spacing: -0.3px; }
+.cx-coupon-desc { font-size: 12px; opacity: 0.92; }
+.cx-coupon-code {
+  margin-top: 16px; font-family: 'DejaVu Sans Mono', monospace; font-size: 13px; font-weight: 800;
+  background: rgba(0,0,0,0.18); border: 1px dashed rgba(255,255,255,0.5); border-radius: 8px;
+  padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+}
+.cx-coupon-expire { font-size: 10.5px; margin-top: 12px; opacity: 0.85; }
+
+/* ---------- 알림 ---------- */
+.cx-notif-row { display: flex; gap: 13px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.cx-notif-row:last-child { border-bottom: none; }
+.cx-notif-icon {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--surface-hover); flex: 0 0 40px;
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.cx-notif-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.cx-notif-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
+.cx-notif-time { font-size: 10.5px; color: var(--text-mute); margin-top: 5px; }
+.cx-empty { text-align: center; color: var(--text-mute); font-size: 12.5px; padding: 50px 10px; }
+
+.cx-footnote { font-size: 10.5px; color: var(--text-mute); text-align: center; padding: 20px 4px 4px; line-height: 1.7; }
 </style>
 </head>
 <body>
@@ -618,678 +598,6 @@ const { useState, useMemo, useEffect } = React;
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
 const API_BASE = "http://localhost:8000";
 
-/* ============================== 실제 데이터 (KKBOX 프로젝트 분석 결과) ============================== */
-
-const SHAP_FEATURES = [
-  { name: "days_to_expire", ko: "만료까지 남은 일수", v: 1.0928 },
-  { name: "last_plan_list_price", ko: "최근 결제 정가", v: 0.7131 },
-  { name: "days_since_last_txn", ko: "마지막 결제 경과일", v: 0.4654 },
-  { name: "auto_renew_rate", ko: "자동갱신 비율", v: 0.3253 },
-  { name: "cancel_rate", ko: "취소율", v: 0.3217 },
-  { name: "last_is_auto_renew", ko: "최근 자동갱신 여부", v: 0.2713 },
-  { name: "registered_via", ko: "가입 경로", v: 0.268 },
-  { name: "d7_active_days", ko: "최근 7일 활동일수", v: 0.1624 },
-  { name: "tenure_days", ko: "가입 경과일수", v: 0.0859 },
-  { name: "last_actual_amount_paid", ko: "최근 실결제액", v: 0.0855 },
-];
-
-const FUNNEL = [
-  { step: "가입", count: 6769473, pctTotal: 100.0, pctPrior: null },
-  { step: "첫 결제", count: 1931003, pctTotal: 28.5, pctPrior: 28.5 },
-  { step: "이용", count: 1878148, pctTotal: 27.7, pctPrior: 97.3 },
-  { step: "반복 이용", count: 1552512, pctTotal: 22.9, pctPrior: 82.7 },
-  { step: "자동 갱신", count: 991567, pctTotal: 14.6, pctPrior: 63.9 },
-  { step: "재구독", count: 711466, pctTotal: 10.5, pctPrior: 96.7 },
-];
-
-const LTV_SEGMENTS = [
-  { key: "highRiskHighValue", label: "고위험 × 고가치", count: 38945, status: "critical" },
-  { key: "highRiskLowValue", label: "고위험 × 저가치", count: 31252, status: "warning" },
-  { key: "lowRiskHighValue", label: "저위험 × 고가치", count: 457532, status: "good" },
-  { key: "lowRiskLowValue", label: "저위험 × 저가치", count: 465202, status: "muted" },
-];
-
-const SEGMENT_DRIVERS = [
-  { name: "days_to_expire", ko: "만료 임박", count: 282, pct: 77.0 },
-  { name: "days_since_last_txn", ko: "장기 미결제", count: 58, pct: 15.8 },
-  { name: "last_is_auto_renew", ko: "자동갱신 해제", count: 13, pct: 3.6 },
-  { name: "cancel_rate", ko: "취소 이력", count: 7, pct: 1.9 },
-  { name: "auto_renew_rate", ko: "자동갱신 낮음", count: 5, pct: 1.4 },
-  { name: "last_actual_amount_paid", ko: "결제액 하락", count: 1, pct: 0.3 },
-];
-
-const RETENTION_POINTS = [
-  { m: "가입월", pct: 100.0, observed: true },
-  { m: "M1", pct: 56.4, observed: true },
-  { m: "M6", pct: 42.6, observed: true },
-  { m: "M11", pct: 38.3, observed: true },
-];
-
-const MODEL_STATS = { auc: 0.9915, f1: 0.8118, threshold: 0.355 };
-
-// ---- 비즈니스 액션 목업: 쿠폰 / 취향 추천 / LTV 우선순위 ----
-// 실제로는 /me/risk, /me/coupons, /me/recommendations API 응답으로 대체될 값들
-const COUPON_RULES = {
-  "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", tier: "high" },
-  "고위험/저가치": { badge: "복귀 유도 오퍼", title: "무료 청취 크레딧 5,000원", desc: "가볍게 다시 시작할 수 있는 소액 혜택", code: "COMEBACK5K", tier: "low" },
-  "저위험/고가치": { badge: "감사 오퍼", title: "다음 달 자동 5% 적립", desc: "이탈 위험은 낮지만 고가치 고객 유지용", code: "THANKS5PT", tier: "low" },
-  "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", tier: "low" },
-};
-
-const TASTE_TAGS = [
-  { name: "인디 팝", pct: 34 },
-  { name: "K-POP", pct: 27 },
-  { name: "재즈", pct: 18 },
-  { name: "로파이", pct: 12 },
-];
-const TASTE_TRACKS = [
-  { title: "밤의 산책", artist: "오후의 산책자", emoji: "🌙", match: 96 },
-  { title: "Sunday Jazz", artist: "Coffee & Vinyl", emoji: "☕", match: 91 },
-  { title: "새벽 드라이브", artist: "네온사인", emoji: "🚗", match: 88 },
-];
-
-const LTV_PRIORITY = [
-  { rank: 1, id: "msno_ax91k382", risk: 0.94, monthlyRevenue: 18900, ltv: 612000 },
-  { rank: 2, id: "msno_bz02m714", risk: 0.89, monthlyRevenue: 15900, ltv: 498000 },
-  { rank: 3, id: "msno_cy73p205", risk: 0.87, monthlyRevenue: 14900, ltv: 471000 },
-  { rank: 4, id: "msno_dw84q396", risk: 0.83, monthlyRevenue: 13900, ltv: 435000 },
-  { rank: 5, id: "msno_ev15r487", risk: 0.81, monthlyRevenue: 12900, ltv: 402000 },
-];
-
-/* ============================== 차트 컴포넌트 (dataviz 팔레트 기반) ============================== */
-
-function HBarChart({ data, valueKey, labelKey, subLabelKey, colorKey, maxOverride, unit, height = 26 }) {
-  const max = maxOverride || Math.max(...data.map((d) => d[valueKey]));
-  return html`
-    <div class="hbar-chart">
-      ${data.map(
-        (d, i) => html`
-          <div class="hbar-row" key=${i}>
-            <div class="hbar-label">
-              <span class="hbar-label-main">${d[labelKey]}</span>
-              ${subLabelKey ? html`<span class="hbar-label-sub">${d[subLabelKey]}</span>` : null}
-            </div>
-            <div class="hbar-track" style=${{ height: `${height}px` }}>
-              <div
-                class="hbar-fill"
-                style=${{
-                  width: `${Math.max(2, (d[valueKey] / max) * 100)}%`,
-                  background: colorKey ? d[colorKey] : "var(--series-1)",
-                }}
-              ></div>
-            </div>
-            <div class="hbar-value">${typeof d[valueKey] === "number" ? d[valueKey].toLocaleString() : d[valueKey]}${unit || ""}</div>
-          </div>
-        `
-      )}
-    </div>
-  `;
-}
-
-function StatTile({ label, value, sub, status }) {
-  return html`
-    <div class="stat-tile ${status ? `stat-${status}` : ""}">
-      <div class="stat-label">${label}</div>
-      <div class="stat-value">${value}</div>
-      ${sub ? html`<div class="stat-sub">${sub}</div>` : null}
-    </div>
-  `;
-}
-
-function RetentionLine() {
-  const w = 560,
-    h = 170,
-    padL = 40,
-    padR = 20,
-    padT = 20,
-    padB = 30;
-  const innerW = w - padL - padR,
-    innerH = h - padT - padB;
-  const pts = RETENTION_POINTS;
-  const x = (i) => padL + (i / (pts.length - 1)) * innerW;
-  const y = (pct) => padT + innerH - (pct / 100) * innerH;
-  const path = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(p.pct)}`).join(" ");
-  return html`
-    <svg viewBox="0 0 ${w} ${h}" class="line-chart" role="img" aria-label="코호트 리텐션 곡선">
-      ${[0, 25, 50, 75, 100].map(
-        (g) => html`
-          <line x1=${padL} x2=${w - padR} y1=${y(g)} y2=${y(g)} class="gridline" key=${g} />
-          <text x=${padL - 8} y=${y(g) + 3} class="axis-label" text-anchor="end">${g}%</text>
-        `
-      )}
-      <path d=${path} class="line-mark" fill="none" />
-      ${pts.map(
-        (p, i) => html`
-          <g key=${i}>
-            <circle cx=${x(i)} cy=${y(p.pct)} r="5" class="line-dot" />
-            <text x=${x(i)} y=${y(p.pct) - 12} class="point-label" text-anchor="middle">${p.pct}%</text>
-            <text x=${x(i)} y=${h - 8} class="axis-label" text-anchor="middle">${p.m}</text>
-          </g>
-        `
-      )}
-    </svg>
-  `;
-}
-
-/* ============================== 소비자 앱 화면 (모바일 목업) ============================== */
-
-function PhoneFrame({ title, children }) {
-  return html`
-    <div class="phone-frame">
-      <div class="phone-statusbar">
-        <span>9:41</span>
-        <span>●●●</span>
-      </div>
-      <div class="phone-screen">${children}</div>
-      <div class="phone-caption">${title}</div>
-    </div>
-  `;
-}
-
-function RenewalReminderScreen() {
-  const [tier, setTier] = useState("high");
-  const offers = {
-    high: { badge: "고가치 오퍼", text: "지금 갱신하면 20% 할인 + 보너스 크레딧", cta: "지금 갱신하기" },
-    low: { badge: "저가치 오퍼", text: "지금 갱신하면 무료 청취 크레딧 지급", cta: "지금 갱신하기" },
-  };
-  const o = offers[tier];
-  return html`
-    <div class="app-body">
-      <div class="app-header">홈</div>
-      <div class="reminder-banner">
-        <div class="reminder-icon">🔔</div>
-        <div class="reminder-text">
-          <b>구독이 7일 후 만료돼요</b>
-          <div class="reminder-sub">${o.text}</div>
-        </div>
-        <span class="chip chip-accent">${o.badge}</span>
-      </div>
-      <div class="row gap8" style=${{ marginTop: "10px" }}>
-        <button class="btn btn-primary">${o.cta}</button>
-        <button class="btn btn-ghost">자동갱신 켜기</button>
-      </div>
-      <div class="tier-toggle">
-        <span class="small-muted">데모: LTV 세그먼트별 오퍼 차등</span>
-        <div class="row gap8">
-          <button class="pill ${tier === "high" ? "pill-active" : ""}" onClick=${() => setTier("high")}>고가치 유저</button>
-          <button class="pill ${tier === "low" ? "pill-active" : ""}" onClick=${() => setTier("low")}>저가치 유저</button>
-        </div>
-      </div>
-      <div class="mock-card-list">
-        <div class="mock-card">🎵 오늘의 추천 플레이리스트</div>
-        <div class="mock-card">📻 새로 나온 앨범</div>
-      </div>
-    </div>
-  `;
-}
-
-function MonthlyReportScreen() {
-  return html`
-    <div class="app-body">
-      <div class="app-header">마이페이지</div>
-      <div class="report-title">이번 달 청취 리포트</div>
-      <div class="report-grid">
-        <div class="report-tile">
-          <div class="report-emoji">📊</div>
-          <div class="report-num">32h 40m</div>
-          <div class="report-label">이번 달 재생시간</div>
-          <div class="delta-up">▲ 지난달 대비 12%</div>
-        </div>
-        <div class="report-tile">
-          <div class="report-emoji">🔥</div>
-          <div class="report-num">9일째</div>
-          <div class="report-label">연속 청취 스트릭</div>
-          <div class="small-muted">리워드까지 1일</div>
-        </div>
-        <div class="report-tile">
-          <div class="report-emoji">🎧</div>
-          <div class="report-num">68%</div>
-          <div class="report-label">완청률</div>
-          <div class="small-muted">새 장르 추천 보기 →</div>
-        </div>
-      </div>
-      <div class="mock-card">추천 플레이리스트 · "요즘 취향 저격" · "이번 주 신곡"</div>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        Spotify Wrapped 스타일로 engagement를 높이고, 완청률이 낮은 유저에게는 새 장르 탐색 UI를 자연스럽게 노출합니다.
-      </p>
-    </div>
-  `;
-}
-
-function WinbackScreen() {
-  return html`
-    <div class="app-body">
-      <div class="app-header">다시 만나서 반가워요</div>
-      <div class="winback-hero">
-        <div style=${{ fontSize: "28px" }}>👋</div>
-        <b>오랜만이에요! 그동안 이런 곡들이 나왔어요</b>
-        <span class="chip chip-good">복귀 혜택: 1개월 반값</span>
-      </div>
-      <div class="mock-card-list">
-        <div class="mock-card">🎵 취향 기반 추천곡 미리듣기 #1</div>
-        <div class="mock-card">🎵 취향 기반 추천곡 미리듣기 #2</div>
-        <div class="mock-card">🎵 취향 기반 추천곡 미리듣기 #3</div>
-      </div>
-      <button class="btn btn-primary" style=${{ width: "100%", marginTop: "10px" }}>다시 시작하기</button>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        결제 후 60일 이상 경과 유저(실측 잔존율 44.3%) 재방문 시 노출되는 화면입니다.
-      </p>
-    </div>
-  `;
-}
-
-function CouponScreen() {
-  const [ltvTier, setLtvTier] = useState("고위험/고가치");
-  const c = COUPON_RULES[ltvTier];
-  return html`
-    <div class="app-body">
-      <div class="app-header">쿠폰함</div>
-      <div class="coupon-card ${c.tier === "low" ? "tier-low" : ""}">
-        <span class="coupon-badge">${c.badge}</span>
-        <div class="coupon-title">${c.title}</div>
-        <div class="coupon-desc">${c.desc}</div>
-        <div class="coupon-code">
-          <span>${c.code}</span>
-          <button class="btn btn-ghost btn-sm" style=${{ background: "#fff" }}>복사</button>
-        </div>
-        <div class="coupon-expire">⏱ 만료까지 D-3 · 위험도×LTV 세그먼트 기준 자동 발급</div>
-      </div>
-      <div class="tier-toggle">
-        <span class="small-muted">데모: 세그먼트별 쿠폰 자동 매칭</span>
-        <div class="row gap8" style=${{ flexWrap: "wrap" }}>
-          ${Object.keys(COUPON_RULES).map(
-            (k) => html`<button key=${k} class="pill ${ltvTier === k ? "pill-active" : ""}" onClick=${() => setLtvTier(k)}>${k}</button>`
-          )}
-        </div>
-      </div>
-      <div class="coupon-list-mini">
-        <div class="coupon-mini-row"><span>지난달 발급 쿠폰</span><span class="chip chip-good">3장 사용</span></div>
-        <div class="coupon-mini-row"><span>이번 쿠폰 예상 리텐션 효과</span><span class="chip chip-accent">+1.8%p</span></div>
-      </div>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        쿠폰 종류는 고정이 아니라 위험도×LTV 4분면(analytics/04_ltv.ipynb 세그먼트)에 맞춰 자동 매칭되며, A/B 테스트로 리텐션 효과를 검증합니다.
-      </p>
-    </div>
-  `;
-}
-
-function TasteMusicScreen() {
-  return html`
-    <div class="app-body">
-      <div class="app-header">취향 기반 추천</div>
-      <p class="small-muted" style=${{ margin: "0 0 4px" }}>최근 청취 로그 기반 취향 태그</p>
-      <div class="taste-tag-row">
-        ${TASTE_TAGS.map((t) => html`<span class="taste-tag" key=${t.name}>${t.name}<span class="pct">${t.pct}%</span></span>`)}
-      </div>
-      ${TASTE_TRACKS.map(
-        (t) => html`
-          <div class="taste-track" key=${t.title}>
-            <div class="cover">${t.emoji}</div>
-            <div class="meta"><b>${t.title}</b><span>${t.artist}</span></div>
-            <span class="match-badge">${t.match}% 일치</span>
-          </div>
-        `
-      )}
-      <button class="btn btn-primary" style=${{ width: "100%", marginTop: "12px" }}>추천 플레이리스트 재생</button>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        완청률(completion_rate)·청취 다양성이 낮은 고위험 고객에게 새 장르를 자연스럽게 노출해 참여도(engagement) 자체를 끌어올리는 화면입니다.
-      </p>
-    </div>
-  `;
-}
-
-function NotificationsScreen({ auth }) {
-  const [actions, setActions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!auth) return;
-    setLoading(true);
-    setError("");
-    fetch(`${API_BASE}/me/actions`, {
-      headers: { Authorization: `Bearer ${auth.token}` },
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error(`불러오기 실패 (${r.status})`);
-        return r.json();
-      })
-      .then((data) => setActions(Array.isArray(data) ? data : []))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [auth]);
-
-  const LABELS = {
-    reminder: { emoji: "🔔", label: "만료 임박 리마인드", desc: "관리자가 갱신 리마인드를 보냈어요" },
-    discount_offer: { emoji: "🎁", label: "할인 오퍼", desc: "관리자가 할인 오퍼를 보냈어요" },
-  };
-
-  return html`
-    <div class="app-body">
-      <div class="app-header">알림함</div>
-      ${loading
-        ? html`<p class="small-muted">불러오는 중...</p>`
-        : error
-        ? html`<div class="detail-empty">${error}</div>`
-        : actions.length === 0
-        ? html`<div class="detail-empty">아직 받은 알림이 없어요. 관리자 화면(운영 대시보드 → 이탈방지 액션센터)에서 이 고객에게 리마인드/할인 오퍼를 보내보세요.</div>`
-        : html`
-            <div class="mock-card-list">
-              ${actions.map((a) => {
-                const meta = LABELS[a.action_type] || { emoji: "📩", label: a.action_type, desc: "" };
-                return html`
-                  <div class="mock-card" key=${a.id}>
-                    <b>${meta.emoji} ${meta.label}</b>
-                    <div class="small-muted">${meta.desc} · ${new Date(a.sent_at).toLocaleString()}</div>
-                  </div>
-                `;
-              })}
-            </div>
-          `}
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        실제 로그인한 msno(${auth ? auth.name : ""}) 기준으로 DB에서 바로 조회한 실데이터 화면입니다. 아래 화면들은 예시(mock)입니다.
-      </p>
-    </div>
-  `;
-}
-
-function ConsumerTab({ auth }) {
-  return html`
-    <div>
-      <p class="section-intro">구독자가 직접 보는 화면입니다. 알림함은 관리자가 방금 보낸 액션을 실시간으로 보여주고, 리마인드·리포트·윈백은 이탈 신호에 대응하고, 쿠폰함·취향 추천은 이탈을 막기 위한 비즈니스 액션(할인/개인화)을 보여줍니다.</p>
-      <div class="phone-row">
-        <${PhoneFrame} title="⓪ 알림함 (관리자 발송, 실데이터)"><${NotificationsScreen} auth=${auth} /><//>
-        <${PhoneFrame} title="① 만료 임박 리마인드 배너"><${RenewalReminderScreen} /><//>
-        <${PhoneFrame} title="② 마이페이지 청취 리포트"><${MonthlyReportScreen} /><//>
-        <${PhoneFrame} title="③ 윈백(재방문 유도) 온보딩"><${WinbackScreen} /><//>
-        <${PhoneFrame} title="④ 쿠폰함 (세그먼트별 자동 발급)"><${CouponScreen} /><//>
-        <${PhoneFrame} title="⑤ 취향 기반 음악 추천"><${TasteMusicScreen} /><//>
-      </div>
-    </div>
-  `;
-}
-
-/* ============================== 운영 대시보드 (액션센터) ============================== */
-
-function CustomerDetail({ customer, auth }) {
-  const [sending, setSending] = useState(null);
-  const [sentTypes, setSentTypes] = useState([]);
-  const [error, setError] = useState("");
-
-  if (!customer) {
-    return html`<div class="detail-empty">왼쪽 목록에서 고객을 선택하면 상세 정보가 표시됩니다.</div>`;
-  }
-
-  async function sendAction(actionType) {
-    setSending(actionType);
-    setError("");
-    try {
-      const res = await fetch(`${API_BASE}/admin/customers/${customer.msno}/actions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
-        body: JSON.stringify({ action_type: actionType }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || `발송 실패 (${res.status})`);
-      }
-      setSentTypes((prev) => (prev.includes(actionType) ? prev : [...prev, actionType]));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSending(null);
-    }
-  }
-
-  return html`
-    <div class="detail-panel">
-      <div class="detail-id">${customer.msno}</div>
-      <div class="row gap8" style=${{ margin: "6px 0 12px 0", flexWrap: "wrap" }}>
-        <span class="chip ${customer.risk_tier === "고위험" ? "chip-critical" : "chip-warning"}">위험도 ${customer.churn_proba.toFixed(3)}</span>
-        <span class="chip">${customer.segment}</span>
-      </div>
-      <div class="detail-sub-title">고객 요약 (실데이터)</div>
-      <div class="row gap8" style=${{ flexWrap: "wrap", marginBottom: "10px" }}>
-        <span class="chip chip-accent">월평균 결제 ₩${customer.avg_monthly_revenue != null ? Math.round(customer.avg_monthly_revenue).toLocaleString() : "-"}</span>
-        <span class="chip chip-accent">예상 LTV ₩${customer.ltv_approx != null ? Math.round(customer.ltv_approx).toLocaleString() : "-"}</span>
-        <span class="chip">만료 D-${customer.days_to_expire ?? "-"}</span>
-        <span class="chip">마지막 결제 ${customer.days_since_last_txn ?? "-"}일 전</span>
-      </div>
-      <div class="detail-sub-title">추천 액션</div>
-      <div class="row gap8" style=${{ flexWrap: "wrap" }}>
-        <button class="btn btn-primary btn-sm" disabled=${sending === "reminder"} onClick=${() => sendAction("reminder")}>
-          ${sentTypes.includes("reminder") ? "✓ 리마인드 발송됨" : sending === "reminder" ? "발송 중..." : "리마인드 발송"}
-        </button>
-        <button class="btn btn-ghost btn-sm" disabled=${sending === "discount_offer"} onClick=${() => sendAction("discount_offer")}>
-          ${sentTypes.includes("discount_offer") ? "✓ 오퍼 발송됨" : sending === "discount_offer" ? "발송 중..." : "할인 오퍼 발송"}
-        </button>
-      </div>
-      ${error ? html`<div class="login-error" style=${{ marginTop: "8px" }}>${error}</div>` : null}
-      <p class="small-muted" style=${{ marginTop: "8px" }}>
-        발송하면 이 고객(${customer.msno})으로 로그인했을 때 소비자 앱 알림함에 바로 표시됩니다.
-      </p>
-    </div>
-  `;
-}
-
-function ActionCenter({ auth }) {
-  const [riskFilter, setRiskFilter] = useState("all");
-  const [segmentFilter, setSegmentFilter] = useState("all");
-  const [customers, setCustomers] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [selected, setSelected] = useState(null);
-
-  useEffect(() => {
-    if (!auth) return;
-    setLoading(true);
-    setError("");
-    const params = new URLSearchParams({ page_size: "50" });
-    if (riskFilter !== "all") params.set("risk_tier", riskFilter);
-    if (segmentFilter !== "all") params.set("segment", segmentFilter);
-    fetch(`${API_BASE}/admin/customers?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${auth.token}` },
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error(`고객 목록 조회 실패 (${r.status})`);
-        return r.json();
-      })
-      .then((data) => {
-        const items = data.items || [];
-        setCustomers(items);
-        setTotal(data.total || 0);
-        setSelected(items[0] || null);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [auth, riskFilter, segmentFilter]);
-
-  return html`
-    <div class="action-center">
-      <div class="ac-filters">
-        <div class="filter-block">
-          <div class="filter-label">위험도</div>
-          <select class="select" value=${riskFilter} onChange=${(e) => setRiskFilter(e.target.value)}>
-            <option value="all">전체</option>
-            <option value="고위험">고위험</option>
-            <option value="저위험">저위험</option>
-          </select>
-        </div>
-        <div class="filter-block">
-          <div class="filter-label">세그먼트</div>
-          <select class="select" value=${segmentFilter} onChange=${(e) => setSegmentFilter(e.target.value)}>
-            <option value="all">전체</option>
-            <option value="고위험/고가치">고위험/고가치</option>
-            <option value="고위험/저가치">고위험/저가치</option>
-            <option value="저위험/고가치">저위험/고가치</option>
-            <option value="저위험/저가치">저위험/저가치</option>
-          </select>
-        </div>
-        <div class="filter-count">전체 <b>${total.toLocaleString()}</b>명 중 ${customers.length}명 표시 (위험도 순)</div>
-      </div>
-      <div class="ac-body">
-        <div class="ac-table-wrap">
-          ${loading
-            ? html`<div class="detail-empty">불러오는 중...</div>`
-            : error
-            ? html`<div class="detail-empty">${error}</div>`
-            : html`
-                <table class="ac-table">
-                  <thead>
-                    <tr>
-                      <th>고객 ID (msno)</th>
-                      <th>위험도</th>
-                      <th>세그먼트</th>
-                      <th>만료 D-day</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${customers.map(
-                      (c) => html`
-                        <tr key=${c.msno} class=${selected && selected.msno === c.msno ? "row-selected" : ""} onClick=${() => setSelected(c)}>
-                          <td class="mono-cell">${c.msno}</td>
-                          <td><span class="chip ${c.risk_tier === "고위험" ? "chip-critical" : "chip-warning"} chip-sm">${c.churn_proba.toFixed(3)}</span></td>
-                          <td>${c.segment}</td>
-                          <td>${c.days_to_expire != null ? `D-${c.days_to_expire}` : "-"}</td>
-                        </tr>
-                      `
-                    )}
-                  </tbody>
-                </table>
-              `}
-        </div>
-        <${CustomerDetail} customer=${selected} auth=${auth} />
-      </div>
-      <p class="small-muted" style=${{ marginTop: "8px" }}>
-        ※ 위 목록은 실제 DB(customer_churn_scores)에서 위험도 순으로 불러온 실데이터입니다. 최대 50명까지 표시됩니다.
-      </p>
-    </div>
-  `;
-}
-
-function ABTestMonitor() {
-  const groups = [
-    { key: "control", label: "Control", rate: 93.6, color: "var(--muted-ink)" },
-    { key: "t1", label: "Treatment 1 (리마인드)", rate: 94.8, color: "var(--series-1)" },
-    { key: "t2", label: "Treatment 2 (리마인드+할인)", rate: 95.6, color: "var(--series-2)" },
-  ];
-  return html`
-    <div>
-      <p class="section-intro">
-        아래는 실험 A(만료 임박 리마인드)가 <b>실행됐다고 가정한 예시 화면</b>입니다. 실제 실험은 아직 실행 전이며, 표시된 수치는
-        A/B 테스트 설계 문서의 표본 설계를 참고한 목업(mock) 데이터입니다.
-      </p>
-      <div class="kpi-row">
-        ${groups.map(
-          (g) => html`
-            <${StatTile}
-              key=${g.key}
-              label=${g.label}
-              value="${g.rate}%"
-              sub=${g.key === "control" ? "재구독률 (기준)" : `▲ ${(g.rate - 93.6).toFixed(1)}%p vs Control`}
-              status=${g.key === "control" ? "muted" : "good"}
-            />
-          `
-        )}
-      </div>
-      <div class="hbar-chart" style=${{ marginTop: "14px" }}>
-        ${groups.map(
-          (g) => html`
-            <div class="hbar-row" key=${g.key}>
-              <div class="hbar-label"><span class="hbar-label-main">${g.label}</span></div>
-              <div class="hbar-track" style=${{ height: "22px" }}>
-                <div class="hbar-fill" style=${{ width: `${g.rate}%`, background: g.color }}></div>
-              </div>
-              <div class="hbar-value">${g.rate}%</div>
-            </div>
-          `
-        )}
-      </div>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>Guardrail: 수신거부율 사전 허용범위 이탈 시 조기 중단 (설계 문서 기준)</p>
-    </div>
-  `;
-}
-
-function AdminTab({ auth }) {
-  return html`
-    <div>
-      <p class="section-intro">운영팀이 매일 보는 내부 대시보드입니다. 기존 streamlit_app에 새 페이지로 얹는 형태를 가정했습니다.</p>
-
-      <div class="kpi-row">
-        <${StatTile} label="전체 회원" value="6,769,473" sub="members_v3 기준" />
-        <${StatTile} label="최종 모델 AUC" value=${MODEL_STATS.auc} sub="LightGBM (튜닝 완료)" status="good" />
-        <${StatTile} label="고위험 임계값" value=${MODEL_STATS.threshold} sub="F1-최적 threshold" />
-        <${StatTile} label="고위험×고가치" value="38,945" sub="최우선 케어 대상" status="critical" />
-      </div>
-
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-title">SHAP 이탈 동인 Top 10</div>
-          <${HBarChart} data=${SHAP_FEATURES} valueKey="v" labelKey="ko" subLabelKey="name" />
-        </div>
-        <div class="panel">
-          <div class="panel-title">퍼널 (직전 단계 대비 전환율)</div>
-          <${HBarChart} data=${FUNNEL} valueKey="pctTotal" labelKey="step" unit="%" maxOverride=${100} />
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="panel">
-          <div class="panel-title">LTV × 위험 세그먼트</div>
-          <div class="kpi-row kpi-row-2x2">
-            ${LTV_SEGMENTS.map(
-              (s) => html`<${StatTile} key=${s.key} label=${s.label} value=${s.count.toLocaleString()} status=${s.status} />`
-            )}
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-title">코호트 리텐션 (관측된 지점)</div>
-          <${RetentionLine} />
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">고위험 고객(366명 샘플)의 주요 이탈 요인 분포</div>
-        <${HBarChart} data=${SEGMENT_DRIVERS} valueKey="pct" labelKey="ko" subLabelKey="count" unit="%" maxOverride=${100} />
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">최우선 케어 대상 — 고위험×고가치 Top 5 (LTV 기준)</div>
-        <p class="section-intro" style=${{ margin: "0 0 4px" }}>analytics/04_ltv.ipynb 로직으로 산출한 ltv_approx 상위 고객. 쿠폰함 화면의 VIP 오퍼가 이 리스트를 대상으로 발급됩니다.</p>
-        <table class="priority-table">
-          <thead><tr><th>#</th><th>고객 ID</th><th>위험도</th><th>월평균 결제액</th><th>예상 LTV</th></tr></thead>
-          <tbody>
-            ${LTV_PRIORITY.map(
-              (r) => html`
-                <tr key=${r.id}>
-                  <td class="priority-rank">${r.rank}</td>
-                  <td class="mono-cell">${r.id}</td>
-                  <td><span class="chip chip-critical chip-sm">${r.risk.toFixed(2)}</span></td>
-                  <td>₩${r.monthlyRevenue.toLocaleString()}</td>
-                  <td><b>₩${r.ltv.toLocaleString()}</b></td>
-                </tr>
-              `
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">이탈방지 액션센터</div>
-        <${ActionCenter} auth=${auth} />
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">A/B 테스트 모니터 (예시 화면)</div>
-        <${ABTestMonitor} />
-      </div>
-    </div>
-  `;
-}
-
-/* ============================== 로그인 / 회원가입 ============================== */
-
 // 데모용 msno 목록입니다. 실제 kkbox_serving.customer_churn_scores 에 있는 msno 값으로 교체해주세요.
 // (예: SELECT msno FROM customer_churn_scores ORDER BY RAND() LIMIT 8; 등으로 뽑아서 여기 채워넣으면 됩니다)
 const SAMPLE_MSNO = [
@@ -1297,206 +605,423 @@ const SAMPLE_MSNO = [
   { msno: "SAMPLE_MSNO_2", label: "예시 고객 2" },
 ];
 
+// 세그먼트(위험도×LTV, 실데이터 필드 조합)별 쿠폰 자동 매칭 — analytics/04_ltv.ipynb 세그먼트 기준
+const COUPON_RULES = {
+  "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", alt: false },
+  "고위험/저가치": { badge: "복귀 유도 오퍼", title: "무료 청취 크레딧 5,000원", desc: "가볍게 다시 시작할 수 있는 소액 혜택", code: "COMEBACK5K", alt: true },
+  "저위험/고가치": { badge: "감사 오퍼", title: "다음 달 자동 5% 적립", desc: "이탈 위험은 낮지만 고가치 고객 유지용", code: "THANKS5PT", alt: true },
+  "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", alt: true },
+};
+
+// 아래 트랙/앨범 정보는 실제 청취 로그가 아닌 예시(mock) 데이터입니다.
+// 우리 스키마(customer_churn_scores)에는 실제 장르/곡 선호 데이터가 없기 때문에, 곡 목록 자체는 그럴듯한 샘플로 채우고
+// "왜 이 추천을 보여주는지"의 문구/타겟팅만 로그인한 고객의 실제 risk_tier·segment·days_since_last_txn 값으로 결정합니다.
+const COMEBACK_TRACKS = [
+  { title: "밤의 산책", artist: "오후의 산책자", emoji: "🌙" },
+  { title: "다시, 봄", artist: "네온사인", emoji: "🌱" },
+  { title: "Sunday Jazz", artist: "Coffee & Vinyl", emoji: "☕" },
+  { title: "새벽 드라이브", artist: "하이웨이", emoji: "🚗" },
+];
+const LOYAL_TRACKS = [
+  { title: "이번 주, 우리 취향", artist: "위클리 플레이리스트", emoji: "✨" },
+  { title: "K-POP 데일리 TOP", artist: "여러 아티스트", emoji: "🔥" },
+  { title: "인디 팝 신곡 모음", artist: "여러 아티스트", emoji: "🎸" },
+  { title: "로파이 집중 비트", artist: "Study Beats", emoji: "📻" },
+];
+const COVER_GRADIENTS = [
+  "linear-gradient(135deg,#00c853,#009e42)",
+  "linear-gradient(135deg,#4d5bd9,#2f3aa8)",
+  "linear-gradient(135deg,#ff7b54,#ff5b5b)",
+  "linear-gradient(135deg,#ffb400,#e08e00)",
+];
+
+async function apiFetch(path, { method = "GET", token, body } = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || `요청 실패 (${res.status})`);
+  return data;
+}
+
+/* ============================== 로그인(고객 전용) ============================== */
+
 function LoginScreen({ onLogin }) {
-  const [mode, setMode] = useState("admin"); // "admin" | "customer"
-  const [adminForm, setAdminForm] = useState("login"); // "login" | "signup"
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [msno, setMsno] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function callApi(path, body) {
+  async function handleLogin(e) {
+    e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}${path}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.detail || `요청 실패 (${res.status})`);
-      }
-      return data;
+      const data = await apiFetch("/auth/customer-demo-login", { method: "POST", body: { msno } });
+      onLogin({ token: data.access_token, msno });
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleAdminLogin(e) {
-    e.preventDefault();
-    try {
-      const data = await callApi("/auth/staff-login", { email, password });
-      onLogin({ role: "admin", token: data.access_token, name: data.name || email });
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
-  async function handleAdminSignup(e) {
-    e.preventDefault();
-    try {
-      await callApi("/auth/staff-signup", { email, password, name });
-      // 회원가입 성공 후 바로 로그인 화면으로 전환 (로그인은 별도로 다시 눌러야 함)
-      setAdminForm("login");
-      setError("회원가입 완료! 이제 로그인해주세요.");
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
-  async function handleCustomerLogin(e) {
-    e.preventDefault();
-    try {
-      const data = await callApi("/auth/customer-demo-login", { msno });
-      onLogin({ role: "customer", token: data.access_token, name: msno });
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
   return html`
-    <div class="login-shell">
-      <div class="login-card">
-        <div class="login-brand">
-          <span class="brand-mark">K</span>
-          <div class="login-title">KKBOX 이탈방지 서비스</div>
+    <div class="cx-login-wrap">
+      <div class="cx-login-card">
+        <div class="cx-logo-row">
+          <span class="cx-logo-mark">K</span>
+          <span class="cx-logo-word">KKBOX Music</span>
         </div>
-        <div class="login-sub">관리자 또는 고객으로 로그인해주세요.</div>
+        <div class="cx-logo-sub">가입된 고객 ID(msno)로 로그인하면, 내 이용 현황과 맞춤 추천을 확인할 수 있어요.</div>
 
-        <div class="mode-toggle">
-          <button
-            type="button"
-            class="mode-btn ${mode === "admin" ? "mode-active" : ""}"
-            onClick=${() => { setMode("admin"); setError(""); }}
-          >관리자모드</button>
-          <button
-            type="button"
-            class="mode-btn ${mode === "customer" ? "mode-active" : ""}"
-            onClick=${() => { setMode("customer"); setError(""); }}
-          >고객모드</button>
-        </div>
+        <form onSubmit=${handleLogin}>
+          <label class="cx-field-label">고객 ID (msno)</label>
+          <input class="cx-input" type="text" required value=${msno}
+            onInput=${(e) => setMsno(e.target.value)} placeholder="msno를 입력하세요" />
 
-        ${mode === "admin" ? html`
-          <div class="form-tab-row">
-            <button
-              type="button"
-              class="form-tab ${adminForm === "login" ? "form-tab-active" : ""}"
-              onClick=${() => { setAdminForm("login"); setError(""); }}
-            >로그인</button>
-            <button
-              type="button"
-              class="form-tab ${adminForm === "signup" ? "form-tab-active" : ""}"
-              onClick=${() => { setAdminForm("signup"); setError(""); }}
-            >회원가입</button>
+          <div class="cx-sample-grid">
+            ${SAMPLE_MSNO.map(
+              (s) => html`
+                <button type="button" key=${s.msno} class="cx-sample-btn" onClick=${() => setMsno(s.msno)}>
+                  <b>${s.label}</b>
+                  <span class="cx-sample-code">${s.msno}</span>
+                </button>
+              `
+            )}
           </div>
 
-          ${adminForm === "login" ? html`
-            <form onSubmit=${handleAdminLogin}>
-              <div class="field-group">
-                <label class="field-label">이메일</label>
-                <input class="text-input" type="email" required value=${email}
-                  onInput=${(e) => setEmail(e.target.value)} placeholder="admin@team.com" />
-              </div>
-              <div class="field-group">
-                <label class="field-label">비밀번호</label>
-                <input class="text-input" type="password" required value=${password}
-                  onInput=${(e) => setPassword(e.target.value)} placeholder="••••••••" />
-              </div>
-              <button class="login-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
-            </form>
-          ` : html`
-            <form onSubmit=${handleAdminSignup}>
-              <div class="field-group">
-                <label class="field-label">이름</label>
-                <input class="text-input" type="text" required value=${name}
-                  onInput=${(e) => setName(e.target.value)} placeholder="홍길동" />
-              </div>
-              <div class="field-group">
-                <label class="field-label">이메일</label>
-                <input class="text-input" type="email" required value=${email}
-                  onInput=${(e) => setEmail(e.target.value)} placeholder="admin@team.com" />
-              </div>
-              <div class="field-group">
-                <label class="field-label">비밀번호</label>
-                <input class="text-input" type="password" required value=${password}
-                  onInput=${(e) => setPassword(e.target.value)} placeholder="8자 이상" />
-              </div>
-              <button class="login-submit" type="submit" disabled=${loading}>${loading ? "가입 중..." : "회원가입"}</button>
-            </form>
-          `}
-        ` : html`
-          <form onSubmit=${handleCustomerLogin}>
-            <div class="field-group">
-              <label class="field-label">고객 ID (msno)</label>
-              <input class="text-input" type="text" required value=${msno}
-                onInput=${(e) => setMsno(e.target.value)} placeholder="msno를 입력하세요" />
-            </div>
-            <div class="msno-sample-grid">
-              ${SAMPLE_MSNO.map(
-                (s) => html`
-                  <button type="button" class="msno-sample-btn" onClick=${() => setMsno(s.msno)}>
-                    <b>${s.label}</b>
-                    <span class="msno-sample-code">${s.msno}</span>
-                  </button>
-                `
-              )}
-            </div>
-            <button class="login-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "고객으로 로그인"}</button>
-          </form>
-        `}
+          ${error ? html`<div class="cx-error">${error}</div>` : null}
+          <button class="cx-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
+        </form>
 
-        ${error ? html`<div class="login-error">${error}</div>` : null}
+        <div class="cx-login-footnote">
+          실제 kkbox_serving.customer_churn_scores 테이블에 있는 msno만 로그인됩니다.<br/>
+          관리자이신가요? kkbox_admin.html 파일을 열어주세요.
+        </div>
       </div>
+    </div>
+  `;
+}
+
+/* ============================== 홈 ============================== */
+
+function personaCopy(risk) {
+  if (!risk) return null;
+  const highRisk = risk.risk_tier === "고위험";
+  const longGone = (risk.days_since_last_txn ?? 0) >= 30;
+  if (highRisk) {
+    return {
+      heroClass: "cx-hero cx-hero-danger",
+      badge: "돌아와주세요",
+      title: longGone
+        ? `${risk.days_since_last_txn}일 만이에요, 회원님! 그동안 놓친 곡들이 궁금하지 않으세요?`
+        : "구독이 곧 끊길 수 있어요. 지금 확인해보세요",
+      sub: `구독 만료까지 D-${risk.days_to_expire ?? "-"} · 마지막 결제 ${risk.days_since_last_txn ?? "-"}일 전`,
+      cta: "혜택 보러가기",
+    };
+  }
+  return {
+    heroClass: "cx-hero",
+    badge: "든든한 회원님",
+    title: "꾸준히 함께해주셔서 감사해요 🎧",
+    sub: `이번 주 취향저격 추천이 준비됐어요 · 만료까지 D-${risk.days_to_expire ?? "-"}`,
+    cta: "추천 보러가기",
+  };
+}
+
+function HomeTab({ risk, loading, error, goTab }) {
+  if (loading) return html`<p class="cx-muted">불러오는 중...</p>`;
+  if (error) return html`<div class="cx-empty">${error}</div>`;
+  if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
+
+  const p = personaCopy(risk);
+  return html`
+    <div>
+      <div class=${p.heroClass}>
+        <span class="cx-hero-badge">${p.badge}</span>
+        <div class="cx-hero-title">${p.title}</div>
+        <div class="cx-hero-sub">${p.sub}</div>
+        <div class="cx-hero-cta">
+          <button class="cx-btn cx-btn-white" onClick=${() => goTab(risk.risk_tier === "고위험" ? "benefits" : "recommend")}>${p.cta}</button>
+          <button class="cx-btn cx-btn-ghost-white" onClick=${() => goTab("notif")}>알림 확인</button>
+        </div>
+      </div>
+
+      <div class="cx-stat-row">
+        <div class="cx-stat-tile">
+          <div class="cx-stat-emoji">💳</div>
+          <div class="cx-stat-value">₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue).toLocaleString() : "-"}</div>
+          <div class="cx-stat-label">월 평균 결제</div>
+        </div>
+        <div class="cx-stat-tile">
+          <div class="cx-stat-emoji">💎</div>
+          <div class="cx-stat-value">₩${risk.ltv_approx != null ? Math.round(risk.ltv_approx).toLocaleString() : "-"}</div>
+          <div class="cx-stat-label">예상 LTV</div>
+        </div>
+        <div class="cx-stat-tile">
+          <div class="cx-stat-emoji">🏷️</div>
+          <div class="cx-stat-value">${risk.segment}</div>
+          <div class="cx-stat-label">내 세그먼트</div>
+        </div>
+      </div>
+
+      <div class="cx-card">
+        <div class="cx-card-title">이번 주 추천 미리보기 <button class="cx-link-btn" onClick=${() => goTab("recommend")}>전체보기 →</button></div>
+        <p class="cx-muted" style=${{ marginBottom: "12px" }}>회원님의 최근 이용 패턴(위험도 ${risk.churn_proba.toFixed(3)}, ${risk.segment})에 맞춰 준비한 플레이리스트가 있어요.</p>
+        <div class="cx-track-grid cx-track-grid-sm">
+          ${(risk.risk_tier === "고위험" ? COMEBACK_TRACKS : LOYAL_TRACKS).map(
+            (t, i) => html`
+              <div class="cx-track-card" key=${t.title} onClick=${() => goTab("recommend")}>
+                <div class="cx-track-cover-lg" style=${{ backgroundImage: COVER_GRADIENTS[i % COVER_GRADIENTS.length] }}>
+                  ${t.emoji}
+                  <div class="cx-play-fab">▶</div>
+                </div>
+                <div class="cx-track-card-title">${t.title}</div>
+                <div class="cx-track-card-artist">${t.artist}</div>
+              </div>
+            `
+          )}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================== 추천(취향, 이탈 연계) ============================== */
+
+function RecommendTab({ risk }) {
+  if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
+  const highRisk = risk.risk_tier === "고위험";
+  const tracks = highRisk ? COMEBACK_TRACKS : LOYAL_TRACKS;
+  const heading = highRisk ? "컴백 플레이리스트" : "이주의 취향저격 플레이리스트";
+  const reason = highRisk
+    ? `최근 ${risk.days_since_last_txn ?? "-"}일간 뜸하셨던 회원님을 위해, 다시 즐겨찾으실 만한 곡들을 모았어요.`
+    : `꾸준히 이용해주신 회원님(${risk.segment})을 위한 이번 주 맞춤 추천이에요.`;
+
+  return html`
+    <div>
+      <div class="cx-section-title">🎧 취향 기반 추천</div>
+      <div class="cx-tag-row">
+        <span class="cx-tag">${risk.risk_tier}</span>
+        <span class="cx-tag">${risk.segment}</span>
+        ${risk.ltv_tier === "고가치" ? html`<span class="cx-badge-vip">VIP PICK</span>` : null}
+      </div>
+
+      <div class="cx-card">
+        <div class="cx-card-title">${heading}</div>
+        <p class="cx-muted" style=${{ marginBottom: "14px" }}>${reason}</p>
+        <div class="cx-track-grid">
+          ${tracks.map(
+            (t, i) => html`
+              <div class="cx-track-card" key=${t.title}>
+                <div class="cx-track-cover-lg" style=${{ backgroundImage: COVER_GRADIENTS[i % COVER_GRADIENTS.length] }}>
+                  ${t.emoji}
+                  <div class="cx-play-fab">▶</div>
+                </div>
+                <div class="cx-track-card-title">${t.title}</div>
+                <div class="cx-track-card-artist">${t.artist}</div>
+              </div>
+            `
+          )}
+        </div>
+      </div>
+
+      <p class="cx-muted">
+        ※ 위 트랙/앨범 정보는 실제 청취 로그가 아닌 예시(mock)입니다. 다만 어떤 추천을 보여줄지(컴백형 vs 취향형)와 문구는
+        회원님의 실제 위험도·세그먼트 데이터를 기준으로 결정됩니다.
+      </p>
+    </div>
+  `;
+}
+
+/* ============================== 혜택(쿠폰) ============================== */
+
+function BenefitsTab({ risk }) {
+  if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
+  const c = COUPON_RULES[risk.segment] || COUPON_RULES["저위험/저가치"];
+  return html`
+    <div>
+      <div class="cx-section-title">🎁 나를 위한 혜택</div>
+      <div class="cx-coupon ${c.alt ? "cx-coupon-alt" : ""}">
+        <span class="cx-coupon-badge">${c.badge}</span>
+        <div class="cx-coupon-title">${c.title}</div>
+        <div class="cx-coupon-desc">${c.desc}</div>
+        <div class="cx-coupon-code">
+          <span>${c.code}</span>
+          <button class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }}>복사</button>
+        </div>
+        <div class="cx-coupon-expire">⏱ 만료까지 D-${risk.days_to_expire ?? "-"} · 내 세그먼트(${risk.segment}) 기준 자동 발급</div>
+      </div>
+      <p class="cx-muted" style=${{ marginTop: "12px" }}>
+        혜택은 고정이 아니라 위험도×LTV 세그먼트에 맞춰 자동 매칭됩니다. 지금 회원님의 세그먼트는 <b>${risk.segment}</b> 예요.
+      </p>
+    </div>
+  `;
+}
+
+/* ============================== 알림 ============================== */
+
+function NotifTab({ actions, loading, error }) {
+  const LABELS = {
+    reminder: { emoji: "🔔", label: "만료 임박 리마인드", desc: "관리자가 갱신 리마인드를 보냈어요" },
+    discount_offer: { emoji: "🎁", label: "할인 오퍼", desc: "관리자가 할인 오퍼를 보냈어요" },
+  };
+  return html`
+    <div>
+      <div class="cx-section-title">🔔 알림함</div>
+      ${loading
+        ? html`<p class="cx-muted">불러오는 중...</p>`
+        : error
+        ? html`<div class="cx-empty">${error}</div>`
+        : actions.length === 0
+        ? html`<div class="cx-empty">아직 받은 알림이 없어요.<br/>관리자 콘솔(kkbox_admin.html) → 이탈방지 액션센터에서 리마인드/할인 오퍼를 보내보세요.</div>`
+        : html`
+            <div class="cx-card" style=${{ padding: "4px 16px" }}>
+              ${actions.map((a) => {
+                const meta = LABELS[a.action_type] || { emoji: "📩", label: a.action_type, desc: "" };
+                return html`
+                  <div class="cx-notif-row" key=${a.id}>
+                    <div class="cx-notif-icon">${meta.emoji}</div>
+                    <div>
+                      <div class="cx-notif-title">${meta.label}</div>
+                      <div class="cx-notif-desc">${meta.desc}</div>
+                      <div class="cx-notif-time">${new Date(a.sent_at).toLocaleString()}</div>
+                    </div>
+                  </div>
+                `;
+              })}
+            </div>
+          `}
+      <p class="cx-muted" style=${{ marginTop: "12px" }}>실제 로그인한 msno 기준으로 DB에서 바로 조회한 실데이터입니다.</p>
     </div>
   `;
 }
 
 /* ============================== 루트 ============================== */
 
-function App() {
-  const [tab, setTab] = useState("consumer");
-  const [auth, setAuth] = useState(null); // null | { role: "admin"|"customer", token, name }
+const TABS = [
+  { key: "home", label: "홈", icon: "🏠" },
+  { key: "recommend", label: "추천", icon: "🎧" },
+  { key: "benefits", label: "혜택", icon: "🎁" },
+  { key: "notif", label: "알림", icon: "🔔" },
+];
+
+function CustomerApp({ auth, onLogout }) {
+  const [tab, setTab] = useState("home");
+  const [risk, setRisk] = useState(null);
+  const [riskLoading, setRiskLoading] = useState(true);
+  const [riskError, setRiskError] = useState("");
+  const [actions, setActions] = useState([]);
+  const [actionsLoading, setActionsLoading] = useState(true);
+  const [actionsError, setActionsError] = useState("");
 
   useEffect(() => {
-    if (auth?.role === "admin") setTab("admin");
-    if (auth?.role === "customer") setTab("consumer");
+    setRiskLoading(true);
+    setRiskError("");
+    apiFetch("/me/risk", { token: auth.token })
+      .then(setRisk)
+      .catch((err) => setRiskError(err.message))
+      .finally(() => setRiskLoading(false));
+
+    setActionsLoading(true);
+    setActionsError("");
+    apiFetch("/me/actions", { token: auth.token })
+      .then((data) => setActions(Array.isArray(data) ? data : []))
+      .catch((err) => setActionsError(err.message))
+      .finally(() => setActionsLoading(false));
   }, [auth]);
 
+  const nowPlaying = risk ? (risk.risk_tier === "고위험" ? COMEBACK_TRACKS[0] : LOYAL_TRACKS[0]) : null;
+
+  return html`
+    <div class="cx-app">
+      <nav class="cx-nav">
+        <div class="cx-nav-logo">
+          <span class="cx-logo-mark">K</span>
+          <span class="cx-nav-logo-word">KKBOX Music</span>
+        </div>
+        ${TABS.map(
+          (t) => html`
+            <button key=${t.key} class="cx-navbtn ${tab === t.key ? "cx-nav-active" : ""}" onClick=${() => setTab(t.key)}>
+              <span class="cx-navicon">${t.icon}</span>
+              <span>${t.label}</span>
+            </button>
+          `
+        )}
+        <div class="cx-nav-spacer"></div>
+        ${risk ? html`
+          <div class="cx-nav-foot">
+            <div class="cx-nav-seg">내 세그먼트<br/><b>${risk.segment}</b></div>
+          </div>
+        ` : null}
+      </nav>
+
+      <div class="cx-topbar">
+        <div class="cx-searchpill">
+          <span>🔍</span>
+          <span>재생목록, 아티스트 검색 (데모 화면)</span>
+        </div>
+        <div class="cx-topbar-actions">
+          <button class="cx-icon-btn" title="알림함" onClick=${() => setTab("notif")}>
+            🔔${actions.length > 0 ? html`<span class="cx-icon-badge">${actions.length}</span>` : null}
+          </button>
+          <button class="cx-profile-chip" title="로그아웃" onClick=${onLogout}>
+            <span class="cx-profile-avatar">${(auth.msno || "?").slice(0, 1).toUpperCase()}</span>
+            <span>로그아웃</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="cx-content">
+        <div class="cx-content-inner">
+          ${tab === "home" ? html`<${HomeTab} risk=${risk} loading=${riskLoading} error=${riskError} goTab=${setTab} />` : null}
+          ${tab === "recommend" ? html`<${RecommendTab} risk=${risk} />` : null}
+          ${tab === "benefits" ? html`<${BenefitsTab} risk=${risk} />` : null}
+          ${tab === "notif" ? html`<${NotifTab} actions=${actions} loading=${actionsLoading} error=${actionsError} />` : null}
+          <div class="cx-footnote">위험도·세그먼트·결제 관련 수치는 실제 DB 값입니다. 곡/앨범 이미지·재생 컨트롤은 예시(mock)이며 실제로 재생되지 않습니다.</div>
+        </div>
+      </div>
+
+      ${nowPlaying ? html`
+        <div class="cx-playerbar">
+          <div class="cx-playerbar-track">
+            <div class="cx-playerbar-cover" style=${{ backgroundImage: COVER_GRADIENTS[0] }}>${nowPlaying.emoji}</div>
+            <div class="cx-playerbar-meta">
+              <div class="cx-playerbar-title">${nowPlaying.title}</div>
+              <div class="cx-playerbar-artist">${nowPlaying.artist}</div>
+            </div>
+          </div>
+          <div class="cx-playerbar-mid">
+            <div class="cx-playerbar-controls">
+              <span>🔀</span><span>⏮</span><span class="cx-play-fab-mid">▶</span><span>⏭</span><span>🔁</span>
+            </div>
+            <div class="cx-playerbar-progress">
+              <span>1:32</span>
+              <div class="cx-progress-track"><div class="cx-progress-fill"></div></div>
+              <span>3:47</span>
+            </div>
+          </div>
+          <div class="cx-playerbar-vol">
+            <span>🔊</span>
+            <div class="cx-vol-track"><div class="cx-vol-fill"></div></div>
+          </div>
+        </div>
+      ` : null}
+    </div>
+  `;
+}
+
+function App() {
+  const [auth, setAuth] = useState(null); // null | { token, msno }
   if (!auth) {
     return html`<${LoginScreen} onLogin=${setAuth} />`;
   }
-  const canSeeConsumer = auth.role === "customer";
-  const canSeeAdmin = auth.role === "admin";
-
-  return html`
-    <div class="app-root">
-      <header class="top-header">
-        <div class="brand">
-          <span class="brand-mark">K</span>
-          <div>
-            <div class="brand-title">KKBOX 이탈방지 프론트 데모</div>
-            <div class="brand-sub">
-              SKN-2nd-2team · ${auth.role === "admin" ? `관리자 · ${auth.name}` : `고객 · ${auth.name}`}
-            </div>
-          </div>
-        </div>
-        <nav class="tab-nav">
-          ${canSeeConsumer ? html`<button class="tab-btn ${tab === "consumer" ? "tab-active" : ""}" onClick=${() => setTab("consumer")}>소비자 앱</button>` : null}
-          ${canSeeAdmin ? html`<button class="tab-btn ${tab === "admin" ? "tab-active" : ""}" onClick=${() => setTab("admin")}>운영 대시보드</button>` : null}
-          <button class="logout-btn" onClick=${() => setAuth(null)}>로그아웃</button>
-        </nav>
-      </header>
-      <main class="main-content">${tab === "consumer" ? html`<${ConsumerTab} auth=${auth} />` : html`<${AdminTab} auth=${auth} />`}</main>
-      <footer class="page-footer">
-        모든 수치는 KKBOX_이탈예측_데이터처리과정_정리.pdf에서 실제로 도출된 값입니다. 개별 고객 데이터와 A/B 테스트 결과는
-        실제 개인정보/실행 결과가 아닌 예시(mock)입니다.
-      </footer>
-    </div>
-  `;
+  return html`<${CustomerApp} auth=${auth} onLogout=${() => setAuth(null)} />`;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);

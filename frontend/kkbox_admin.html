@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KKBOX 이탈방지 프론트 데모 (React)</title>
+<title>KKBOX 이탈방지 관리자 콘솔 (React)</title>
 <style>
 body { margin:0; }
 .viz-root {
@@ -667,27 +667,6 @@ const RETENTION_POINTS = [
 
 const MODEL_STATS = { auc: 0.9915, f1: 0.8118, threshold: 0.355 };
 
-// ---- 비즈니스 액션 목업: 쿠폰 / 취향 추천 / LTV 우선순위 ----
-// 실제로는 /me/risk, /me/coupons, /me/recommendations API 응답으로 대체될 값들
-const COUPON_RULES = {
-  "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", tier: "high" },
-  "고위험/저가치": { badge: "복귀 유도 오퍼", title: "무료 청취 크레딧 5,000원", desc: "가볍게 다시 시작할 수 있는 소액 혜택", code: "COMEBACK5K", tier: "low" },
-  "저위험/고가치": { badge: "감사 오퍼", title: "다음 달 자동 5% 적립", desc: "이탈 위험은 낮지만 고가치 고객 유지용", code: "THANKS5PT", tier: "low" },
-  "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", tier: "low" },
-};
-
-const TASTE_TAGS = [
-  { name: "인디 팝", pct: 34 },
-  { name: "K-POP", pct: 27 },
-  { name: "재즈", pct: 18 },
-  { name: "로파이", pct: 12 },
-];
-const TASTE_TRACKS = [
-  { title: "밤의 산책", artist: "오후의 산책자", emoji: "🌙", match: 96 },
-  { title: "Sunday Jazz", artist: "Coffee & Vinyl", emoji: "☕", match: 91 },
-  { title: "새벽 드라이브", artist: "네온사인", emoji: "🚗", match: 88 },
-];
-
 const LTV_PRIORITY = [
   { rank: 1, id: "msno_ax91k382", risk: 0.94, monthlyRevenue: 18900, ltv: 612000 },
   { rank: 2, id: "msno_bz02m714", risk: 0.89, monthlyRevenue: 15900, ltv: 498000 },
@@ -771,250 +750,13 @@ function RetentionLine() {
   `;
 }
 
-/* ============================== 소비자 앱 화면 (모바일 목업) ============================== */
-
-function PhoneFrame({ title, children }) {
-  return html`
-    <div class="phone-frame">
-      <div class="phone-statusbar">
-        <span>9:41</span>
-        <span>●●●</span>
-      </div>
-      <div class="phone-screen">${children}</div>
-      <div class="phone-caption">${title}</div>
-    </div>
-  `;
-}
-
-function RenewalReminderScreen() {
-  const [tier, setTier] = useState("high");
-  const offers = {
-    high: { badge: "고가치 오퍼", text: "지금 갱신하면 20% 할인 + 보너스 크레딧", cta: "지금 갱신하기" },
-    low: { badge: "저가치 오퍼", text: "지금 갱신하면 무료 청취 크레딧 지급", cta: "지금 갱신하기" },
-  };
-  const o = offers[tier];
-  return html`
-    <div class="app-body">
-      <div class="app-header">홈</div>
-      <div class="reminder-banner">
-        <div class="reminder-icon">🔔</div>
-        <div class="reminder-text">
-          <b>구독이 7일 후 만료돼요</b>
-          <div class="reminder-sub">${o.text}</div>
-        </div>
-        <span class="chip chip-accent">${o.badge}</span>
-      </div>
-      <div class="row gap8" style=${{ marginTop: "10px" }}>
-        <button class="btn btn-primary">${o.cta}</button>
-        <button class="btn btn-ghost">자동갱신 켜기</button>
-      </div>
-      <div class="tier-toggle">
-        <span class="small-muted">데모: LTV 세그먼트별 오퍼 차등</span>
-        <div class="row gap8">
-          <button class="pill ${tier === "high" ? "pill-active" : ""}" onClick=${() => setTier("high")}>고가치 유저</button>
-          <button class="pill ${tier === "low" ? "pill-active" : ""}" onClick=${() => setTier("low")}>저가치 유저</button>
-        </div>
-      </div>
-      <div class="mock-card-list">
-        <div class="mock-card">🎵 오늘의 추천 플레이리스트</div>
-        <div class="mock-card">📻 새로 나온 앨범</div>
-      </div>
-    </div>
-  `;
-}
-
-function MonthlyReportScreen() {
-  return html`
-    <div class="app-body">
-      <div class="app-header">마이페이지</div>
-      <div class="report-title">이번 달 청취 리포트</div>
-      <div class="report-grid">
-        <div class="report-tile">
-          <div class="report-emoji">📊</div>
-          <div class="report-num">32h 40m</div>
-          <div class="report-label">이번 달 재생시간</div>
-          <div class="delta-up">▲ 지난달 대비 12%</div>
-        </div>
-        <div class="report-tile">
-          <div class="report-emoji">🔥</div>
-          <div class="report-num">9일째</div>
-          <div class="report-label">연속 청취 스트릭</div>
-          <div class="small-muted">리워드까지 1일</div>
-        </div>
-        <div class="report-tile">
-          <div class="report-emoji">🎧</div>
-          <div class="report-num">68%</div>
-          <div class="report-label">완청률</div>
-          <div class="small-muted">새 장르 추천 보기 →</div>
-        </div>
-      </div>
-      <div class="mock-card">추천 플레이리스트 · "요즘 취향 저격" · "이번 주 신곡"</div>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        Spotify Wrapped 스타일로 engagement를 높이고, 완청률이 낮은 유저에게는 새 장르 탐색 UI를 자연스럽게 노출합니다.
-      </p>
-    </div>
-  `;
-}
-
-function WinbackScreen() {
-  return html`
-    <div class="app-body">
-      <div class="app-header">다시 만나서 반가워요</div>
-      <div class="winback-hero">
-        <div style=${{ fontSize: "28px" }}>👋</div>
-        <b>오랜만이에요! 그동안 이런 곡들이 나왔어요</b>
-        <span class="chip chip-good">복귀 혜택: 1개월 반값</span>
-      </div>
-      <div class="mock-card-list">
-        <div class="mock-card">🎵 취향 기반 추천곡 미리듣기 #1</div>
-        <div class="mock-card">🎵 취향 기반 추천곡 미리듣기 #2</div>
-        <div class="mock-card">🎵 취향 기반 추천곡 미리듣기 #3</div>
-      </div>
-      <button class="btn btn-primary" style=${{ width: "100%", marginTop: "10px" }}>다시 시작하기</button>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        결제 후 60일 이상 경과 유저(실측 잔존율 44.3%) 재방문 시 노출되는 화면입니다.
-      </p>
-    </div>
-  `;
-}
-
-function CouponScreen() {
-  const [ltvTier, setLtvTier] = useState("고위험/고가치");
-  const c = COUPON_RULES[ltvTier];
-  return html`
-    <div class="app-body">
-      <div class="app-header">쿠폰함</div>
-      <div class="coupon-card ${c.tier === "low" ? "tier-low" : ""}">
-        <span class="coupon-badge">${c.badge}</span>
-        <div class="coupon-title">${c.title}</div>
-        <div class="coupon-desc">${c.desc}</div>
-        <div class="coupon-code">
-          <span>${c.code}</span>
-          <button class="btn btn-ghost btn-sm" style=${{ background: "#fff" }}>복사</button>
-        </div>
-        <div class="coupon-expire">⏱ 만료까지 D-3 · 위험도×LTV 세그먼트 기준 자동 발급</div>
-      </div>
-      <div class="tier-toggle">
-        <span class="small-muted">데모: 세그먼트별 쿠폰 자동 매칭</span>
-        <div class="row gap8" style=${{ flexWrap: "wrap" }}>
-          ${Object.keys(COUPON_RULES).map(
-            (k) => html`<button key=${k} class="pill ${ltvTier === k ? "pill-active" : ""}" onClick=${() => setLtvTier(k)}>${k}</button>`
-          )}
-        </div>
-      </div>
-      <div class="coupon-list-mini">
-        <div class="coupon-mini-row"><span>지난달 발급 쿠폰</span><span class="chip chip-good">3장 사용</span></div>
-        <div class="coupon-mini-row"><span>이번 쿠폰 예상 리텐션 효과</span><span class="chip chip-accent">+1.8%p</span></div>
-      </div>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        쿠폰 종류는 고정이 아니라 위험도×LTV 4분면(analytics/04_ltv.ipynb 세그먼트)에 맞춰 자동 매칭되며, A/B 테스트로 리텐션 효과를 검증합니다.
-      </p>
-    </div>
-  `;
-}
-
-function TasteMusicScreen() {
-  return html`
-    <div class="app-body">
-      <div class="app-header">취향 기반 추천</div>
-      <p class="small-muted" style=${{ margin: "0 0 4px" }}>최근 청취 로그 기반 취향 태그</p>
-      <div class="taste-tag-row">
-        ${TASTE_TAGS.map((t) => html`<span class="taste-tag" key=${t.name}>${t.name}<span class="pct">${t.pct}%</span></span>`)}
-      </div>
-      ${TASTE_TRACKS.map(
-        (t) => html`
-          <div class="taste-track" key=${t.title}>
-            <div class="cover">${t.emoji}</div>
-            <div class="meta"><b>${t.title}</b><span>${t.artist}</span></div>
-            <span class="match-badge">${t.match}% 일치</span>
-          </div>
-        `
-      )}
-      <button class="btn btn-primary" style=${{ width: "100%", marginTop: "12px" }}>추천 플레이리스트 재생</button>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        완청률(completion_rate)·청취 다양성이 낮은 고위험 고객에게 새 장르를 자연스럽게 노출해 참여도(engagement) 자체를 끌어올리는 화면입니다.
-      </p>
-    </div>
-  `;
-}
-
-function NotificationsScreen({ auth }) {
-  const [actions, setActions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!auth) return;
-    setLoading(true);
-    setError("");
-    fetch(`${API_BASE}/me/actions`, {
-      headers: { Authorization: `Bearer ${auth.token}` },
-    })
-      .then((r) => {
-        if (!r.ok) throw new Error(`불러오기 실패 (${r.status})`);
-        return r.json();
-      })
-      .then((data) => setActions(Array.isArray(data) ? data : []))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [auth]);
-
-  const LABELS = {
-    reminder: { emoji: "🔔", label: "만료 임박 리마인드", desc: "관리자가 갱신 리마인드를 보냈어요" },
-    discount_offer: { emoji: "🎁", label: "할인 오퍼", desc: "관리자가 할인 오퍼를 보냈어요" },
-  };
-
-  return html`
-    <div class="app-body">
-      <div class="app-header">알림함</div>
-      ${loading
-        ? html`<p class="small-muted">불러오는 중...</p>`
-        : error
-        ? html`<div class="detail-empty">${error}</div>`
-        : actions.length === 0
-        ? html`<div class="detail-empty">아직 받은 알림이 없어요. 관리자 화면(운영 대시보드 → 이탈방지 액션센터)에서 이 고객에게 리마인드/할인 오퍼를 보내보세요.</div>`
-        : html`
-            <div class="mock-card-list">
-              ${actions.map((a) => {
-                const meta = LABELS[a.action_type] || { emoji: "📩", label: a.action_type, desc: "" };
-                return html`
-                  <div class="mock-card" key=${a.id}>
-                    <b>${meta.emoji} ${meta.label}</b>
-                    <div class="small-muted">${meta.desc} · ${new Date(a.sent_at).toLocaleString()}</div>
-                  </div>
-                `;
-              })}
-            </div>
-          `}
-      <p class="small-muted" style=${{ marginTop: "10px" }}>
-        실제 로그인한 msno(${auth ? auth.name : ""}) 기준으로 DB에서 바로 조회한 실데이터 화면입니다. 아래 화면들은 예시(mock)입니다.
-      </p>
-    </div>
-  `;
-}
-
-function ConsumerTab({ auth }) {
-  return html`
-    <div>
-      <p class="section-intro">구독자가 직접 보는 화면입니다. 알림함은 관리자가 방금 보낸 액션을 실시간으로 보여주고, 리마인드·리포트·윈백은 이탈 신호에 대응하고, 쿠폰함·취향 추천은 이탈을 막기 위한 비즈니스 액션(할인/개인화)을 보여줍니다.</p>
-      <div class="phone-row">
-        <${PhoneFrame} title="⓪ 알림함 (관리자 발송, 실데이터)"><${NotificationsScreen} auth=${auth} /><//>
-        <${PhoneFrame} title="① 만료 임박 리마인드 배너"><${RenewalReminderScreen} /><//>
-        <${PhoneFrame} title="② 마이페이지 청취 리포트"><${MonthlyReportScreen} /><//>
-        <${PhoneFrame} title="③ 윈백(재방문 유도) 온보딩"><${WinbackScreen} /><//>
-        <${PhoneFrame} title="④ 쿠폰함 (세그먼트별 자동 발급)"><${CouponScreen} /><//>
-        <${PhoneFrame} title="⑤ 취향 기반 음악 추천"><${TasteMusicScreen} /><//>
-      </div>
-    </div>
-  `;
-}
-
 /* ============================== 운영 대시보드 (액션센터) ============================== */
 
 function CustomerDetail({ customer, auth }) {
   const [sending, setSending] = useState(null);
   const [sentTypes, setSentTypes] = useState([]);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   if (!customer) {
     return html`<div class="detail-empty">왼쪽 목록에서 고객을 선택하면 상세 정보가 표시됩니다.</div>`;
@@ -1038,6 +780,15 @@ function CustomerDetail({ customer, auth }) {
       setError(err.message);
     } finally {
       setSending(null);
+    }
+  }
+
+  function copyMsno() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(customer.msno).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      });
     }
   }
 
@@ -1065,9 +816,22 @@ function CustomerDetail({ customer, auth }) {
         </button>
       </div>
       ${error ? html`<div class="login-error" style=${{ marginTop: "8px" }}>${error}</div>` : null}
-      <p class="small-muted" style=${{ marginTop: "8px" }}>
-        발송하면 이 고객(${customer.msno})으로 로그인했을 때 소비자 앱 알림함에 바로 표시됩니다.
-      </p>
+      ${sentTypes.length > 0
+        ? html`
+            <div class="winback-hero" style=${{ marginTop: "10px", background: "#eefaf1", border: "1px solid #cdeed7" }}>
+              <b>📱 고객모드에서 확인하려면</b>
+              <div class="small-muted">kkbox_customer.html 을 열고, 아래 고객 ID로 로그인하면 방금 보낸 알림이 바로 보여요.</div>
+              <div class="coupon-code" style=${{ background: "#fff", border: "1px dashed var(--series-1)", color: "var(--text-primary)", width: "100%" }}>
+                <span class="mono-cell" style=${{ fontSize: "12px" }}>${customer.msno}</span>
+                <button type="button" class="btn btn-ghost btn-sm" onClick=${copyMsno}>${copied ? "복사됨!" : "복사"}</button>
+              </div>
+            </div>
+          `
+        : html`
+            <p class="small-muted" style=${{ marginTop: "8px" }}>
+              발송하면 이 고객(${customer.msno})으로 kkbox_customer.html 에 로그인했을 때 알림 탭에 바로 표시됩니다.
+            </p>
+          `}
     </div>
   `;
 }
@@ -1256,7 +1020,7 @@ function AdminTab({ auth }) {
 
       <div class="panel">
         <div class="panel-title">최우선 케어 대상 — 고위험×고가치 Top 5 (LTV 기준)</div>
-        <p class="section-intro" style=${{ margin: "0 0 4px" }}>analytics/04_ltv.ipynb 로직으로 산출한 ltv_approx 상위 고객. 쿠폰함 화면의 VIP 오퍼가 이 리스트를 대상으로 발급됩니다.</p>
+        <p class="section-intro" style=${{ margin: "0 0 4px" }}>analytics/04_ltv.ipynb 로직으로 산출한 ltv_approx 상위 고객. 실제 발급 대상은 이탈방지 액션센터에서 직접 선택합니다.</p>
         <table class="priority-table">
           <thead><tr><th>#</th><th>고객 ID</th><th>위험도</th><th>월평균 결제액</th><th>예상 LTV</th></tr></thead>
           <tbody>
@@ -1288,22 +1052,13 @@ function AdminTab({ auth }) {
   `;
 }
 
-/* ============================== 로그인 / 회원가입 ============================== */
-
-// 데모용 msno 목록입니다. 실제 kkbox_serving.customer_churn_scores 에 있는 msno 값으로 교체해주세요.
-// (예: SELECT msno FROM customer_churn_scores ORDER BY RAND() LIMIT 8; 등으로 뽑아서 여기 채워넣으면 됩니다)
-const SAMPLE_MSNO = [
-  { msno: "SAMPLE_MSNO_1", label: "예시 고객 1" },
-  { msno: "SAMPLE_MSNO_2", label: "예시 고객 2" },
-];
+/* ============================== 로그인(관리자 전용) ============================== */
 
 function LoginScreen({ onLogin }) {
-  const [mode, setMode] = useState("admin"); // "admin" | "customer"
-  const [adminForm, setAdminForm] = useState("login"); // "login" | "signup"
+  const [formTab, setFormTab] = useState("login"); // "login" | "signup"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [msno, setMsno] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -1326,33 +1081,22 @@ function LoginScreen({ onLogin }) {
     }
   }
 
-  async function handleAdminLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
     try {
       const data = await callApi("/auth/staff-login", { email, password });
-      onLogin({ role: "admin", token: data.access_token, name: data.name || email });
+      onLogin({ role: "admin", token: data.access_token, name: email });
     } catch (err) {
       setError(err.message);
     }
   }
 
-  async function handleAdminSignup(e) {
+  async function handleSignup(e) {
     e.preventDefault();
     try {
       await callApi("/auth/staff-signup", { email, password, name });
-      // 회원가입 성공 후 바로 로그인 화면으로 전환 (로그인은 별도로 다시 눌러야 함)
-      setAdminForm("login");
+      setFormTab("login");
       setError("회원가입 완료! 이제 로그인해주세요.");
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
-  async function handleCustomerLogin(e) {
-    e.preventDefault();
-    try {
-      const data = await callApi("/auth/customer-demo-login", { msno });
-      onLogin({ role: "customer", token: data.access_token, name: msno });
     } catch (err) {
       setError(err.message);
     }
@@ -1363,89 +1107,49 @@ function LoginScreen({ onLogin }) {
       <div class="login-card">
         <div class="login-brand">
           <span class="brand-mark">K</span>
-          <div class="login-title">KKBOX 이탈방지 서비스</div>
-        </div>
-        <div class="login-sub">관리자 또는 고객으로 로그인해주세요.</div>
-
-        <div class="mode-toggle">
-          <button
-            type="button"
-            class="mode-btn ${mode === "admin" ? "mode-active" : ""}"
-            onClick=${() => { setMode("admin"); setError(""); }}
-          >관리자모드</button>
-          <button
-            type="button"
-            class="mode-btn ${mode === "customer" ? "mode-active" : ""}"
-            onClick=${() => { setMode("customer"); setError(""); }}
-          >고객모드</button>
-        </div>
-
-        ${mode === "admin" ? html`
-          <div class="form-tab-row">
-            <button
-              type="button"
-              class="form-tab ${adminForm === "login" ? "form-tab-active" : ""}"
-              onClick=${() => { setAdminForm("login"); setError(""); }}
-            >로그인</button>
-            <button
-              type="button"
-              class="form-tab ${adminForm === "signup" ? "form-tab-active" : ""}"
-              onClick=${() => { setAdminForm("signup"); setError(""); }}
-            >회원가입</button>
+          <div>
+            <div class="login-title">KKBOX 이탈방지 관리자 콘솔</div>
+            <div class="login-sub">운영팀 계정으로 로그인해주세요.</div>
           </div>
+        </div>
 
-          ${adminForm === "login" ? html`
-            <form onSubmit=${handleAdminLogin}>
-              <div class="field-group">
-                <label class="field-label">이메일</label>
-                <input class="text-input" type="email" required value=${email}
-                  onInput=${(e) => setEmail(e.target.value)} placeholder="admin@team.com" />
-              </div>
-              <div class="field-group">
-                <label class="field-label">비밀번호</label>
-                <input class="text-input" type="password" required value=${password}
-                  onInput=${(e) => setPassword(e.target.value)} placeholder="••••••••" />
-              </div>
-              <button class="login-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
-            </form>
-          ` : html`
-            <form onSubmit=${handleAdminSignup}>
-              <div class="field-group">
-                <label class="field-label">이름</label>
-                <input class="text-input" type="text" required value=${name}
-                  onInput=${(e) => setName(e.target.value)} placeholder="홍길동" />
-              </div>
-              <div class="field-group">
-                <label class="field-label">이메일</label>
-                <input class="text-input" type="email" required value=${email}
-                  onInput=${(e) => setEmail(e.target.value)} placeholder="admin@team.com" />
-              </div>
-              <div class="field-group">
-                <label class="field-label">비밀번호</label>
-                <input class="text-input" type="password" required value=${password}
-                  onInput=${(e) => setPassword(e.target.value)} placeholder="8자 이상" />
-              </div>
-              <button class="login-submit" type="submit" disabled=${loading}>${loading ? "가입 중..." : "회원가입"}</button>
-            </form>
-          `}
-        ` : html`
-          <form onSubmit=${handleCustomerLogin}>
+        <div class="form-tab-row">
+          <button type="button" class="form-tab ${formTab === "login" ? "form-tab-active" : ""}" onClick=${() => { setFormTab("login"); setError(""); }}>로그인</button>
+          <button type="button" class="form-tab ${formTab === "signup" ? "form-tab-active" : ""}" onClick=${() => { setFormTab("signup"); setError(""); }}>회원가입</button>
+        </div>
+
+        ${formTab === "login" ? html`
+          <form onSubmit=${handleLogin}>
             <div class="field-group">
-              <label class="field-label">고객 ID (msno)</label>
-              <input class="text-input" type="text" required value=${msno}
-                onInput=${(e) => setMsno(e.target.value)} placeholder="msno를 입력하세요" />
+              <label class="field-label">이메일</label>
+              <input class="text-input" type="email" required value=${email}
+                onInput=${(e) => setEmail(e.target.value)} placeholder="admin@team.com" />
             </div>
-            <div class="msno-sample-grid">
-              ${SAMPLE_MSNO.map(
-                (s) => html`
-                  <button type="button" class="msno-sample-btn" onClick=${() => setMsno(s.msno)}>
-                    <b>${s.label}</b>
-                    <span class="msno-sample-code">${s.msno}</span>
-                  </button>
-                `
-              )}
+            <div class="field-group">
+              <label class="field-label">비밀번호</label>
+              <input class="text-input" type="password" required value=${password}
+                onInput=${(e) => setPassword(e.target.value)} placeholder="••••••••" />
             </div>
-            <button class="login-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "고객으로 로그인"}</button>
+            <button class="login-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
+          </form>
+        ` : html`
+          <form onSubmit=${handleSignup}>
+            <div class="field-group">
+              <label class="field-label">이름</label>
+              <input class="text-input" type="text" required value=${name}
+                onInput=${(e) => setName(e.target.value)} placeholder="홍길동" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">이메일</label>
+              <input class="text-input" type="email" required value=${email}
+                onInput=${(e) => setEmail(e.target.value)} placeholder="admin@team.com" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">비밀번호</label>
+              <input class="text-input" type="password" required value=${password}
+                onInput=${(e) => setPassword(e.target.value)} placeholder="8자 이상 + 특수문자 1개" />
+            </div>
+            <button class="login-submit" type="submit" disabled=${loading}>${loading ? "가입 중..." : "회원가입"}</button>
           </form>
         `}
 
@@ -1458,19 +1162,11 @@ function LoginScreen({ onLogin }) {
 /* ============================== 루트 ============================== */
 
 function App() {
-  const [tab, setTab] = useState("consumer");
-  const [auth, setAuth] = useState(null); // null | { role: "admin"|"customer", token, name }
-
-  useEffect(() => {
-    if (auth?.role === "admin") setTab("admin");
-    if (auth?.role === "customer") setTab("consumer");
-  }, [auth]);
+  const [auth, setAuth] = useState(null); // null | { role: "admin", token, name }
 
   if (!auth) {
     return html`<${LoginScreen} onLogin=${setAuth} />`;
   }
-  const canSeeConsumer = auth.role === "customer";
-  const canSeeAdmin = auth.role === "admin";
 
   return html`
     <div class="app-root">
@@ -1478,22 +1174,18 @@ function App() {
         <div class="brand">
           <span class="brand-mark">K</span>
           <div>
-            <div class="brand-title">KKBOX 이탈방지 프론트 데모</div>
-            <div class="brand-sub">
-              SKN-2nd-2team · ${auth.role === "admin" ? `관리자 · ${auth.name}` : `고객 · ${auth.name}`}
-            </div>
+            <div class="brand-title">KKBOX 이탈방지 관리자 콘솔</div>
+            <div class="brand-sub">SKN-2nd-2team · 관리자 · ${auth.name}</div>
           </div>
         </div>
         <nav class="tab-nav">
-          ${canSeeConsumer ? html`<button class="tab-btn ${tab === "consumer" ? "tab-active" : ""}" onClick=${() => setTab("consumer")}>소비자 앱</button>` : null}
-          ${canSeeAdmin ? html`<button class="tab-btn ${tab === "admin" ? "tab-active" : ""}" onClick=${() => setTab("admin")}>운영 대시보드</button>` : null}
           <button class="logout-btn" onClick=${() => setAuth(null)}>로그아웃</button>
         </nav>
       </header>
-      <main class="main-content">${tab === "consumer" ? html`<${ConsumerTab} auth=${auth} />` : html`<${AdminTab} auth=${auth} />`}</main>
+      <main class="main-content"><${AdminTab} auth=${auth} /></main>
       <footer class="page-footer">
-        모든 수치는 KKBOX_이탈예측_데이터처리과정_정리.pdf에서 실제로 도출된 값입니다. 개별 고객 데이터와 A/B 테스트 결과는
-        실제 개인정보/실행 결과가 아닌 예시(mock)입니다.
+        모든 수치는 KKBOX_이탈예측_데이터처리과정_정리.pdf에서 실제로 도출된 값입니다. A/B 테스트 결과는 실제 실행 결과가 아닌 예시(mock)입니다.
+        고객모드 화면은 별도 파일(kkbox_customer.html)에서 확인하세요.
       </footer>
     </div>
   `;

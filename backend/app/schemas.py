@@ -1,6 +1,6 @@
 """Pydantic 응답/요청 모델 — API 계약을 여기 한 곳에 모아둔다."""
 import re
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 from pydantic import BaseModel, field_validator
@@ -32,6 +32,10 @@ class StaffLoginRequest(BaseModel):
 
 class CustomerLoginRequest(BaseModel):
     msno: str
+
+
+class ActionRequest(BaseModel):
+    action_type: str  # "reminder" | "discount_offer"
 
 
 # ---- 응답 ----
@@ -68,3 +72,11 @@ class KpiResponse(BaseModel):
     funnel_stats: list[dict]
     segment_drivers: list[dict]
     retention_cohort: list[dict]
+
+
+class ActionRecord(BaseModel):
+    id: int
+    msno: str
+    action_type: str
+    sent_by: Optional[str] = None
+    sent_at: datetime
