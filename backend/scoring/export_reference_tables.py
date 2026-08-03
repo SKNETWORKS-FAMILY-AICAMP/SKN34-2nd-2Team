@@ -1,8 +1,13 @@
 """
 Phase 1b — 참조 테이블 5개를 schema.sql 컬럼 구조에 맞게 다시 저장한다.
 
-streamlit_app/prepare_data.py가 이미 계산해놓은 결과(streamlit_app/data/*.csv)를
-그대로 재사용한다 — 다시 계산하지 않음. 컬럼 이름/형태만 MySQL 테이블에 맞게 맞춘다.
+v2(누수 수정) 파이프라인이 만든 data/dashboard/*.csv를 그대로 재사용한다 — 다시 계산하지 않음.
+컬럼 이름/형태만 MySQL 테이블에 맞게 맞춘다.
+
+단, model_stats(모델 비교표)만 예외로 streamlit_app/data/model_comparison.csv를 그대로 쓴다 —
+이건 LightGBM/XGBoost/CatBoost/RandomForest/LogisticRegression "알고리즘 간" 비교표라 v1/v2
+파이프라인 교체와 무관하고, 실제로 다시 계산된 적이 없다(교체 대상 아님). 이 표의 LightGBM 행 값은
+구버전(누수 수정 전) 기준이라 실제 서빙 중인 v2 모델의 진짜 threshold/AUC와는 다르다는 점 유의.
 
 실행: python backend/scoring/export_reference_tables.py
 """
@@ -11,8 +16,8 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-DASH_DATA = ROOT / "data" / "dashboard"  # analytics 04~06 (v2 파이프라인)이 저장하는 새 위치
-LEGACY_DASH_DATA = ROOT / "streamlit_app" / "data"  # model_comparison.csv는 v1/v2와 무관한 알고리즘 비교표라 예전 위치 그대로 사용
+DASH_DATA = ROOT / "data" / "dashboard"
+LEGACY_DASH_DATA = ROOT / "streamlit_app" / "data"  # model_comparison.csv 전용 (교체 대상 아님)
 OUT_DIR = Path(__file__).resolve().parent / "output"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
