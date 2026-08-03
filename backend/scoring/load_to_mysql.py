@@ -45,8 +45,13 @@ def load_table(engine, csv_name, table_name, chunksize=None):
         print(f"건너뜀 (파일 없음): {csv_name} — build_scoring_table.py / export_reference_tables.py 먼저 실행하세요")
         return
     df = pd.read_csv(path)
+    # msno/model_name/feature/stage/driver_feature 등이 PRIMARY KEY라, 이전에 적재된 데이터가
+    # 남아있으면 append 시 "Duplicate entry" 에러가 난다. 테이블 구조(PK/ENUM/INDEX)는 그대로 두고
+    # 데이터만 비운 뒤 다시 채워서 "덮어쓰기"가 되게 한다.
+    with engine.begin() as conn:
+        conn.execute(text(f"TRUNCATE TABLE {table_name}"))
     df.to_sql(table_name, engine, if_exists="append", index=False, chunksize=chunksize)
-    print(f"적재 완료: {table_name} ({len(df):,} rows)")
+    print(f"적재 완료 (기존 데이터 비우고 새로 채움): {table_name} ({len(df):,} rows)")
 
 
 def main():

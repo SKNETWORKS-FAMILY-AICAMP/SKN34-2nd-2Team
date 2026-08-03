@@ -11,7 +11,8 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-DASH_DATA = ROOT / "streamlit_app" / "data"
+DASH_DATA = ROOT / "data" / "dashboard"  # analytics 04~06 (v2 파이프라인)이 저장하는 새 위치
+LEGACY_DASH_DATA = ROOT / "streamlit_app" / "data"  # model_comparison.csv는 v1/v2와 무관한 알고리즘 비교표라 예전 위치 그대로 사용
 OUT_DIR = Path(__file__).resolve().parent / "output"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -28,7 +29,7 @@ DRIVER_KO = {
 def main():
     # 1) model_stats — LightGBM/XGBoost/... test 행만 (실서비스는 채택 모델만 보여주면 되지만,
     #    운영 대시보드 "모델 비교" 탭에서 5개 다 보여주는 중이므로 test split만 남긴다)
-    mc = pd.read_csv(DASH_DATA / "model_comparison.csv")
+    mc = pd.read_csv(LEGACY_DASH_DATA / "model_comparison.csv")
     model_stats = mc[mc["split"] == "test"][["model", "auc", "f1", "threshold"]].rename(
         columns={"model": "model_name"}
     )

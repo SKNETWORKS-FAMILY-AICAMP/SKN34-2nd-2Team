@@ -26,7 +26,7 @@ MODELS_DIR = ROOT / "models"
 OUT_DIR = Path(__file__).resolve().parent / "output"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-RISK_THRESHOLD = json.loads((MODELS_DIR / "best_params.json").read_text())["threshold"]
+RISK_THRESHOLD = json.loads((MODELS_DIR / "lightgbm_enhanced_v2_meta.json").read_text())["threshold"]
 DROP_COLS = ["msno", "snapshot", "split", "is_churn"]
 
 
@@ -36,8 +36,8 @@ def step(msg):
 
 def main():
     step("1) 모델 + 전체 피처 테이블 로드")
-    booster = lgb.Booster(model_file=str(MODELS_DIR / "lightgbm_final.txt"))
-    df = pd.read_csv(PROCESSED_DIR / "model_table_final.csv")
+    booster = lgb.Booster(model_file=str(MODELS_DIR / "lightgbm_enhanced_v2.txt"))
+    df = pd.read_csv(PROCESSED_DIR / "model_table_enhanced_v2.csv")
     df["city"] = df["city"].astype("int64").astype("category")
     df["registered_via"] = df["registered_via"].astype("int64").astype("category")
     df["gender"] = df["gender"].astype("category")
