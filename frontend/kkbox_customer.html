@@ -7,23 +7,26 @@
 <style>
 body { margin:0; }
 .viz-root {
-  --mg: #1fd8c0;             /* KKBOX 톤의 틸/청록 포인트 컬러 (스포티파이 그린 대신 브랜드 차별화) */
-  --mg-dark: #14a894;
-  --mg-tint: rgba(31,216,192,0.14);
-  --bg: #0a0d0e;              /* 메인 콘텐츠 배경 */
-  --bg-side: #050707;         /* 사이드바 배경 */
-  --surface: #171b1c;         /* 카드 */
-  --surface-hover: #232829;
-  --surface-2: #101314;       /* 톱바/플레이어바 */
-  --text: #ffffff;
-  --text-soft: #b3b8b8;
-  --text-mute: #6c7373;
-  --line: rgba(255,255,255,0.08);
-  --danger: #ff5b5b;
-  --danger-tint: rgba(255,91,91,0.14);
-  --gold: #ffd166;
-  --gold-tint: rgba(255,209,102,0.16);
-  --indigo: #7c6ff5;
+  --mg: #0e9c86;              /* KKBOX 톤의 틸/청록 포인트 컬러 (스포티파이 그린 대신 브랜드 차별화) */
+  --mg-dark: #0a7862;
+  --mg-tint: rgba(14,156,134,0.10);
+  --bg: #f6f7f6;              /* 메인 콘텐츠 배경 — 밝은 라이트 테마 */
+  --bg-side: #ffffff;         /* 사이드바 배경 */
+  --surface: #ffffff;         /* 카드 */
+  --surface-hover: #eef1f0;
+  --surface-2: #ffffff;       /* 톱바/플레이어바 */
+  --text: #161f1c;
+  --text-soft: #5c6663;
+  --text-mute: #8d9592;
+  --line: rgba(22,32,29,0.09);
+  --danger: #d9463f;
+  --danger-tint: rgba(217,70,63,0.09);
+  --gold: #a97a0e;
+  --gold-tint: rgba(169,122,14,0.12);
+  --indigo: #6656c9;
+  --shadow-sm: 0 2px 8px rgba(22,32,29,0.06);
+  --shadow-md: 0 10px 26px rgba(22,32,29,0.10);
+  --shadow-lg: 0 20px 48px rgba(22,32,29,0.12);
 }
 
 * { box-sizing: border-box; }
@@ -36,24 +39,21 @@ body {
 }
 #root { min-height: 100vh; }
 button { font-family: inherit; }
-::selection { background: var(--mg); color: #000; }
+::selection { background: var(--mg); color: #fff; }
 
 /* ---------- 로그인 ---------- */
 .cx-login-wrap {
   min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(30,215,96,0.20), transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(111,111,240,0.16), transparent 45%),
-    #0a0a0c;
+  background: linear-gradient(165deg, #eef6f4 0%, #f6f7f6 55%, #ffffff 100%);
   padding: 20px;
 }
 .cx-login-card {
   width: 100%; max-width: 400px; background: var(--surface-2); border: 1px solid var(--line);
-  border-radius: 20px; padding: 34px 28px; box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+  border-radius: 18px; padding: 34px 28px; box-shadow: var(--shadow-lg);
 }
 .cx-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
 .cx-logo-mark {
-  width: 40px; height: 40px; border-radius: 50%; background: var(--mg); color: #05170a;
+  width: 40px; height: 40px; border-radius: 50%; background: var(--mg); color: #ffffff;
   display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 19px;
 }
 .cx-logo-word { font-weight: 800; font-size: 18px; letter-spacing: -0.3px; color: var(--text); }
@@ -61,24 +61,24 @@ button { font-family: inherit; }
 
 .cx-field-label { font-size: 11.5px; font-weight: 700; color: var(--text-soft); margin-bottom: 7px; display: block; text-transform: uppercase; letter-spacing: 0.3px; }
 .cx-input {
-  width: 100%; border: 1.5px solid var(--line); border-radius: 6px; padding: 13px 14px; font-size: 13.5px;
-  background: #121214; color: var(--text); margin-bottom: 16px;
+  width: 100%; border: 1.5px solid var(--line); border-radius: 8px; padding: 13px 14px; font-size: 13.5px;
+  background: var(--bg); color: var(--text); margin-bottom: 16px;
 }
 .cx-input::placeholder { color: var(--text-mute); }
-.cx-input:focus { outline: none; border-color: var(--text); }
+.cx-input:focus { outline: none; border-color: var(--mg); }
 .cx-submit {
   width: 100%; border: none; border-radius: 999px; padding: 14px 0; font-size: 14.5px; font-weight: 800;
-  background: var(--mg); color: #05170a; cursor: pointer; transition: transform .1s ease, background .15s ease;
+  background: var(--mg); color: #ffffff; cursor: pointer; transition: transform .1s ease, background .15s ease;
 }
-.cx-submit:hover:not(:disabled) { background: #23e56b; transform: scale(1.02); }
+.cx-submit:hover:not(:disabled) { background: var(--mg-dark); transform: scale(1.02); }
 .cx-submit:disabled { opacity: 0.5; cursor: default; }
 .cx-sample-grid { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 18px; }
 .cx-sample-btn {
-  text-align: left; border: 1px solid var(--line); background: #121214; border-radius: 10px;
+  text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 10px;
   padding: 11px 13px; font-size: 12px; cursor: pointer; color: var(--text);
 }
-.cx-sample-btn:hover { border-color: var(--mg); background: #161b17; }
-.cx-sample-btn b { display: block; font-size: 10.5px; color: var(--mg); margin-bottom: 3px; }
+.cx-sample-btn:hover { border-color: var(--mg); background: var(--mg-tint); }
+.cx-sample-btn b { display: block; font-size: 10.5px; color: var(--mg-dark); margin-bottom: 3px; }
 .cx-sample-code { font-family: 'DejaVu Sans Mono', monospace; font-size: 9.5px; color: var(--text-mute); word-break: break-all; }
 .cx-error {
   background: var(--danger-tint); border: 1px solid rgba(255,91,91,0.4); color: #ff8a8a; font-size: 11.5px;
@@ -93,47 +93,76 @@ button { font-family: inherit; }
   grid-template-columns: 240px 1fr;
   grid-template-rows: 64px 1fr;
   grid-template-areas: "side top" "side main";
-  background:
-    radial-gradient(circle at 12% 0%, rgba(31,216,192,0.10), transparent 40%),
-    radial-gradient(circle at 92% 92%, rgba(124,111,245,0.08), transparent 45%),
-    var(--bg);
+  background: var(--bg);
 }
 
 /* 좌측 내비게이션 — 전체 높이를 차지하는 진짜 사이드바 */
 .cx-nav {
   grid-area: side; grid-row: 1 / span 2; background: var(--bg-side); padding: 20px 12px;
   display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; align-self: start;
+  border-right: 1px solid var(--line);
 }
 .cx-nav-logo { display: flex; align-items: center; gap: 10px; padding: 6px 12px 22px; }
 .cx-nav-logo .cx-logo-mark { width: 30px; height: 30px; font-size: 14px; }
 .cx-nav-logo-word { font-weight: 800; font-size: 15px; letter-spacing: -0.2px; }
 .cx-navbtn {
   border: none; background: none; padding: 11px 13px; display: flex; flex-direction: row; align-items: center;
-  gap: 14px; cursor: pointer; color: var(--text-soft); font-size: 13.5px; font-weight: 700; border-radius: 6px; text-align: left;
-  transition: color .1s ease;
+  gap: 14px; cursor: pointer; color: var(--text-soft); font-size: 13.5px; font-weight: 700; border-radius: 9px; text-align: left;
+  transition: color .1s ease, background .12s ease;
 }
-.cx-navbtn:hover { color: var(--text); }
+.cx-navbtn:hover { color: var(--text); background: var(--surface-hover); }
 .cx-navbtn .cx-navicon { font-size: 18px; width: 20px; text-align: center; }
-.cx-navbtn.cx-nav-active { color: var(--text); }
+.cx-navbtn.cx-nav-active { color: var(--mg-dark); background: var(--mg-tint); }
 .cx-nav-spacer { flex: 1; }
 .cx-nav-foot { padding: 10px 13px; border-top: 1px solid var(--line); margin-top: 8px; }
 .cx-nav-seg { font-size: 10px; color: var(--text-mute); margin-bottom: 6px; }
-.cx-nav-seg b { color: var(--mg); }
+.cx-nav-seg b { color: var(--mg-dark); }
 
-/* 상단 바 — 검색 필(장식용) + 프로필 칩 */
+/* 상단 바 — 실제 검색(재생목록/아티스트) + 프로필 칩 */
 .cx-topbar {
   grid-area: top; position: sticky; top: 0; z-index: 30;
-  background: rgba(10,10,12,0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid transparent;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
   display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px;
 }
-.cx-searchpill {
-  flex: 1; max-width: 380px; display: flex; align-items: center; gap: 9px; background: var(--surface);
-  border-radius: 999px; padding: 9px 16px; color: var(--text-mute); font-size: 12.5px;
+.cx-search-wrap { position: relative; flex: 1; max-width: 420px; }
+.cx-search-input-row {
+  display: flex; align-items: center; gap: 9px; background: var(--surface-hover); border: 1.5px solid transparent;
+  border-radius: 999px; padding: 9px 16px; transition: border-color .12s ease, background .12s ease;
 }
+.cx-search-input-row.cx-search-focus { border-color: var(--mg); background: var(--surface); }
+.cx-search-icon { font-size: 13px; color: var(--text-mute); flex: 0 0 auto; }
+.cx-search-input {
+  border: none; background: none; outline: none; font-size: 12.5px; color: var(--text); flex: 1; min-width: 0;
+  font-family: inherit;
+}
+.cx-search-input::placeholder { color: var(--text-mute); }
+.cx-search-spinner {
+  width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--mg);
+  animation: cx-spin .7s linear infinite; flex: 0 0 auto;
+}
+@keyframes cx-spin { to { transform: rotate(360deg); } }
+.cx-search-clear { border: none; background: none; color: var(--text-mute); cursor: pointer; font-size: 14px; padding: 0 2px; flex: 0 0 auto; line-height: 1; }
+.cx-search-clear:hover { color: var(--text); }
+.cx-search-dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-lg);
+  max-height: 360px; overflow-y: auto; z-index: 40; padding: 6px;
+}
+.cx-search-row { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 9px; cursor: pointer; }
+.cx-search-row:hover { background: var(--surface-hover); }
+.cx-search-row-disabled { opacity: 0.45; cursor: default; }
+.cx-search-row-disabled:hover { background: none; }
+.cx-search-art { width: 38px; height: 38px; border-radius: 6px; object-fit: cover; flex: 0 0 38px; background: var(--surface-hover); }
+.cx-search-art-empty { display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.cx-search-meta { min-width: 0; flex: 1; }
+.cx-search-title { font-size: 12.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-search-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-search-play { font-size: 11px; color: var(--mg-dark); flex: 0 0 auto; }
+.cx-search-note { padding: 14px 10px; font-size: 11.5px; color: var(--text-mute); text-align: center; }
 .cx-topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .cx-icon-btn {
-  position: relative; border: none; background: var(--surface); color: var(--text); width: 34px; height: 34px;
+  position: relative; border: 1px solid var(--line); background: var(--surface); color: var(--text); width: 34px; height: 34px;
   border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 .cx-icon-btn:hover { background: var(--surface-hover); }
@@ -161,7 +190,7 @@ button { font-family: inherit; }
   display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
 }
 .cx-playerbar-track { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; max-width: 320px; }
-.cx-playerbar-cover { width: 48px; height: 48px; border-radius: 6px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; background-color: var(--surface); background-size: cover; background-position: center; }
+.cx-playerbar-cover { width: 48px; height: 48px; border-radius: 6px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-mute); background-color: var(--surface-hover); background-size: cover; background-position: center; }
 .cx-playerbar-meta { min-width: 0; }
 .cx-playerbar-title { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-playerbar-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -169,27 +198,27 @@ button { font-family: inherit; }
 .cx-playerbar-controls { display: flex; align-items: center; gap: 18px; }
 .cx-playerbar-controls span { color: var(--text-soft); font-size: 15px; cursor: pointer; }
 .cx-play-fab-mid {
-  width: 30px; height: 30px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center;
+  width: 30px; height: 30px; border-radius: 50%; background: var(--text); color: #fff; display: flex; align-items: center;
   justify-content: center; font-size: 12px; cursor: pointer;
 }
 .cx-playerbar-progress { width: 100%; display: flex; align-items: center; gap: 8px; }
 .cx-playerbar-progress span { font-size: 9.5px; color: var(--text-mute); }
-.cx-progress-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+.cx-progress-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(22,32,29,0.10); position: relative; overflow: hidden; }
 .cx-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--text); border-radius: 2px; }
 .cx-playerbar-vol { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px; color: var(--text-soft); font-size: 14px; }
-.cx-vol-track { width: 80px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.14); position: relative; }
+.cx-vol-track { width: 80px; height: 3px; border-radius: 2px; background: rgba(22,32,29,0.10); position: relative; }
 .cx-vol-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 65%; background: var(--text-soft); border-radius: 2px; }
 
 @media (max-width: 860px) {
   .cx-app { grid-template-columns: 1fr; grid-template-rows: 60px 1fr; grid-template-areas: "top" "main"; }
   .cx-nav {
     grid-row: auto; position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: auto; z-index: 30;
-    background: #0a0a0c; border-top: 1px solid var(--line); flex-direction: row; padding: 4px 0; gap: 0;
+    background: var(--bg-side); border-top: 1px solid var(--line); flex-direction: row; padding: 4px 0; gap: 0;
   }
   .cx-nav-logo, .cx-nav-spacer, .cx-nav-foot { display: none; }
   .cx-navbtn { flex: 1; flex-direction: column; gap: 3px; padding: 7px 0 9px; border-radius: 0; color: var(--text-mute); font-size: 10px; }
-  .cx-navbtn.cx-nav-active { color: var(--mg); }
-  .cx-searchpill span:last-child { display: none; }
+  .cx-navbtn.cx-nav-active { color: var(--mg-dark); background: none; }
+  .cx-search-wrap { display: none; }
   .cx-content { padding: 16px 16px 90px; }
   .cx-content-inner { max-width: 100%; }
   .cx-playerbar { display: none; }
@@ -198,15 +227,11 @@ button { font-family: inherit; }
 /* ---------- 홈: 히어로 배너 ---------- */
 .cx-hero {
   border-radius: 16px; padding: 26px 28px 28px; color: #fff; position: relative; overflow: hidden; margin-bottom: 24px;
-  box-shadow: 0 18px 40px rgba(31,216,192,0.16);
-  background:
-    linear-gradient(120deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
-    linear-gradient(135deg, var(--mg) 0%, #0d6e63 100%);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--mg) 0%, #0a6d5c 100%);
 }
 .cx-hero.cx-hero-danger {
-  background:
-    linear-gradient(120deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
-    linear-gradient(135deg, #ff8a5b 0%, #b3273a 100%);
+  background: linear-gradient(135deg, #e06a3f 0%, #a52e3a 100%);
 }
 .cx-hero-badge { font-size: 10.5px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 12px; border-radius: 10px; display: inline-block; letter-spacing: 0.2px; }
 .cx-hero-title { font-size: 26px; font-weight: 900; margin: 14px 0 6px; line-height: 1.3; letter-spacing: -0.4px; max-width: 640px; }
@@ -253,17 +278,17 @@ button { font-family: inherit; }
 .cx-track-grid-sm .cx-track-cover-lg { font-size: 26px; }
 .cx-play-fab {
   position: absolute; right: 8px; bottom: 8px; width: 38px; height: 38px; border-radius: 50%; background: var(--mg);
-  color: #05170a; display: flex; align-items: center; justify-content: center; font-size: 13px;
+  color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px;
   opacity: 0; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 16px rgba(22,32,29,0.25);
 }
 .cx-track-card:hover .cx-play-fab { opacity: 1; transform: translateY(0); }
 .cx-track-card-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-track-card-artist { font-size: 11px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- 혜택(쿠폰) ---------- */
-.cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0d6e63 100%); box-shadow: 0 16px 40px rgba(31,216,192,0.18); }
-.cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f6ff0 0%, #34348f 100%); box-shadow: 0 16px 40px rgba(111,111,240,0.18); }
+.cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0a6d5c 100%); box-shadow: var(--shadow-md); }
+.cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f61d6 0%, #322a7a 100%); box-shadow: var(--shadow-md); }
 .cx-coupon-badge { font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 11px; border-radius: 10px; display: inline-block; }
 .cx-coupon-title { font-size: 19px; font-weight: 900; margin: 12px 0 4px; letter-spacing: -0.3px; }
 .cx-coupon-desc { font-size: 12px; opacity: 0.92; }
@@ -300,7 +325,7 @@ button { font-family: inherit; }
 .cx-chart-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-chart-artist { font-size: 11px; color: var(--text-mute); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-chart-play {
-  width: 30px; height: 30px; border-radius: 50%; background: var(--mg-tint); color: var(--mg); flex: 0 0 30px;
+  width: 30px; height: 30px; border-radius: 50%; background: var(--mg-tint); color: var(--mg-dark); flex: 0 0 30px;
   display: flex; align-items: center; justify-content: center; font-size: 11px;
 }
 .cx-chart-play-disabled { background: var(--surface-hover); color: var(--text-mute); }
@@ -1058,6 +1083,45 @@ function CustomerApp({ auth, onLogout }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
+  // 실제 검색 (상단 검색창 — /music/search 호출, 디바운스 적용)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  useEffect(() => {
+    const term = searchTerm.trim();
+    if (!term) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      setSearchError("");
+      return;
+    }
+    setSearchLoading(true);
+    setSearchError("");
+    const timer = setTimeout(() => {
+      fetch(`${MUSIC_SEARCH_URL}?term=${encodeURIComponent(term)}&limit=8`)
+        .then((res) => {
+          if (!res.ok) throw new Error(`검색 실패 (${res.status})`);
+          return res.json();
+        })
+        .then((data) => {
+          const list = (data.results || []).map(normalizeTrack).filter((t) => t && t.title);
+          setSearchResults(list);
+        })
+        .catch((err) => setSearchError(err.message || "검색 중 오류가 발생했어요."))
+        .finally(() => setSearchLoading(false));
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  function handleSearchResultClick(track) {
+    if (!track.previewUrl) return;
+    playTrack(track, searchResults);
+  }
+
   useEffect(() => {
     setRiskLoading(true);
     setRiskError("");
@@ -1163,9 +1227,53 @@ function CustomerApp({ auth, onLogout }) {
       </nav>
 
       <div class="cx-topbar">
-        <div class="cx-searchpill">
-          <span>🔍</span>
-          <span>재생목록, 아티스트 검색 (데모 화면)</span>
+        <div class="cx-search-wrap">
+          <div class="cx-search-input-row ${searchFocused ? "cx-search-focus" : ""}">
+            <span class="cx-search-icon">🔍</span>
+            <input
+              class="cx-search-input"
+              type="text"
+              placeholder="재생목록, 아티스트, 곡 검색"
+              value=${searchTerm}
+              onInput=${(e) => { setSearchTerm(e.target.value); setSearchOpen(true); }}
+              onFocus=${() => { setSearchFocused(true); if (searchTerm.trim()) setSearchOpen(true); }}
+              onBlur=${() => { setSearchFocused(false); setTimeout(() => setSearchOpen(false), 150); }}
+            />
+            ${searchLoading ? html`<span class="cx-search-spinner"></span>` : null}
+            ${searchTerm && !searchLoading
+              ? html`<button type="button" class="cx-search-clear" onMouseDown=${(e) => e.preventDefault()} onClick=${() => { setSearchTerm(""); setSearchResults([]); }}>✕</button>`
+              : null}
+          </div>
+          ${searchOpen && searchTerm.trim()
+            ? html`
+                <div class="cx-search-dropdown" onMouseDown=${(e) => e.preventDefault()}>
+                  ${searchLoading
+                    ? html`<div class="cx-search-note">검색 중...</div>`
+                    : searchError
+                    ? html`<div class="cx-search-note">${searchError}</div>`
+                    : !searchResults.length
+                    ? html`<div class="cx-search-note">"${searchTerm}"에 대한 검색 결과가 없어요.</div>`
+                    : searchResults.map(
+                        (t, i) => html`
+                          <div
+                            class="cx-search-row ${!t.previewUrl ? "cx-search-row-disabled" : ""}"
+                            key=${i}
+                            onClick=${() => handleSearchResultClick(t)}
+                          >
+                            ${t.artwork
+                              ? html`<img class="cx-search-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-search-art cx-search-art-empty", textContent: "🎵" })); }} />`
+                              : html`<div class="cx-search-art cx-search-art-empty">🎵</div>`}
+                            <div class="cx-search-meta">
+                              <div class="cx-search-title">${t.title}</div>
+                              <div class="cx-search-artist">${t.artist}</div>
+                            </div>
+                            <span class="cx-search-play">${t.previewUrl ? "▶" : "–"}</span>
+                          </div>
+                        `
+                      )}
+                </div>
+              `
+            : null}
         </div>
         <div class="cx-topbar-actions">
           <button class="cx-icon-btn" title="알림함" onClick=${() => setTab("notif")}>
