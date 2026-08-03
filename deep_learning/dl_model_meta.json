@@ -1,7 +1,0 @@
-{
-  "feature_dim": 68,
-  "architecture": "128-64-32-1 MLP, BatchNorm+Dropout, BCEWithLogitsLoss(pos_weight)",
-  "best_valid_auc": 0.9886627844564951,
-  "best_threshold": 0.87,
-  "epochs_trained": 40
-}
