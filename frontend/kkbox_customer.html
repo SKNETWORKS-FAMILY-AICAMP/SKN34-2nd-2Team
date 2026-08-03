@@ -7,23 +7,23 @@
 <style>
 body { margin:0; }
 .viz-root {
-  --mg: #1ed760;             /* 브랜드 그린 (스포티파이/멜론 느낌의 포인트 컬러) */
-  --mg-dark: #17ad4b;
-  --mg-tint: rgba(30,215,96,0.14);
-  --bg: #0a0a0c;              /* 메인 콘텐츠 배경 */
-  --bg-side: #000000;         /* 사이드바 배경 */
-  --surface: #181818;         /* 카드 */
-  --surface-hover: #242424;
-  --surface-2: #121214;       /* 톱바/플레이어바 */
+  --mg: #1fd8c0;             /* KKBOX 톤의 틸/청록 포인트 컬러 (스포티파이 그린 대신 브랜드 차별화) */
+  --mg-dark: #14a894;
+  --mg-tint: rgba(31,216,192,0.14);
+  --bg: #0a0d0e;              /* 메인 콘텐츠 배경 */
+  --bg-side: #050707;         /* 사이드바 배경 */
+  --surface: #171b1c;         /* 카드 */
+  --surface-hover: #232829;
+  --surface-2: #101314;       /* 톱바/플레이어바 */
   --text: #ffffff;
-  --text-soft: #b3b3b3;
-  --text-mute: #6a6a6e;
+  --text-soft: #b3b8b8;
+  --text-mute: #6c7373;
   --line: rgba(255,255,255,0.08);
   --danger: #ff5b5b;
   --danger-tint: rgba(255,91,91,0.14);
   --gold: #ffd166;
   --gold-tint: rgba(255,209,102,0.16);
-  --indigo: #6f6ff0;
+  --indigo: #7c6ff5;
 }
 
 * { box-sizing: border-box; }
@@ -93,7 +93,10 @@ button { font-family: inherit; }
   grid-template-columns: 240px 1fr;
   grid-template-rows: 64px 1fr;
   grid-template-areas: "side top" "side main";
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(31,216,192,0.10), transparent 40%),
+    radial-gradient(circle at 92% 92%, rgba(124,111,245,0.08), transparent 45%),
+    var(--bg);
 }
 
 /* 좌측 내비게이션 — 전체 높이를 차지하는 진짜 사이드바 */
@@ -158,7 +161,7 @@ button { font-family: inherit; }
   display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
 }
 .cx-playerbar-track { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; max-width: 320px; }
-.cx-playerbar-cover { width: 48px; height: 48px; border-radius: 6px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; }
+.cx-playerbar-cover { width: 48px; height: 48px; border-radius: 6px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; background-color: var(--surface); background-size: cover; background-position: center; }
 .cx-playerbar-meta { min-width: 0; }
 .cx-playerbar-title { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-playerbar-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -195,9 +198,10 @@ button { font-family: inherit; }
 /* ---------- 홈: 히어로 배너 ---------- */
 .cx-hero {
   border-radius: 16px; padding: 26px 28px 28px; color: #fff; position: relative; overflow: hidden; margin-bottom: 24px;
+  box-shadow: 0 18px 40px rgba(31,216,192,0.16);
   background:
     linear-gradient(120deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
-    linear-gradient(135deg, var(--mg) 0%, #0c6b2e 100%);
+    linear-gradient(135deg, var(--mg) 0%, #0d6e63 100%);
 }
 .cx-hero.cx-hero-danger {
   background:
@@ -217,10 +221,13 @@ button { font-family: inherit; }
 .cx-btn-ghost-white { background: rgba(0,0,0,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.55); }
 
 .cx-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-.cx-stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 15px 12px; text-align: center; transition: background .15s ease; }
-.cx-stat-tile:hover { background: var(--surface-hover); }
-.cx-stat-emoji { font-size: 16px; }
-.cx-stat-value { font-weight: 800; font-size: 14px; margin-top: 6px; color: var(--text); }
+.cx-stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 14px; text-align: center; transition: background .15s ease, transform .15s ease; }
+.cx-stat-tile:hover { background: var(--surface-hover); transform: translateY(-1px); }
+.cx-stat-emoji {
+  width: 34px; height: 34px; margin: 0 auto; border-radius: 50%; background: var(--mg-tint);
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+.cx-stat-value { font-weight: 800; font-size: 14px; margin-top: 10px; color: var(--text); }
 .cx-stat-label { font-size: 10px; color: var(--text-mute); margin-top: 3px; }
 
 .cx-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-bottom: 20px; }
@@ -241,6 +248,7 @@ button { font-family: inherit; }
 .cx-track-cover-lg {
   width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; display: flex; align-items: center; justify-content: center;
   font-size: 36px; color: #fff; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  background-color: var(--surface-hover); background-size: cover; background-position: center;
 }
 .cx-track-grid-sm .cx-track-cover-lg { font-size: 26px; }
 .cx-play-fab {
@@ -254,7 +262,7 @@ button { font-family: inherit; }
 .cx-track-card-artist { font-size: 11px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- 혜택(쿠폰) ---------- */
-.cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0c6b2e 100%); box-shadow: 0 16px 40px rgba(30,215,96,0.18); }
+.cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0d6e63 100%); box-shadow: 0 16px 40px rgba(31,216,192,0.18); }
 .cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f6ff0 0%, #34348f 100%); box-shadow: 0 16px 40px rgba(111,111,240,0.18); }
 .cx-coupon-badge { font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 11px; border-radius: 10px; display: inline-block; }
 .cx-coupon-title { font-size: 19px; font-weight: 900; margin: 12px 0 4px; letter-spacing: -0.3px; }
@@ -277,6 +285,25 @@ button { font-family: inherit; }
 .cx-notif-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
 .cx-notif-time { font-size: 10.5px; color: var(--text-mute); margin-top: 5px; }
 .cx-empty { text-align: center; color: var(--text-mute); font-size: 12.5px; padding: 50px 10px; }
+
+/* ---------- 차트 ---------- */
+.cx-chart-list { display: flex; flex-direction: column; }
+.cx-chart-row {
+  display: flex; align-items: center; gap: 14px; padding: 10px 8px; border-radius: 8px; cursor: pointer;
+  transition: background .12s ease;
+}
+.cx-chart-row:hover { background: var(--surface-hover); }
+.cx-chart-rank { width: 26px; text-align: center; font-weight: 800; font-size: 13px; color: var(--text-mute); flex: 0 0 26px; }
+.cx-chart-art { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; flex: 0 0 44px; background: var(--surface); }
+.cx-chart-art-empty { display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.cx-chart-meta { min-width: 0; flex: 1; }
+.cx-chart-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-chart-artist { font-size: 11px; color: var(--text-mute); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-chart-play {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--mg-tint); color: var(--mg); flex: 0 0 30px;
+  display: flex; align-items: center; justify-content: center; font-size: 11px;
+}
+.cx-chart-play-disabled { background: var(--surface-hover); color: var(--text-mute); }
 
 .cx-footnote { font-size: 10.5px; color: var(--text-mute); text-align: center; padding: 20px 4px 4px; line-height: 1.7; }
 </style>
@@ -593,7 +620,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>
 const html = htm.bind(React.createElement);
-const { useState, useMemo, useEffect } = React;
+const { useState, useMemo, useEffect, useRef } = React;
 
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
 const API_BASE = "http://localhost:8000";
@@ -613,27 +640,72 @@ const COUPON_RULES = {
   "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", alt: true },
 };
 
-// 아래 트랙/앨범 정보는 실제 청취 로그가 아닌 예시(mock) 데이터입니다.
-// 우리 스키마(customer_churn_scores)에는 실제 장르/곡 선호 데이터가 없기 때문에, 곡 목록 자체는 그럴듯한 샘플로 채우고
-// "왜 이 추천을 보여주는지"의 문구/타겟팅만 로그인한 고객의 실제 risk_tier·segment·days_since_last_txn 값으로 결정합니다.
-const COMEBACK_TRACKS = [
-  { title: "밤의 산책", artist: "오후의 산책자", emoji: "🌙" },
-  { title: "다시, 봄", artist: "네온사인", emoji: "🌱" },
-  { title: "Sunday Jazz", artist: "Coffee & Vinyl", emoji: "☕" },
-  { title: "새벽 드라이브", artist: "하이웨이", emoji: "🚗" },
-];
-const LOYAL_TRACKS = [
-  { title: "이번 주, 우리 취향", artist: "위클리 플레이리스트", emoji: "✨" },
-  { title: "K-POP 데일리 TOP", artist: "여러 아티스트", emoji: "🔥" },
-  { title: "인디 팝 신곡 모음", artist: "여러 아티스트", emoji: "🎸" },
-  { title: "로파이 집중 비트", artist: "Study Beats", emoji: "📻" },
-];
-const COVER_GRADIENTS = [
-  "linear-gradient(135deg,#00c853,#009e42)",
-  "linear-gradient(135deg,#4d5bd9,#2f3aa8)",
-  "linear-gradient(135deg,#ff7b54,#ff5b5b)",
-  "linear-gradient(135deg,#ffb400,#e08e00)",
-];
+// 우리 스키마(customer_churn_scores)에는 실제 청취 로그/장르 선호 데이터가 없기 때문에,
+// "어떤 무드(컴백형 vs 취향형)를 보여줄지"만 로그인한 고객의 실제 risk_tier·days_since_last_txn 값으로 정하고,
+// 실제 곡/앨범 정보(제목·아티스트·커버·30초 미리듣기)는 Apple의 공개 iTunes/Apple Music API에서 실시간으로 가져온다.
+// 브라우저가 itunes.apple.com/rss.marketingtools.apple.com을 직접 부르면 네트워크 환경에 따라
+// CORS/방화벽에 막힐 수 있어서, 우리 FastAPI 백엔드(backend/app/routers/music_router.py)가 대신
+// 호출해서 넘겨준다 — 브라우저는 항상 같은 오리진(localhost:8000)만 호출하므로 CORS 문제가 없다.
+const MUSIC_SEARCH_URL = `${API_BASE}/music/search`;
+const MUSIC_CHART_URL = `${API_BASE}/music/chart`;
+
+// 무드별로 실제로 존재하는 곡을 검색해서 채운다 (제목/아티스트로 검색 -> 1위 매칭 결과 사용)
+const COMEBACK_QUERIES = ["아이유 밤편지", "폴킴 모든 날 모든 순간", "잔나비 주저하는 연인들을 위해", "볼빨간사춘기 우주를 줄게"];
+const LOYAL_QUERIES = ["뉴진스 Super Shy", "아이브 Love Dive", "블랙핑크 Pink Venom", "방탄소년단 Dynamite"];
+
+function normalizeTrack(t) {
+  if (!t) return null;
+  return {
+    title: t.trackName || t.name,
+    artist: t.artistName,
+    artwork: (t.artworkUrl100 || "").replace("100x100bb", "300x300bb"),
+    previewUrl: t.previewUrl || null,
+  };
+}
+
+async function fetchTrackByQuery(term) {
+  const url = `${MUSIC_SEARCH_URL}?term=${encodeURIComponent(term)}&limit=1`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`음원 검색 실패 (${res.status})`);
+  const data = await res.json();
+  return normalizeTrack(data.results && data.results[0]);
+}
+
+async function fetchPlaylist(queries) {
+  const results = await Promise.all(queries.map((q) => fetchTrackByQuery(q).catch(() => null)));
+  return results.filter(Boolean);
+}
+
+// 실시간 인기 차트 — 백엔드가 Apple Music 공식 대한민국 차트 + 미리듣기 URL을 합쳐서
+// [{rank, title, artist, artwork, previewUrl}, ...] 형태로 내려준다.
+// 그마저 실패하면(네트워크/일시 장애) 음원 검색으로 대체해서 화면이 비지 않게 한다.
+async function fetchTopChart(limit = 100) {
+  const res = await fetch(`${MUSIC_CHART_URL}?limit=${limit}`);
+  if (!res.ok) throw new Error(`차트 조회 실패 (${res.status})`);
+  const data = await res.json();
+  if (!Array.isArray(data) || !data.length) throw new Error("차트 데이터 없음");
+  return data;
+}
+
+async function fetchFallbackChart(limit = 50) {
+  const res = await fetch(`${MUSIC_SEARCH_URL}?term=${encodeURIComponent("kpop")}&limit=${limit}`);
+  if (!res.ok) throw new Error(`검색 대체 조회 실패 (${res.status})`);
+  const data = await res.json();
+  return (data.results || []).map((t, i) => ({
+    rank: i + 1,
+    title: t.trackName,
+    artist: t.artistName,
+    artwork: t.artworkUrl100,
+    previewUrl: t.previewUrl || null,
+  }));
+}
+
+function formatTime(sec) {
+  if (!sec || !isFinite(sec)) return "0:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
 
 async function apiFetch(path, { method = "GET", token, body } = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -734,7 +806,7 @@ function personaCopy(risk) {
   };
 }
 
-function HomeTab({ risk, loading, error, goTab }) {
+function HomeTab({ risk, loading, error, goTab, tracks, tracksLoading, onPlay }) {
   if (loading) return html`<p class="cx-muted">불러오는 중...</p>`;
   if (error) return html`<div class="cx-empty">${error}</div>`;
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
@@ -759,34 +831,38 @@ function HomeTab({ risk, loading, error, goTab }) {
           <div class="cx-stat-label">월 평균 결제</div>
         </div>
         <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">💎</div>
-          <div class="cx-stat-value">₩${risk.ltv_approx != null ? Math.round(risk.ltv_approx).toLocaleString() : "-"}</div>
-          <div class="cx-stat-label">예상 LTV</div>
+          <div class="cx-stat-emoji">📅</div>
+          <div class="cx-stat-value">D-${risk.days_to_expire ?? "-"}</div>
+          <div class="cx-stat-label">구독 만료까지</div>
         </div>
         <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">🏷️</div>
-          <div class="cx-stat-value">${risk.segment}</div>
-          <div class="cx-stat-label">내 세그먼트</div>
+          <div class="cx-stat-emoji">🕘</div>
+          <div class="cx-stat-value">${risk.days_since_last_txn ?? "-"}일 전</div>
+          <div class="cx-stat-label">마지막 결제</div>
         </div>
       </div>
 
       <div class="cx-card">
         <div class="cx-card-title">이번 주 추천 미리보기 <button class="cx-link-btn" onClick=${() => goTab("recommend")}>전체보기 →</button></div>
-        <p class="cx-muted" style=${{ marginBottom: "12px" }}>회원님의 최근 이용 패턴(위험도 ${risk.churn_proba.toFixed(3)}, ${risk.segment})에 맞춰 준비한 플레이리스트가 있어요.</p>
-        <div class="cx-track-grid cx-track-grid-sm">
-          ${(risk.risk_tier === "고위험" ? COMEBACK_TRACKS : LOYAL_TRACKS).map(
-            (t, i) => html`
-              <div class="cx-track-card" key=${t.title} onClick=${() => goTab("recommend")}>
-                <div class="cx-track-cover-lg" style=${{ backgroundImage: COVER_GRADIENTS[i % COVER_GRADIENTS.length] }}>
-                  ${t.emoji}
-                  <div class="cx-play-fab">▶</div>
-                </div>
-                <div class="cx-track-card-title">${t.title}</div>
-                <div class="cx-track-card-artist">${t.artist}</div>
+        <p class="cx-muted" style=${{ marginBottom: "12px" }}>회원님의 최근 이용 패턴에 맞춰 준비한 플레이리스트가 있어요. 커버를 누르면 30초 미리듣기가 재생돼요.</p>
+        ${tracksLoading && !tracks.length
+          ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
+          : html`
+              <div class="cx-track-grid cx-track-grid-sm">
+                ${tracks.map(
+                  (t) => html`
+                    <div class="cx-track-card" key=${t.title} onClick=${() => onPlay(t, tracks)}>
+                      <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                        ${!t.artwork ? "🎵" : null}
+                        <div class="cx-play-fab">▶</div>
+                      </div>
+                      <div class="cx-track-card-title">${t.title}</div>
+                      <div class="cx-track-card-artist">${t.artist}</div>
+                    </div>
+                  `
+                )}
               </div>
-            `
-          )}
-        </div>
+            `}
       </div>
     </div>
   `;
@@ -794,47 +870,92 @@ function HomeTab({ risk, loading, error, goTab }) {
 
 /* ============================== 추천(취향, 이탈 연계) ============================== */
 
-function RecommendTab({ risk }) {
+function RecommendTab({ risk, tracks, tracksLoading, onPlay }) {
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
   const highRisk = risk.risk_tier === "고위험";
-  const tracks = highRisk ? COMEBACK_TRACKS : LOYAL_TRACKS;
   const heading = highRisk ? "컴백 플레이리스트" : "이주의 취향저격 플레이리스트";
   const reason = highRisk
     ? `최근 ${risk.days_since_last_txn ?? "-"}일간 뜸하셨던 회원님을 위해, 다시 즐겨찾으실 만한 곡들을 모았어요.`
-    : `꾸준히 이용해주신 회원님(${risk.segment})을 위한 이번 주 맞춤 추천이에요.`;
+    : `꾸준히 이용해주신 회원님을 위한 이번 주 맞춤 추천이에요.`;
 
   return html`
     <div>
       <div class="cx-section-title">🎧 취향 기반 추천</div>
       <div class="cx-tag-row">
-        <span class="cx-tag">${risk.risk_tier}</span>
-        <span class="cx-tag">${risk.segment}</span>
+        <span class="cx-tag">${highRisk ? "컴백 추천" : "위클리 추천"}</span>
         ${risk.ltv_tier === "고가치" ? html`<span class="cx-badge-vip">VIP PICK</span>` : null}
       </div>
 
       <div class="cx-card">
         <div class="cx-card-title">${heading}</div>
         <p class="cx-muted" style=${{ marginBottom: "14px" }}>${reason}</p>
-        <div class="cx-track-grid">
-          ${tracks.map(
-            (t, i) => html`
-              <div class="cx-track-card" key=${t.title}>
-                <div class="cx-track-cover-lg" style=${{ backgroundImage: COVER_GRADIENTS[i % COVER_GRADIENTS.length] }}>
-                  ${t.emoji}
-                  <div class="cx-play-fab">▶</div>
-                </div>
-                <div class="cx-track-card-title">${t.title}</div>
-                <div class="cx-track-card-artist">${t.artist}</div>
+        ${tracksLoading && !tracks.length
+          ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
+          : !tracks.length
+          ? html`<p class="cx-muted">지금은 추천 음원을 불러올 수 없어요. 잠시 후 다시 시도해주세요.</p>`
+          : html`
+              <div class="cx-track-grid">
+                ${tracks.map(
+                  (t) => html`
+                    <div class="cx-track-card" key=${t.title} onClick=${() => onPlay(t, tracks)}>
+                      <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                        ${!t.artwork ? "🎵" : null}
+                        <div class="cx-play-fab">▶</div>
+                      </div>
+                      <div class="cx-track-card-title">${t.title}</div>
+                      <div class="cx-track-card-artist">${t.artist}</div>
+                    </div>
+                  `
+                )}
               </div>
-            `
-          )}
-        </div>
+            `}
       </div>
 
       <p class="cx-muted">
-        ※ 위 트랙/앨범 정보는 실제 청취 로그가 아닌 예시(mock)입니다. 다만 어떤 추천을 보여줄지(컴백형 vs 취향형)와 문구는
-        회원님의 실제 위험도·세그먼트 데이터를 기준으로 결정됩니다.
+        ※ 위 트랙/앨범 정보는 Apple Music(iTunes) 공개 API에서 실시간으로 가져온 실제 음원입니다(30초 미리듣기 재생).
+        다만 회원님의 실제 청취 기록 기반 추천은 아니며, 어떤 무드(컴백형 vs 취향형)를 보여줄지와 문구는
+        회원님의 실제 이용 데이터(최근 결제·활동 이력 등)를 기준으로 결정됩니다.
       </p>
+    </div>
+  `;
+}
+
+/* ============================== 차트(실시간 인기 차트) ============================== */
+
+function ChartTab({ chart, loading, error, onPlay }) {
+  return html`
+    <div>
+      <div class="cx-section-title">🔥 실시간 인기 차트</div>
+      <p class="cx-muted" style=${{ marginBottom: "16px" }}>
+        Apple Music 공식 대한민국 인기곡 차트를 실시간으로 가져와요. 곡을 누르면 30초 미리듣기가 재생됩니다.
+      </p>
+      ${loading
+        ? html`<p class="cx-muted">차트를 불러오는 중...</p>`
+        : error
+        ? html`<div class="cx-empty">${error}</div>`
+        : !chart.length
+        ? html`<div class="cx-empty">지금은 차트를 불러올 수 없어요.</div>`
+        : html`
+            <div class="cx-chart-list">
+              ${chart.map(
+                (t) => html`
+                  <div class="cx-chart-row" key=${t.rank} onClick=${() => t.previewUrl && onPlay(t, chart)}>
+                    <div class="cx-chart-rank">${t.rank}</div>
+                    ${t.artwork
+                      ? html`<img class="cx-chart-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-chart-art cx-chart-art-empty", textContent: "🎵" })); }} />`
+                      : html`<div class="cx-chart-art cx-chart-art-empty">🎵</div>`}
+                    <div class="cx-chart-meta">
+                      <div class="cx-chart-title">${t.title}</div>
+                      <div class="cx-chart-artist">${t.artist}</div>
+                    </div>
+                    ${t.previewUrl
+                      ? html`<div class="cx-chart-play">▶</div>`
+                      : html`<div class="cx-chart-play cx-chart-play-disabled" title="미리듣기 미지원">–</div>`}
+                  </div>
+                `
+              )}
+            </div>
+          `}
     </div>
   `;
 }
@@ -855,10 +976,10 @@ function BenefitsTab({ risk }) {
           <span>${c.code}</span>
           <button class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }}>복사</button>
         </div>
-        <div class="cx-coupon-expire">⏱ 만료까지 D-${risk.days_to_expire ?? "-"} · 내 세그먼트(${risk.segment}) 기준 자동 발급</div>
+        <div class="cx-coupon-expire">⏱ 만료까지 D-${risk.days_to_expire ?? "-"} · 회원님 전용 자동 발급 혜택</div>
       </div>
       <p class="cx-muted" style=${{ marginTop: "12px" }}>
-        혜택은 고정이 아니라 위험도×LTV 세그먼트에 맞춰 자동 매칭됩니다. 지금 회원님의 세그먼트는 <b>${risk.segment}</b> 예요.
+        혜택은 고정이 아니라 회원님의 이용 패턴에 맞춰 자동으로 매칭돼요. 다음 방문 때 다른 혜택이 보일 수도 있어요.
       </p>
     </div>
   `;
@@ -906,6 +1027,7 @@ function NotifTab({ actions, loading, error }) {
 
 const TABS = [
   { key: "home", label: "홈", icon: "🏠" },
+  { key: "chart", label: "차트", icon: "🔥" },
   { key: "recommend", label: "추천", icon: "🎧" },
   { key: "benefits", label: "혜택", icon: "🎁" },
   { key: "notif", label: "알림", icon: "🔔" },
@@ -919,6 +1041,22 @@ function CustomerApp({ auth, onLogout }) {
   const [actions, setActions] = useState([]);
   const [actionsLoading, setActionsLoading] = useState(true);
   const [actionsError, setActionsError] = useState("");
+
+  // 실제 음원(Apple Music/iTunes) 상태
+  const [comebackTracks, setComebackTracks] = useState([]);
+  const [loyalTracks, setLoyalTracks] = useState([]);
+  const [tracksLoading, setTracksLoading] = useState(true);
+  const [chart, setChart] = useState([]);
+  const [chartLoading, setChartLoading] = useState(true);
+  const [chartError, setChartError] = useState("");
+
+  // 실제 재생 상태 (30초 미리듣기)
+  const audioRef = useRef(null);
+  const [nowPlaying, setNowPlaying] = useState(null); // { title, artist, artwork, previewUrl }
+  const [playQueue, setPlayQueue] = useState([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     setRiskLoading(true);
@@ -934,9 +1072,72 @@ function CustomerApp({ auth, onLogout }) {
       .then((data) => setActions(Array.isArray(data) ? data : []))
       .catch((err) => setActionsError(err.message))
       .finally(() => setActionsLoading(false));
+
+    setTracksLoading(true);
+    Promise.all([fetchPlaylist(COMEBACK_QUERIES), fetchPlaylist(LOYAL_QUERIES)])
+      .then(([cb, lo]) => {
+        setComebackTracks(cb);
+        setLoyalTracks(lo);
+      })
+      .catch(() => {})
+      .finally(() => setTracksLoading(false));
+
+    setChartLoading(true);
+    setChartError("");
+    fetchTopChart(100)
+      .then(setChart)
+      .catch(() =>
+        fetchFallbackChart(50)
+          .then(setChart)
+          .catch(() => setChartError("지금은 차트를 불러올 수 없어요. 잠시 후 다시 시도해주세요."))
+      )
+      .finally(() => setChartLoading(false));
   }, [auth]);
 
-  const nowPlaying = risk ? (risk.risk_tier === "고위험" ? COMEBACK_TRACKS[0] : LOYAL_TRACKS[0]) : null;
+  // 아직 아무것도 재생 안 했을 때, 플레이어바에 보여줄 기본 트랙만 조용히 세팅(자동재생 아님 — 브라우저 정책상 클릭 없이 재생 불가하기도 함)
+  useEffect(() => {
+    if (nowPlaying || !risk) return;
+    const list = risk.risk_tier === "고위험" ? comebackTracks : loyalTracks;
+    if (list.length) setNowPlaying(list[0]);
+  }, [risk, comebackTracks, loyalTracks]);
+
+  function playTrack(track, queue) {
+    if (!track || !track.previewUrl || !audioRef.current) return;
+    setNowPlaying(track);
+    setPlayQueue(queue || []);
+    audioRef.current.src = track.previewUrl;
+    audioRef.current.currentTime = 0;
+    audioRef.current
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch(() => setIsPlaying(false));
+  }
+
+  function togglePlay() {
+    if (!audioRef.current || !nowPlaying) return;
+    if (!audioRef.current.src && nowPlaying.previewUrl) {
+      audioRef.current.src = nowPlaying.previewUrl;
+    }
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else if (nowPlaying.previewUrl) {
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => setIsPlaying(false));
+    }
+  }
+
+  function skip(delta) {
+    const queue = playQueue.length ? playQueue : risk ? (risk.risk_tier === "고위험" ? comebackTracks : loyalTracks) : [];
+    if (!queue.length || !nowPlaying) return;
+    const idx = queue.findIndex((t) => t.previewUrl === nowPlaying.previewUrl);
+    const nextIdx = idx === -1 ? 0 : (idx + delta + queue.length) % queue.length;
+    playTrack(queue[nextIdx], queue);
+  }
+
+  const progressPct = duration ? Math.min(100, (currentTime / duration) * 100) : 0;
 
   return html`
     <div class="cx-app">
@@ -956,7 +1157,7 @@ function CustomerApp({ auth, onLogout }) {
         <div class="cx-nav-spacer"></div>
         ${risk ? html`
           <div class="cx-nav-foot">
-            <div class="cx-nav-seg">내 세그먼트<br/><b>${risk.segment}</b></div>
+            <div class="cx-nav-seg">구독 만료까지<br/><b>D-${risk.days_to_expire ?? "-"}</b></div>
           </div>
         ` : null}
       </nav>
@@ -979,18 +1180,31 @@ function CustomerApp({ auth, onLogout }) {
 
       <div class="cx-content">
         <div class="cx-content-inner">
-          ${tab === "home" ? html`<${HomeTab} risk=${risk} loading=${riskLoading} error=${riskError} goTab=${setTab} />` : null}
-          ${tab === "recommend" ? html`<${RecommendTab} risk=${risk} />` : null}
+          ${tab === "home" ? html`<${HomeTab} risk=${risk} loading=${riskLoading} error=${riskError} goTab=${setTab}
+              tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />` : null}
+          ${tab === "chart" ? html`<${ChartTab} chart=${chart} loading=${chartLoading} error=${chartError} onPlay=${playTrack} />` : null}
+          ${tab === "recommend" ? html`<${RecommendTab} risk=${risk}
+              tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />` : null}
           ${tab === "benefits" ? html`<${BenefitsTab} risk=${risk} />` : null}
           ${tab === "notif" ? html`<${NotifTab} actions=${actions} loading=${actionsLoading} error=${actionsError} />` : null}
-          <div class="cx-footnote">위험도·세그먼트·결제 관련 수치는 실제 DB 값입니다. 곡/앨범 이미지·재생 컨트롤은 예시(mock)이며 실제로 재생되지 않습니다.</div>
+          <div class="cx-footnote">구독 상태·결제·추천/혜택 로직은 실제 DB 값을, 차트·추천 음원 정보는 Apple Music(iTunes) 공개 API를 실시간으로 사용합니다. 30초 미리듣기만 재생되며 일부 곡은 미리듣기가 제공되지 않을 수 있어요.</div>
         </div>
       </div>
+
+      <audio
+        ref=${audioRef}
+        onTimeUpdate=${(e) => setCurrentTime(e.target.currentTime)}
+        onLoadedMetadata=${(e) => setDuration(e.target.duration)}
+        onEnded=${() => skip(1)}
+        style=${{ display: "none" }}
+      ></audio>
 
       ${nowPlaying ? html`
         <div class="cx-playerbar">
           <div class="cx-playerbar-track">
-            <div class="cx-playerbar-cover" style=${{ backgroundImage: COVER_GRADIENTS[0] }}>${nowPlaying.emoji}</div>
+            <div class="cx-playerbar-cover" style=${{ backgroundImage: nowPlaying.artwork ? `url(${nowPlaying.artwork})` : undefined }}>
+              ${!nowPlaying.artwork ? "🎵" : null}
+            </div>
             <div class="cx-playerbar-meta">
               <div class="cx-playerbar-title">${nowPlaying.title}</div>
               <div class="cx-playerbar-artist">${nowPlaying.artist}</div>
@@ -998,12 +1212,18 @@ function CustomerApp({ auth, onLogout }) {
           </div>
           <div class="cx-playerbar-mid">
             <div class="cx-playerbar-controls">
-              <span>🔀</span><span>⏮</span><span class="cx-play-fab-mid">▶</span><span>⏭</span><span>🔁</span>
+              <span>🔀</span>
+              <span onClick=${() => skip(-1)} style=${{ cursor: "pointer" }}>⏮</span>
+              <span class="cx-play-fab-mid" onClick=${togglePlay} style=${{ cursor: nowPlaying.previewUrl ? "pointer" : "default", opacity: nowPlaying.previewUrl ? 1 : 0.4 }}>
+                ${isPlaying ? "⏸" : "▶"}
+              </span>
+              <span onClick=${() => skip(1)} style=${{ cursor: "pointer" }}>⏭</span>
+              <span>🔁</span>
             </div>
             <div class="cx-playerbar-progress">
-              <span>1:32</span>
-              <div class="cx-progress-track"><div class="cx-progress-fill"></div></div>
-              <span>3:47</span>
+              <span>${formatTime(currentTime)}</span>
+              <div class="cx-progress-track"><div class="cx-progress-fill" style=${{ width: `${progressPct}%` }}></div></div>
+              <span>${formatTime(duration)}</span>
             </div>
           </div>
           <div class="cx-playerbar-vol">

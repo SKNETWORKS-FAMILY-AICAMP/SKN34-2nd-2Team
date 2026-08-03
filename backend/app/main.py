@@ -13,7 +13,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from app.routers import admin_router, auth_router, me_router
+from app.routers import admin_router, auth_router, me_router, music_router
 
 app = FastAPI(title="KKBOX Churn Serving API")
 
@@ -33,6 +33,7 @@ app.add_middleware(
 app.include_router(auth_router.router, prefix="/auth", tags=["auth"])
 app.include_router(me_router.router, prefix="/me", tags=["me"])
 app.include_router(admin_router.router, prefix="/admin", tags=["admin"])
+app.include_router(music_router.router, prefix="/music", tags=["music"])
 
 
 @app.get("/health")
