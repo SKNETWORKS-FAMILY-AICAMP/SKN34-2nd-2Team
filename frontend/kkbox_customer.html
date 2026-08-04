@@ -265,6 +265,40 @@ button { font-family: inherit; }
 .cx-tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
 .cx-tag { font-size: 10.5px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text-soft); }
 
+/* ---------- 리마인드 컴백 플레이리스트 (kkbox-retention-kr 무드 이식) ----------
+   고위험(리마인드 발송 대상) 회원에게만 노출되는, 짙은 블랙-딥틸 에디토리얼 패널.
+   실제 곡 데이터/재생 로직은 그대로(onPlay), 이 부분만 다른 시각적 톤을 준다. */
+.cx-remind-panel {
+  position: relative; overflow: hidden; border-radius: 18px; padding: 34px 30px 30px; margin-bottom: 20px;
+  background: linear-gradient(150deg, #080b0c 0%, #0d2426 55%, #082d30 100%);
+  color: #f3f7f6; box-shadow: 0 20px 48px rgba(0,0,0,0.35);
+}
+.cx-remind-eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #00d5c8; }
+.cx-remind-title { font-size: 24px; font-weight: 900; letter-spacing: -0.3px; margin: 10px 0 8px; color: #f3f7f6; }
+.cx-remind-sub { font-size: 12.5px; line-height: 1.6; color: rgba(243,247,246,0.62); max-width: 520px; margin-bottom: 20px; }
+.cx-remind-tag {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: #00d5c8;
+  border: 1px solid rgba(0,213,200,0.45); border-radius: 999px; padding: 4px 12px; margin-bottom: 22px;
+}
+.cx-remind-tracklist { border-top: 1px solid rgba(255,255,255,0.12); }
+.cx-remind-track {
+  display: flex; align-items: center; gap: 14px; padding: 14px 2px; border-bottom: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer; transition: background .12s ease;
+}
+.cx-remind-track:hover { background: rgba(255,255,255,0.04); }
+.cx-remind-track-cover {
+  width: 46px; height: 46px; border-radius: 6px; flex: 0 0 46px; background-size: cover; background-position: center;
+  background-color: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.cx-remind-track-meta { min-width: 0; flex: 1; }
+.cx-remind-track-title { font-size: 13px; font-weight: 700; color: #f3f7f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-remind-track-artist { font-size: 11px; color: rgba(243,247,246,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.cx-remind-track-play {
+  flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(0,213,200,0.5); color: #00d5c8;
+  display: flex; align-items: center; justify-content: center; font-size: 11px;
+}
+.cx-remind-note { margin-top: 18px; font-size: 10.5px; line-height: 1.7; color: rgba(243,247,246,0.35); }
+
 /* 앨범 커버 카드 그리드 — 스포티파이 스타일: 호버 시 확대되는 플로팅 재생 버튼 */
 .cx-track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
 .cx-track-grid.cx-track-grid-sm { grid-template-columns: repeat(auto-fill, minmax(126px, 1fr)); gap: 16px; }
@@ -936,36 +970,73 @@ function RecommendTab({ risk, tracks, tracksLoading, onPlay }) {
         ${risk.ltv_tier === "고가치" ? html`<span class="cx-badge-vip">VIP PICK</span>` : null}
       </div>
 
-      <div class="cx-card">
-        <div class="cx-card-title">${heading}</div>
-        <p class="cx-muted" style=${{ marginBottom: "14px" }}>${reason}</p>
-        ${tracksLoading && !tracks.length
-          ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
-          : !tracks.length
-          ? html`<p class="cx-muted">지금은 추천 음원을 불러올 수 없어요. 잠시 후 다시 시도해주세요.</p>`
-          : html`
-              <div class="cx-track-grid">
-                ${tracks.map(
-                  (t) => html`
-                    <div class="cx-track-card" key=${t.title} onClick=${() => onPlay(t, tracks)}>
-                      <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
-                        ${!t.artwork ? "🎵" : null}
-                        <div class="cx-play-fab">▶</div>
-                      </div>
-                      <div class="cx-track-card-title">${t.title}</div>
-                      <div class="cx-track-card-artist">${t.artist}</div>
+      ${highRisk
+        ? html`
+            <div class="cx-remind-panel">
+              <span class="cx-remind-eyebrow">LISTEN AGAIN</span>
+              <div class="cx-remind-title">다시 만날 음악, ${heading}</div>
+              <p class="cx-remind-sub">${reason}</p>
+              <span class="cx-remind-tag">🔔 리마인드 발송 · 컴백 추천</span>
+              ${tracksLoading && !tracks.length
+                ? html`<p class="cx-muted" style=${{ color: "rgba(243,247,246,0.5)" }}>실제 음원 정보를 불러오는 중...</p>`
+                : !tracks.length
+                ? html`<p class="cx-muted" style=${{ color: "rgba(243,247,246,0.5)" }}>지금은 추천 음원을 불러올 수 없어요. 잠시 후 다시 시도해주세요.</p>`
+                : html`
+                    <div class="cx-remind-tracklist">
+                      ${tracks.map(
+                        (t) => html`
+                          <div class="cx-remind-track" key=${t.title} onClick=${() => onPlay(t, tracks)}>
+                            <div class="cx-remind-track-cover" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                              ${!t.artwork ? "🎵" : null}
+                            </div>
+                            <div class="cx-remind-track-meta">
+                              <div class="cx-remind-track-title">${t.title}</div>
+                              <div class="cx-remind-track-artist">${t.artist}</div>
+                            </div>
+                            <span class="cx-remind-track-play">▶</span>
+                          </div>
+                        `
+                      )}
                     </div>
-                  `
-                )}
-              </div>
-            `}
-      </div>
+                  `}
+              <p class="cx-remind-note">
+                ※ Apple Music(iTunes) 공개 API에서 실시간으로 가져온 실제 음원입니다(30초 미리듣기 재생).
+                어떤 무드를 보여드릴지는 회원님의 실제 risk_tier·최근 결제 이력을 기준으로 결정돼요.
+              </p>
+            </div>
+          `
+        : html`
+            <div class="cx-card">
+              <div class="cx-card-title">${heading}</div>
+              <p class="cx-muted" style=${{ marginBottom: "14px" }}>${reason}</p>
+              ${tracksLoading && !tracks.length
+                ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
+                : !tracks.length
+                ? html`<p class="cx-muted">지금은 추천 음원을 불러올 수 없어요. 잠시 후 다시 시도해주세요.</p>`
+                : html`
+                    <div class="cx-track-grid">
+                      ${tracks.map(
+                        (t) => html`
+                          <div class="cx-track-card" key=${t.title} onClick=${() => onPlay(t, tracks)}>
+                            <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                              ${!t.artwork ? "🎵" : null}
+                              <div class="cx-play-fab">▶</div>
+                            </div>
+                            <div class="cx-track-card-title">${t.title}</div>
+                            <div class="cx-track-card-artist">${t.artist}</div>
+                          </div>
+                        `
+                      )}
+                    </div>
+                  `}
+            </div>
 
-      <p class="cx-muted">
-        ※ 위 트랙/앨범 정보는 Apple Music(iTunes) 공개 API에서 실시간으로 가져온 실제 음원입니다(30초 미리듣기 재생).
-        다만 회원님의 실제 청취 기록 기반 추천은 아니며, 어떤 무드(컴백형 vs 취향형)를 보여줄지와 문구는
-        회원님의 실제 이용 데이터(최근 결제·활동 이력 등)를 기준으로 결정됩니다.
-      </p>
+            <p class="cx-muted">
+              ※ 위 트랙/앨범 정보는 Apple Music(iTunes) 공개 API에서 실시간으로 가져온 실제 음원입니다(30초 미리듣기 재생).
+              다만 회원님의 실제 청취 기록 기반 추천은 아니며, 어떤 무드(컴백형 vs 취향형)를 보여줄지와 문구는
+              회원님의 실제 이용 데이터(최근 결제·활동 이력 등)를 기준으로 결정됩니다.
+            </p>
+          `}
     </div>
   `;
 }
