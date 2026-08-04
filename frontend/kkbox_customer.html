@@ -314,6 +314,54 @@ button { font-family: inherit; }
 .cx-track-card-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-track-card-artist { font-size: 11px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* ---------- 구독권 결제 ---------- */
+.cx-billing-plan-card {
+  border-radius: 16px; padding: 24px 26px; background: linear-gradient(135deg, #16201f 0%, #0c1413 100%);
+  border: 1px solid var(--line); margin-bottom: 20px;
+}
+.cx-billing-plan-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.cx-billing-plan-badge { font-size: 10.5px; font-weight: 800; padding: 5px 11px; border-radius: 10px; }
+.cx-billing-status-active { background: rgba(0,213,200,0.14); color: var(--mg); }
+.cx-billing-status-grace { background: var(--gold-tint); color: var(--gold); }
+.cx-billing-status-expired { background: var(--danger-tint); color: var(--danger); }
+.cx-billing-status-unknown { background: var(--surface-hover); color: var(--text-mute); }
+.cx-billing-plan-price { font-size: 24px; font-weight: 900; color: var(--text); letter-spacing: -0.02em; }
+.cx-billing-plan-price span { font-size: 12px; font-weight: 700; color: var(--text-mute); margin-left: 2px; }
+.cx-billing-plan-desc { font-size: 12px; color: var(--text-soft); margin-top: 8px; }
+.cx-billing-plan-actions { margin-top: 16px; display: flex; align-items: center; gap: 10px; }
+.cx-billing-current-plan { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11.5px; color: var(--text-soft); flex-wrap: wrap; }
+.cx-billing-current-plan b { color: var(--text); }
+.cx-billing-autorenew-on { color: var(--mg); font-weight: 700; }
+.cx-billing-autorenew-off { color: var(--text-mute); font-weight: 700; }
+/* 요금제 목록 — 실제 KKBox 결제 데이터(payment_plan_days × plan_list_price) 그룹별 리스트 */
+.cx-plan-groups { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.cx-plan-group { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.cx-plan-group-tag {
+  flex: 0 0 108px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  padding: 14px 8px; text-align: center; color: #fff; font-weight: 800; font-size: 12.5px; line-height: 1.3; white-space: pre-line;
+}
+.cx-plan-group-hot { display: inline-block; font-size: 9px; font-weight: 900; background: rgba(255,255,255,0.25); padding: 2px 7px; border-radius: 6px; }
+.cx-plan-tag-mint { background: linear-gradient(160deg, #00d5c8, #0a6d5c); }
+.cx-plan-tag-blue { background: linear-gradient(160deg, #4a8fe7, #2955a3); }
+.cx-plan-tag-violet { background: linear-gradient(160deg, #8b6fe0, #4a3a99); }
+.cx-plan-tag-gold { background: linear-gradient(160deg, #e3b341, #a97c1c); }
+.cx-plan-group-rows { flex: 1; display: flex; flex-direction: column; }
+.cx-plan-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.cx-plan-row:last-child { border-bottom: none; }
+.cx-plan-row-current { background: rgba(0,213,200,0.07); }
+.cx-plan-row-name { flex: 1; min-width: 0; }
+.cx-plan-row-title { font-size: 12.5px; font-weight: 700; color: var(--text); }
+.cx-plan-row-sub { font-size: 10.5px; color: var(--text-mute); margin-top: 2px; }
+.cx-plan-row-price { text-align: right; flex: 0 0 auto; }
+.cx-plan-row-list-price { font-size: 10.5px; color: var(--text-mute); text-decoration: line-through; }
+.cx-plan-row-paid-price { font-size: 15px; font-weight: 900; color: var(--text); }
+.cx-plan-row-btn {
+  flex: 0 0 auto; border: 1px solid var(--mg); background: none; color: var(--mg); font-size: 11px; font-weight: 800;
+  padding: 8px 13px; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: background .15s ease, color .15s ease;
+}
+.cx-plan-row-btn:hover { background: var(--mg); color: #061011; }
+.cx-plan-row-current-tag { font-size: 10.5px; font-weight: 800; color: var(--mg); white-space: nowrap; }
+
 /* ---------- 혜택(쿠폰) ---------- */
 .cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0a6d5c 100%); box-shadow: var(--shadow-md); }
 .cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f61d6 0%, #322a7a 100%); box-shadow: var(--shadow-md); }
@@ -327,16 +375,51 @@ button { font-family: inherit; }
 }
 .cx-coupon-expire { font-size: 10.5px; margin-top: 12px; opacity: 0.85; }
 
+/* ---------- 전략 혜택 카드(콘서트 추첨/연차 혜택/갱신 리워드) ---------- */
+.cx-benefit-section { margin-top: 30px; }
+.cx-benefit-section-title { font-size: 13.5px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+.cx-benefit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.cx-benefit-card {
+  border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--surface);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.cx-benefit-card-locked { opacity: 0.5; }
+.cx-benefit-icon { font-size: 20px; }
+.cx-benefit-card-title { font-size: 13.5px; font-weight: 800; color: var(--text); }
+.cx-benefit-card-desc { font-size: 11.5px; color: var(--text-soft); line-height: 1.6; flex: 1; }
+.cx-benefit-card-note { font-size: 10.5px; color: var(--text-mute); }
+.cx-benefit-tier-track { height: 5px; border-radius: 3px; background: var(--line); position: relative; overflow: hidden; margin: 4px 0; }
+.cx-benefit-tier-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--mg); border-radius: 3px; }
+.cx-benefit-tier-labels { display: flex; justify-content: space-between; font-size: 9.5px; color: var(--text-mute); }
+.cx-benefit-tier-list { display: flex; flex-direction: column; gap: 5px; margin: 6px 0 2px; }
+.cx-benefit-tier-row { display: flex; justify-content: space-between; gap: 10px; font-size: 10.5px; padding: 6px 9px; border-radius: 7px; background: var(--surface-hover); color: var(--text-soft); }
+.cx-benefit-tier-row span:first-child { flex: 0 0 auto; font-weight: 700; white-space: nowrap; }
+.cx-benefit-tier-row span:last-child { text-align: right; }
+.cx-benefit-tier-row-current { background: rgba(0,213,200,0.16); color: var(--text); font-weight: 700; }
+.cx-benefit-tier-row-done { opacity: 0.55; }
+.cx-benefit-tier-row-locked { opacity: 0.75; }
+.cx-benefit-claim-btn {
+  margin-top: 4px; border: 1px solid var(--mg); background: none; color: var(--mg); font-size: 11.5px; font-weight: 800;
+  padding: 9px 14px; border-radius: 8px; cursor: pointer; transition: background .15s ease, color .15s ease;
+}
+.cx-benefit-claim-btn:hover { background: var(--mg); color: #061011; }
+.cx-benefit-claim-btn:disabled { border-color: var(--line); color: var(--text-mute); cursor: default; background: none; }
+.cx-benefit-claimed { font-size: 11px; font-weight: 800; color: var(--mg); }
+
 /* ---------- 알림 ---------- */
-.cx-notif-row { display: flex; gap: 13px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.cx-notif-row { display: flex; gap: 13px; padding: 14px 0; border-bottom: 1px solid var(--line); cursor: pointer; border-radius: 8px; transition: background .12s ease; }
+.cx-notif-row:hover { background: var(--surface-hover); }
 .cx-notif-row:last-child { border-bottom: none; }
 .cx-notif-icon {
   width: 40px; height: 40px; border-radius: 50%; background: var(--surface-hover); flex: 0 0 40px;
-  display: flex; align-items: center; justify-content: center; font-size: 17px;
+  display: flex; align-items: center; justify-content: center; font-size: 17px; position: relative;
 }
-.cx-notif-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.cx-notif-unread-dot { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; border-radius: 50%; background: var(--mg); border: 2px solid var(--surface); }
+.cx-notif-title { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+.cx-notif-row-unread .cx-notif-title { color: var(--mg); }
 .cx-notif-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
 .cx-notif-time { font-size: 10.5px; color: var(--text-mute); margin-top: 5px; }
+.cx-notif-cta { font-size: 10px; color: var(--mg); margin-top: 6px; font-weight: 700; }
 .cx-empty { text-align: center; color: var(--text-mute); font-size: 12.5px; padding: 50px 10px; }
 
 /* ---------- 차트 ---------- */
@@ -778,6 +861,84 @@ const COUPON_RULES = {
   "저위험/고가치": { badge: "감사 오퍼", title: "다음 달 자동 5% 적립", desc: "이탈 위험은 낮지만 고가치 고객 유지용", code: "THANKS5PT", alt: true },
   "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", alt: true },
 };
+// 위 COUPON_RULES 중 "고위험" 두 세그먼트(VIP 리텐션 오퍼 / 복귀 유도 오퍼)가 곧
+// "이탈 고객을 위한 컴백(win-back) 전략" — 생존분석상 이탈 위험이 가장 높은 고위험군에게
+// LTV 등급별로 차등화된 리텐션 오퍼를 자동 매칭한다.
+
+// "기존 고객 구독 유지 전략" (생존분석·퍼널 분석 기반 제안서) — 아래 3개 혜택은 실제 risk 데이터로
+// 대상 여부를 판정해서 보여주고, 응모/수령 버튼을 누르면 실제로 서버(customer_actions)에 기록된다.
+// ① 콘서트 티켓 추첨: RMST 기준 자동갱신 유지 고객의 실제 기대 잔존기간이 기존 모델 상한의 2.5배 —
+//    장기 결제 유지 고객("숨은 VIP")을 위한 정기 이벤트. 저위험·고가치 고객 대상.
+// ② 연 단위 유지 혜택: Cox 모형상 자동갱신 유지가 이탈 위험을 79% 낮추는 압도적 요인(HR 0.21) —
+//    유지 연차가 늘어날수록 혜택이 커지는 구조로 이 보호 효과를 제도적으로 강화.
+// ③ 갱신 즉시 리워드: 퍼널상 "반복 이용 → 자동갱신" 전환율이 23%인 병목 구간 — 갱신 시점에
+//    즉시 보상을 줘서 전환 장벽을 낮춘다. 구독활성 상태로 만료가 임박했거나 갱신유예기간인 고객 대상.
+const ANNUAL_TIERS = [
+  { key: "annual_tier", label: "1년차", minMonths: 0, reward: "마일리지 5% 적립" },
+  { key: "annual_tier", label: "2년차", minMonths: 12, reward: "마일리지 8% 적립 + 생일 기프티콘" },
+  { key: "annual_tier", label: "3년차", minMonths: 24, reward: "10% 추가 할인 + 제휴 가맹점 프리미엄 쿠폰" },
+  { key: "annual_tier", label: "4년차 이상", minMonths: 36, reward: "15% 할인 + 여행 제휴 할인 패키지" },
+];
+
+function getAnnualTier(expectedLifetimeMonths) {
+  const months = expectedLifetimeMonths ?? 0;
+  let idx = 0;
+  ANNUAL_TIERS.forEach((t, i) => {
+    if (months >= t.minMonths) idx = i;
+  });
+  return { tier: ANNUAL_TIERS[idx], tierIndex: idx, next: ANNUAL_TIERS[idx + 1] || null, months };
+}
+
+function isConcertRaffleEligible(risk) {
+  return !!risk && risk.risk_tier === "저위험" && risk.ltv_tier === "고가치";
+}
+
+function isRenewalRewardEligible(risk) {
+  if (!risk) return false;
+  if (risk.lifecycle_status === "갱신유예기간") return true;
+  if (risk.lifecycle_status === "구독활성" && risk.days_to_expire != null && risk.days_to_expire >= 0 && risk.days_to_expire <= 7) return true;
+  return false;
+}
+
+// 실제 원본 결제 데이터(data/processed/features_transactions.csv, last_payment_plan_days ×
+// last_plan_list_price 조합)에서 가입자 수 기준 상위 요금제만 뽑은 카탈로그 — 가격은 대만달러(NTD) 정가 그대로.
+// listPrice/paidPrice/subscribers/autoRenewRate 전부 data/processed/features_transactions.csv
+// (last_payment_plan_days × last_plan_list_price 그룹별 실제 집계)에서 뽑은 값 — 가상 데이터 아님.
+// paidPrice는 그 그룹 고객들의 실제 last_actual_amount_paid 평균(정가 대비 실제 할인폭 그대로 반영).
+const PLAN_GROUPS = [
+  {
+    label: "체험형",
+    tagClass: "cx-plan-tag-mint",
+    tiers: [
+      { planDays: 7, name: "7일 무료 체험", sub: "결제 전 체험 플랜", listPrice: 0, paidPrice: 0, subscribers: 456957, autoRenewRate: 0 },
+    ],
+  },
+  {
+    label: "월정액\n스탠다드",
+    tagClass: "cx-plan-tag-blue",
+    tiers: [
+      { planDays: 30, name: "30일 스탠다드", sub: "정가 그대로 결제", listPrice: 99, paidPrice: 99, subscribers: 419479, autoRenewRate: 1.0 },
+      { planDays: 30, name: "30일 라이트", sub: "정가 그대로 결제", listPrice: 100, paidPrice: 100, subscribers: 14815, autoRenewRate: 0.965 },
+    ],
+  },
+  {
+    label: "월정액\n프리미엄",
+    tagClass: "cx-plan-tag-violet",
+    hot: true,
+    tiers: [
+      { planDays: 30, name: "30일 프리미엄", sub: "실 가입자 최다 요금제", listPrice: 149, paidPrice: 115.77, subscribers: 989060, autoRenewRate: 0.813 },
+      { planDays: 30, name: "30일 스페셜", sub: "", listPrice: 180, paidPrice: 179.88, subscribers: 133232, autoRenewRate: 0.436 },
+    ],
+  },
+  {
+    label: "장기 결제형",
+    tagClass: "cx-plan-tag-gold",
+    tiers: [
+      { planDays: 195, name: "195일 반기 요금제", sub: "6개월 단위 결제", listPrice: 894, paidPrice: 894, subscribers: 45519, autoRenewRate: 0 },
+      { planDays: 410, name: "410일 연간 요금제", sub: "일 단가 최저", listPrice: 1788, paidPrice: 1788, subscribers: 62813, autoRenewRate: 0 },
+    ],
+  },
+];
 
 // 우리 스키마(customer_churn_scores)에는 실제 청취 로그/장르 선호 데이터가 없기 때문에,
 // "어떤 무드(컴백형 vs 취향형)를 보여줄지"만 로그인한 고객의 실제 risk_tier·days_since_last_txn 값으로 정하고,
@@ -880,7 +1041,11 @@ async function apiFetch(path, { method = "GET", token, body } = {}) {
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || `요청 실패 (${res.status})`);
+  if (!res.ok) {
+    const err = new Error(data.detail || `요청 실패 (${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
   return data;
 }
 
@@ -1144,15 +1309,38 @@ function ChartTab({ chart, loading, error, onPlay }) {
 
 /* ============================== 혜택(쿠폰) ============================== */
 
-function BenefitsTab({ risk }) {
+function BenefitsTab({ risk, actions, onClaimBenefit, claimingKey }) {
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
   const c = COUPON_RULES[risk.segment] || COUPON_RULES["저위험/저가치"];
+  const isWinback = risk.risk_tier === "고위험";
+  const claimedKeys = new Set((actions || []).filter((a) => a.benefit_key).map((a) => a.benefit_key));
+
+  const concertEligible = isConcertRaffleEligible(risk);
+  const { tier, tierIndex, next, months } = getAnnualTier(risk.expected_lifetime_months);
+  const tierPct = next ? Math.min(100, Math.round(((months - tier.minMonths) / (next.minMonths - tier.minMonths)) * 100)) : 100;
+  const renewalEligible = isRenewalRewardEligible(risk);
+
+  function ClaimButton({ benefitKey, label }) {
+    const claimed = claimedKeys.has(benefitKey);
+    if (claimed) return html`<span class="cx-benefit-claimed">✓ 이미 받으셨어요</span>`;
+    return html`
+      <button
+        type="button"
+        class="cx-benefit-claim-btn"
+        disabled=${claimingKey === benefitKey}
+        onClick=${() => onClaimBenefit && onClaimBenefit(benefitKey)}
+      >
+        ${claimingKey === benefitKey ? "처리 중..." : label}
+      </button>
+    `;
+  }
+
   return html`
     <div>
       <span class="cx-eyebrow">BENEFITS FOR YOU</span>
       <div class="cx-section-title cx-display">🎁 나를 위한 혜택</div>
       <div class="cx-coupon ${c.alt ? "cx-coupon-alt" : ""}">
-        <span class="cx-coupon-badge">${c.badge}</span>
+        <span class="cx-coupon-badge">${c.badge}${isWinback ? " · 컴백 오퍼" : ""}</span>
         <div class="cx-coupon-title">${c.title}</div>
         <div class="cx-coupon-desc">${c.desc}</div>
         <div class="cx-coupon-code">
@@ -1161,19 +1349,197 @@ function BenefitsTab({ risk }) {
         </div>
         <div class="cx-coupon-expire">⏱ 구독 ${formatDday(risk.lifecycle_status, risk.days_to_expire).text} · 회원님 전용 자동 발급 혜택</div>
       </div>
-      <p class="cx-muted" style=${{ marginTop: "12px" }}>
-        혜택은 고정이 아니라 회원님의 이용 패턴에 맞춰 자동으로 매칭돼요. 다음 방문 때 다른 혜택이 보일 수도 있어요.
-      </p>
+
+      <div class="cx-benefit-section">
+        <div class="cx-benefit-grid">
+          <div class="cx-benefit-card ${concertEligible ? "" : "cx-benefit-card-locked"}">
+            <span class="cx-benefit-icon">🎫</span>
+            <div class="cx-benefit-card-title">콘서트 티켓 추첨 이벤트</div>
+            <div class="cx-benefit-card-desc">장기 결제 유지 고객만을 위한 최신 콘서트 티켓 정기 추첨이에요. 자동갱신 유지 고객의 실제 기대 잔존기간은 기존 모델 상한의 2.5배 — 회원님은 저희에게 "숨은 VIP"예요.</div>
+            ${concertEligible
+              ? html`<${ClaimButton} benefitKey="concert_raffle" label="응모하기" />`
+              : html`<div class="cx-benefit-card-note">저위험 · 고가치 등급 고객 대상 혜택이에요.</div>`}
+          </div>
+
+          <div class="cx-benefit-card">
+            <span class="cx-benefit-icon">📈</span>
+            <div class="cx-benefit-card-title">연 단위 구독 유지 혜택</div>
+            <div class="cx-benefit-card-desc">현재 <b>${tier.label}</b> 등급 · ${tier.reward}. 자동갱신 유지는 이탈 위험을 79% 낮추는 가장 강력한 요인이라, 유지 기간이 길어질수록 혜택도 커져요.</div>
+            <div class="cx-benefit-tier-track"><div class="cx-benefit-tier-fill" style=${{ width: `${tierPct}%` }}></div></div>
+            <div class="cx-benefit-tier-labels"><span>${tier.label}</span><span>${next ? next.label : "최고 등급"}</span></div>
+            <div class="cx-benefit-tier-list">
+              ${ANNUAL_TIERS.map(
+                (t, i) => html`
+                  <div class="cx-benefit-tier-row ${i === tierIndex ? "cx-benefit-tier-row-current" : i < tierIndex ? "cx-benefit-tier-row-done" : "cx-benefit-tier-row-locked"}" key=${t.label}>
+                    <span>${i < tierIndex ? "✓" : i === tierIndex ? "●" : "○"} ${t.label}</span>
+                    <span>${t.reward}</span>
+                  </div>
+                `
+              )}
+            </div>
+            <${ClaimButton} benefitKey="annual_tier" label="이번 등급 혜택 받기" />
+          </div>
+
+          <div class="cx-benefit-card ${renewalEligible ? "" : "cx-benefit-card-locked"}">
+            <span class="cx-benefit-icon">⚡</span>
+            <div class="cx-benefit-card-title">갱신 즉시 리워드</div>
+            <div class="cx-benefit-card-desc">갱신 임박 시점에 실제로 갱신을 완료하면 즉시 소액 리워드(스타벅스 기프티콘)를 드려요. "반복 이용 → 자동갱신" 전환율 23%의 병목을 낮추기 위한 혜택이에요.</div>
+            ${renewalEligible
+              ? html`<${ClaimButton} benefitKey="renewal_reward" label="갱신하고 리워드 받기" />`
+              : html`<div class="cx-benefit-card-note">갱신이 임박했거나 갱신유예기간인 고객 대상 혜택이에요.</div>`}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================== 구독권 결제 ============================== */
+
+const BILLING_STATUS_CLASS = {
+  구독활성: "cx-billing-status-active",
+  갱신유예기간: "cx-billing-status-grace",
+  장기만료: "cx-billing-status-expired",
+};
+
+function BillingTab({ risk, actions, onClaimBenefit, claimingKey }) {
+  if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
+
+  // scored_at은 파이프라인 실행일(pd.Timestamp.now())이라 days_to_expire/days_since_last_txn(원본 데이터 기준)과
+  // 시간 기준이 달라서, 이 둘을 더해 절대 달력 날짜를 만들면 안 된다 — 항상 상대적(D-day, "N일 전")으로만 표시.
+  const dday = formatDday(risk.lifecycle_status, risk.days_to_expire);
+  const statusClass = BILLING_STATUS_CLASS[risk.lifecycle_status] || "cx-billing-status-unknown";
+
+  const renewalEligible = isRenewalRewardEligible(risk);
+  const renewalClaimed = (actions || []).some((a) => a.benefit_key === "renewal_reward");
+
+  const [selectedTierKey, setSelectedTierKey] = useState(null);
+  const currentTierKey =
+    risk.last_payment_plan_days != null && risk.last_plan_list_price != null
+      ? `${risk.last_payment_plan_days}-${Math.round(risk.last_plan_list_price)}`
+      : null;
+
+  return html`
+    <div>
+      <span class="cx-eyebrow">SUBSCRIPTION & BILLING</span>
+      <div class="cx-section-title cx-display">💳 구독권 결제</div>
+
+      <div class="cx-billing-plan-card">
+        <div class="cx-billing-plan-top">
+          <span class="cx-billing-plan-badge ${statusClass}">${risk.lifecycle_status || "상태확인필요"}</span>
+          <div class="cx-billing-plan-price">
+            ₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue).toLocaleString() : "-"}<span>/월</span>
+          </div>
+        </div>
+        <div class="cx-billing-plan-desc">구독 ${dday.text}</div>
+        <div class="cx-billing-current-plan">
+          <span>현재 결제 중인 요금제</span>
+          <b>${risk.last_payment_plan_days != null ? `${risk.last_payment_plan_days}일 · ₩${Math.round(risk.last_plan_list_price).toLocaleString()}` : "정보 없음"}</b>
+          ${risk.last_is_auto_renew != null
+            ? html`<span class="${risk.last_is_auto_renew ? "cx-billing-autorenew-on" : "cx-billing-autorenew-off"}">${risk.last_is_auto_renew ? "자동갱신 ON" : "자동갱신 OFF"}</span>`
+            : null}
+        </div>
+        ${renewalEligible
+          ? html`
+              <div class="cx-billing-plan-actions">
+                ${renewalClaimed
+                  ? html`<span class="cx-benefit-claimed">✓ 갱신 리워드 수령 완료</span>`
+                  : html`
+                      <button
+                        type="button"
+                        class="cx-benefit-claim-btn"
+                        disabled=${claimingKey === "renewal_reward"}
+                        onClick=${() => onClaimBenefit && onClaimBenefit("renewal_reward")}
+                      >
+                        ${claimingKey === "renewal_reward" ? "처리 중..." : "갱신하고 리워드 받기"}
+                      </button>
+                    `}
+              </div>
+            `
+          : null}
+      </div>
+
+      <div class="cx-stat-row">
+        <div class="cx-stat-tile">
+          <div class="cx-stat-label"><span class="cx-stat-emoji">🕘</span>최근 결제</div>
+          <div class="cx-stat-value">${risk.days_since_last_txn ?? "-"}일 전</div>
+        </div>
+        <div class="cx-stat-tile">
+          <div class="cx-stat-label"><span class="cx-stat-emoji">⏳</span>예상 잔여 구독기간</div>
+          <div class="cx-stat-value">${risk.expected_lifetime_months != null ? `${Math.round(risk.expected_lifetime_months)}개월` : "-"}</div>
+        </div>
+        <div class="cx-stat-tile">
+          <div class="cx-stat-label"><span class="cx-stat-emoji">📊</span>예상 누적 결제액</div>
+          <div class="cx-stat-value">₩${risk.ltv_approx != null ? Math.round(risk.ltv_approx).toLocaleString() : "-"}</div>
+        </div>
+      </div>
+
+      <div class="cx-card">
+        <div class="cx-card-title">결제 정보</div>
+        <div class="cx-stat-tile">
+          <div class="cx-stat-label"><span class="cx-stat-emoji">💳</span>월 평균 결제</div>
+          <div class="cx-stat-value">₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue).toLocaleString() : "-"}</div>
+        </div>
+        <div class="cx-stat-tile">
+          <div class="cx-stat-label"><span class="cx-stat-emoji">🏷️</span>고객 세그먼트</div>
+          <div class="cx-stat-value" style=${{ fontSize: "13px" }}>${risk.segment || "-"}</div>
+        </div>
+      </div>
+
+      <div class="cx-benefit-section">
+        <div class="cx-plan-groups">
+          ${PLAN_GROUPS.map(
+            (group) => html`
+              <div class="cx-plan-group" key=${group.label}>
+                <div class="cx-plan-group-tag ${group.tagClass}">
+                  ${group.hot ? html`<span class="cx-plan-group-hot">HOT</span>` : null}
+                  <span>${group.label}</span>
+                </div>
+                <div class="cx-plan-group-rows">
+                  ${group.tiers.map((tier) => {
+                    const tierKey = `${tier.planDays}-${tier.listPrice}`;
+                    const isCurrent = tierKey === currentTierKey;
+                    return html`
+                      <div class="cx-plan-row ${isCurrent ? "cx-plan-row-current" : ""}" key=${tierKey}>
+                        <div class="cx-plan-row-name">
+                          <div class="cx-plan-row-title">${tier.name}</div>
+                          <div class="cx-plan-row-sub">${tier.sub ? tier.sub : `가입자 ${tier.subscribers.toLocaleString()}명`}</div>
+                        </div>
+                        <div class="cx-plan-row-price">
+                          ${tier.paidPrice < tier.listPrice ? html`<div class="cx-plan-row-list-price">₩${tier.listPrice.toLocaleString()}</div>` : null}
+                          <div class="cx-plan-row-paid-price">₩${Math.round(tier.paidPrice).toLocaleString()}</div>
+                        </div>
+                        ${isCurrent
+                          ? html`<span class="cx-plan-row-current-tag">✓ 이용중</span>`
+                          : html`
+                              <button type="button" class="cx-plan-row-btn" onClick=${() => setSelectedTierKey(tierKey)}>
+                                ${selectedTierKey === tierKey ? "선택됨 ✓" : "선택하기"}
+                              </button>
+                            `}
+                      </div>
+                    `;
+                  })}
+                </div>
+              </div>
+            `
+          )}
+        </div>
+      </div>
     </div>
   `;
 }
 
 /* ============================== 알림 ============================== */
 
-function NotifTab({ actions, loading, error }) {
+function NotifTab({ actions, loading, error, onOpen }) {
   const LABELS = {
     reminder: { emoji: "🔔", label: "만료 임박 리마인드", desc: "관리자가 갱신 리마인드를 보냈어요" },
     discount_offer: { emoji: "🎁", label: "할인 오퍼", desc: "관리자가 할인 오퍼를 보냈어요" },
+  };
+  const BENEFIT_LABELS = {
+    concert_raffle: { emoji: "🎫", label: "콘서트 티켓 추첨 응모 완료", desc: "추첨 결과는 순차 안내될 예정이에요" },
+    annual_tier: { emoji: "📈", label: "연 단위 유지 혜택 수령", desc: "현재 등급 혜택이 지급됐어요" },
+    renewal_reward: { emoji: "⚡", label: "갱신 즉시 리워드 수령", desc: "스타벅스 기프티콘이 지급됐어요" },
   };
   return html`
     <div>
@@ -1184,25 +1550,28 @@ function NotifTab({ actions, loading, error }) {
         : error
         ? html`<div class="cx-empty">${error}</div>`
         : actions.length === 0
-        ? html`<div class="cx-empty">아직 받은 알림이 없어요.<br/>관리자 콘솔(kkbox_admin.html) → 이탈방지 액션센터에서 리마인드/할인 오퍼를 보내보세요.</div>`
+        ? html`<div class="cx-empty">아직 받은 알림이 없어요.</div>`
         : html`
             <div class="cx-card" style=${{ padding: "4px 16px" }}>
               ${actions.map((a) => {
-                const meta = LABELS[a.action_type] || { emoji: "📩", label: a.action_type, desc: "" };
+                const meta = (a.benefit_key && BENEFIT_LABELS[a.benefit_key]) || LABELS[a.action_type] || { emoji: "📩", label: a.action_type, desc: "" };
                 return html`
-                  <div class="cx-notif-row" key=${a.id}>
-                    <div class="cx-notif-icon">${meta.emoji}</div>
+                  <div class="cx-notif-row ${!a.is_read ? "cx-notif-row-unread" : ""}" key=${a.id} onClick=${() => onOpen && onOpen(a)}>
+                    <div class="cx-notif-icon">
+                      ${meta.emoji}
+                      ${!a.is_read ? html`<span class="cx-notif-unread-dot"></span>` : null}
+                    </div>
                     <div>
                       <div class="cx-notif-title">${meta.label}</div>
                       <div class="cx-notif-desc">${meta.desc}</div>
                       <div class="cx-notif-time">${new Date(a.sent_at).toLocaleString()}</div>
+                      <div class="cx-notif-cta">혜택 보러 가기 →</div>
                     </div>
                   </div>
                 `;
               })}
             </div>
           `}
-      <p class="cx-muted" style=${{ marginTop: "12px" }}>실제 로그인한 msno 기준으로 DB에서 바로 조회한 실데이터입니다.</p>
     </div>
   `;
 }
@@ -1216,6 +1585,7 @@ const NAV_ITEMS = [
   { key: "discover", label: "음악 둘러보기" },
   { key: "reminder", label: "나의 리마인드" },
   { key: "benefits", label: "맞춤 혜택" },
+  { key: "billing", label: "구독권 결제" },
 ];
 function CustomerApp({ auth, onLogout }) {
   // 진짜 탭 방식 — 헤더 메뉴를 누르면 그 섹션만 보이고 나머지는 렌더링 자체를 안 한다.
@@ -1229,6 +1599,27 @@ function CustomerApp({ auth, onLogout }) {
   const [actions, setActions] = useState([]);
   const [actionsLoading, setActionsLoading] = useState(true);
   const [actionsError, setActionsError] = useState("");
+  const [claimingKey, setClaimingKey] = useState("");
+  const unreadCount = actions.filter((a) => !a.is_read).length;
+
+  function markActionRead(actionId) {
+    setActions((prev) => prev.map((a) => (a.id === actionId ? { ...a, is_read: true } : a)));
+    apiFetch(`/me/actions/${actionId}/read`, { method: "PATCH", token: auth.token }).catch(() => {});
+  }
+
+  function openNotification(action) {
+    if (!action.is_read) markActionRead(action.id);
+    scrollToSection("benefits");
+  }
+
+  function claimBenefit(benefitKey) {
+    if (claimingKey) return;
+    setClaimingKey(benefitKey);
+    apiFetch("/me/benefits/claim", { method: "POST", token: auth.token, body: { benefit_key: benefitKey } })
+      .then((record) => setActions((prev) => [record, ...prev.filter((a) => a.id !== record.id)]))
+      .catch((err) => window.alert(err.message || "혜택 수령에 실패했어요. 잠시 후 다시 시도해주세요."))
+      .finally(() => setClaimingKey(""));
+  }
 
   // 실제 음원(Apple Music/iTunes) 상태
   const [comebackTracks, setComebackTracks] = useState([]);
@@ -1311,7 +1702,11 @@ function CustomerApp({ auth, onLogout }) {
     setRiskError("");
     apiFetch("/me/risk", { token: auth.token })
       .then(setRisk)
-      .catch((err) => setRiskError(err.message))
+      .catch((err) => {
+        // 저장된 토큰이 만료/무효화된 경우 새로고침해도 로그인 화면이 뜨도록 자동 로그아웃.
+        if (err.status === 401) onLogout();
+        else setRiskError(err.message);
+      })
       .finally(() => setRiskLoading(false));
 
     setActionsLoading(true);
@@ -1425,7 +1820,7 @@ function CustomerApp({ auth, onLogout }) {
               🔍<span>검색</span>
             </button>
             <button class="cx-icon-btn" title="나의 리마인드" onClick=${() => scrollToSection("reminder")}>
-              🔔${actions.length > 0 ? html`<span class="cx-icon-badge">${actions.length}</span>` : null}
+              🔔${unreadCount > 0 ? html`<span class="cx-icon-badge">${unreadCount}</span>` : null}
             </button>
             <button class="cx-icon-btn" title=${theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"} onClick=${() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>
               ${theme === "dark" ? "☀️" : "🌙"}
@@ -1472,17 +1867,22 @@ function CustomerApp({ auth, onLogout }) {
               ` : null}
               ${activeSection === "reminder" ? html`
                 <section class="cx-scroll-section">
-                  <${NotifTab} actions=${actions} loading=${actionsLoading} error=${actionsError} />
+                  <${NotifTab} actions=${actions} loading=${actionsLoading} error=${actionsError} onOpen=${openNotification} />
                 </section>
               ` : null}
               ${activeSection === "benefits" ? html`
                 <section class="cx-scroll-section">
-                  <${BenefitsTab} risk=${risk} />
+                  <${BenefitsTab} risk=${risk} actions=${actions} onClaimBenefit=${claimBenefit} claimingKey=${claimingKey} />
                 </section>
               ` : null}
               ${activeSection === "charts" ? html`
                 <section class="cx-scroll-section">
                   <${ChartTab} chart=${chart} loading=${chartLoading} error=${chartError} onPlay=${playTrack} />
+                </section>
+              ` : null}
+              ${activeSection === "billing" ? html`
+                <section class="cx-scroll-section">
+                  <${BillingTab} risk=${risk} actions=${actions} onClaimBenefit=${claimBenefit} claimingKey=${claimingKey} />
                 </section>
               ` : null}
             </div>
@@ -1614,12 +2014,42 @@ function CustomerApp({ auth, onLogout }) {
   `;
 }
 
-function App() {
-  const [auth, setAuth] = useState(null); // null | { token, msno }
-  if (!auth) {
-    return html`<${LoginScreen} onLogin=${setAuth} />`;
+const AUTH_STORAGE_KEY = "cx_customer_auth";
+
+// 새로고침해도 로그인 상태가 유지되도록 localStorage에 저장해둔 토큰을 초기값으로 사용.
+// 토큰 자체가 만료되면(로그인 8시간 후) CustomerApp의 /me/risk 조회가 401을 받아 자동 로그아웃된다.
+function loadStoredAuth() {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.token && parsed.msno ? parsed : null;
+  } catch {
+    return null;
   }
-  return html`<${CustomerApp} auth=${auth} onLogout=${() => setAuth(null)} />`;
+}
+
+function App() {
+  const [auth, setAuth] = useState(loadStoredAuth); // null | { token, msno }
+
+  function handleLogin(data) {
+    try {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data));
+    } catch {}
+    setAuth(data);
+  }
+
+  function handleLogout() {
+    try {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch {}
+    setAuth(null);
+  }
+
+  if (!auth) {
+    return html`<${LoginScreen} onLogin=${handleLogin} />`;
+  }
+  return html`<${CustomerApp} auth=${auth} onLogout=${handleLogout} />`;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
