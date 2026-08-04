@@ -4,35 +4,73 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KKBOX 이탈방지 고객모드 데모 (React)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Archivo:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 body { margin:0; }
+/* ---------- kkbox-retention-kr(마누스) 무드로 전체 톤 이식 ----------
+   블랙 #080B0C -> 딥틸 #082D30, 시그니처 청록 #00D5C8, 은은한 오프화이트 #F3F7F6.
+   저위험/고위험 상관없이 전체 화면에 동일한 다크 에디토리얼 톤을 적용한다. */
 .viz-root {
-  --mg: #0e9c86;              /* KKBOX 톤의 틸/청록 포인트 컬러 (스포티파이 그린 대신 브랜드 차별화) */
-  --mg-dark: #0a7862;
-  --mg-tint: rgba(14,156,134,0.10);
-  --bg: #f6f7f6;              /* 메인 콘텐츠 배경 — 밝은 라이트 테마 */
-  --bg-side: #ffffff;         /* 사이드바 배경 */
-  --surface: #ffffff;         /* 카드 */
-  --surface-hover: #eef1f0;
-  --surface-2: #ffffff;       /* 톱바/플레이어바 */
-  --text: #161f1c;
-  --text-soft: #5c6663;
-  --text-mute: #8d9592;
-  --line: rgba(22,32,29,0.09);
-  --danger: #d9463f;
-  --danger-tint: rgba(217,70,63,0.09);
-  --gold: #a97a0e;
-  --gold-tint: rgba(169,122,14,0.12);
-  --indigo: #6656c9;
-  --shadow-sm: 0 2px 8px rgba(22,32,29,0.06);
-  --shadow-md: 0 10px 26px rgba(22,32,29,0.10);
-  --shadow-lg: 0 20px 48px rgba(22,32,29,0.12);
+  --mg: #00d5c8;              /* 리마인드 틸 — KKBOX 시그니처 액센트 */
+  --mg-dark: #00b3a8;
+  --mg-tint: rgba(0,213,200,0.12);
+  --bg: #080b0c;              /* 메인 콘텐츠 배경 — 블랙 */
+  --bg-side: #05080a;         /* 사이드바 배경 — 블랙보다 살짝 더 어둡게 */
+  --surface: #10171a;         /* 카드 — 딥틸에 가까운 어두운 패널 */
+  --surface-hover: #172023;
+  --surface-2: #0a1113;       /* 톱바/플레이어바 */
+  --text: #f3f7f6;
+  --text-soft: rgba(243,247,246,0.62);
+  --text-mute: rgba(243,247,246,0.38);
+  --line: rgba(255,255,255,0.12);
+  --danger: #ff6a4d;
+  --danger-tint: rgba(255,106,77,0.12);
+  --gold: #e3b341;
+  --gold-tint: rgba(227,179,65,0.12);
+  --indigo: #8b7ce8;
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.35);
+  --shadow-md: 0 14px 32px rgba(0,0,0,0.45);
+  --shadow-lg: 0 24px 56px rgba(0,0,0,0.55);
 }
+
+/* ---------- 라이트 모드 — 헤더의 ☀️/🌙 토글로 전환 ----------
+   포인트 컬러(--mg)·위험/골드/인디고는 브랜드 일관성을 위해 그대로 두고,
+   배경/카드/텍스트/구분선만 밝은 톤으로 뒤집는다. 히어로 배너는 브랜드 무드라 다크로 고정. */
+.cx-theme-light {
+  --bg: #f4f6f6;
+  --bg-side: #ffffff;
+  --surface: #ffffff;
+  --surface-hover: #eef2f2;
+  --surface-2: #ffffff;
+  --text: #121a1c;
+  --text-soft: rgba(18,26,28,0.64);
+  --text-mute: rgba(18,26,28,0.42);
+  --line: rgba(18,26,28,0.10);
+  --shadow-sm: 0 2px 8px rgba(18,26,28,0.06);
+  --shadow-md: 0 10px 26px rgba(18,26,28,0.10);
+  --shadow-lg: 0 20px 48px rgba(18,26,28,0.12);
+}
+.cx-theme-light .cx-login-wrap { background: radial-gradient(120% 100% at 85% 100%, #dff5f3 0%, #f4f6f6 55%, #ffffff 100%); }
+.cx-theme-light .cx-topheader { background: rgba(255,255,255,0.6); }
+.cx-theme-light .cx-topheader.cx-topheader-scrolled { background: rgba(255,255,255,0.92); box-shadow: 0 14px 40px rgba(18,26,28,0.1); }
+.cx-theme-light .cx-topheader-nav button { color: rgba(18,26,28,0.68); }
+.cx-theme-light .cx-topheader-nav button:hover, .cx-theme-light .cx-topheader-nav button.cx-nav-active { color: #121a1c; }
+.cx-theme-light .cx-topheader-logo-sub { color: rgba(18,26,28,0.4); }
+.cx-theme-light .cx-topheader-logo-div { background: rgba(18,26,28,0.22); }
+.cx-theme-light .cx-header-icon-btn { color: rgba(18,26,28,0.72); }
+.cx-theme-light .cx-header-icon-btn:hover { color: #121a1c; }
+.cx-theme-light .cx-search-modal-overlay { background: rgba(18,26,28,0.32); }
+.cx-theme-light .cx-search-modal { background: rgba(255,255,255,0.98); }
+.cx-theme-light .cx-progress-track { background: rgba(18,26,28,0.12); }
+.cx-theme-light .cx-play-fab-mid { background: #121a1c; color: #f4f6f6; }
+.cx-theme-light .cx-play-fab-mid:hover { background: var(--mg); color: #061011; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+  font-family: 'Noto Sans KR', system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -44,7 +82,7 @@ button { font-family: inherit; }
 /* ---------- 로그인 ---------- */
 .cx-login-wrap {
   min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(165deg, #eef6f4 0%, #f6f7f6 55%, #ffffff 100%);
+  background: radial-gradient(120% 100% at 85% 100%, #082d30 0%, #080b0c 60%, #05080a 100%);
   padding: 20px;
 }
 .cx-login-card {
@@ -72,14 +110,6 @@ button { font-family: inherit; }
 }
 .cx-submit:hover:not(:disabled) { background: var(--mg-dark); transform: scale(1.02); }
 .cx-submit:disabled { opacity: 0.5; cursor: default; }
-.cx-sample-grid { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 18px; }
-.cx-sample-btn {
-  text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 10px;
-  padding: 11px 13px; font-size: 12px; cursor: pointer; color: var(--text);
-}
-.cx-sample-btn:hover { border-color: var(--mg); background: var(--mg-tint); }
-.cx-sample-btn b { display: block; font-size: 10.5px; color: var(--mg-dark); margin-bottom: 3px; }
-.cx-sample-code { font-family: 'DejaVu Sans Mono', monospace; font-size: 9.5px; color: var(--text-mute); word-break: break-all; }
 .cx-error {
   background: var(--danger-tint); border: 1px solid rgba(255,91,91,0.4); color: #ff8a8a; font-size: 11.5px;
   border-radius: 9px; padding: 10px 12px; margin-bottom: 12px;
@@ -87,68 +117,7 @@ button { font-family: inherit; }
 .cx-login-footnote { font-size: 10.5px; color: var(--text-mute); text-align: center; margin-top: 20px; line-height: 1.6; }
 .cx-login-footnote a, .cx-login-footnote b { color: var(--text-soft); }
 
-/* ---------- 앱 셸 (온라인/데스크톱 기본, 좁은 화면에서는 모바일 앱처럼 변신) ---------- */
-.cx-app {
-  min-height: 100vh; display: grid;
-  grid-template-columns: 240px 1fr;
-  grid-template-rows: 64px 1fr;
-  grid-template-areas: "side top" "side main";
-  background: var(--bg);
-}
-
-/* 좌측 내비게이션 — 전체 높이를 차지하는 진짜 사이드바 */
-.cx-nav {
-  grid-area: side; grid-row: 1 / span 2; background: var(--bg-side); padding: 20px 12px;
-  display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; align-self: start;
-  border-right: 1px solid var(--line);
-}
-.cx-nav-logo { display: flex; align-items: center; gap: 10px; padding: 6px 12px 22px; }
-.cx-nav-logo .cx-logo-mark { width: 30px; height: 30px; font-size: 14px; }
-.cx-nav-logo-word { font-weight: 800; font-size: 15px; letter-spacing: -0.2px; }
-.cx-navbtn {
-  border: none; background: none; padding: 11px 13px; display: flex; flex-direction: row; align-items: center;
-  gap: 14px; cursor: pointer; color: var(--text-soft); font-size: 13.5px; font-weight: 700; border-radius: 9px; text-align: left;
-  transition: color .1s ease, background .12s ease;
-}
-.cx-navbtn:hover { color: var(--text); background: var(--surface-hover); }
-.cx-navbtn .cx-navicon { font-size: 18px; width: 20px; text-align: center; }
-.cx-navbtn.cx-nav-active { color: var(--mg-dark); background: var(--mg-tint); }
-.cx-nav-spacer { flex: 1; }
-.cx-nav-foot { padding: 10px 13px; border-top: 1px solid var(--line); margin-top: 8px; }
-.cx-nav-seg { font-size: 10px; color: var(--text-mute); margin-bottom: 6px; }
-.cx-nav-seg b { color: var(--mg-dark); }
-
-/* 상단 바 — 실제 검색(재생목록/아티스트) + 프로필 칩 */
-.cx-topbar {
-  grid-area: top; position: sticky; top: 0; z-index: 30;
-  background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px;
-}
-.cx-search-wrap { position: relative; flex: 1; max-width: 420px; }
-.cx-search-input-row {
-  display: flex; align-items: center; gap: 9px; background: var(--surface-hover); border: 1.5px solid transparent;
-  border-radius: 999px; padding: 9px 16px; transition: border-color .12s ease, background .12s ease;
-}
-.cx-search-input-row.cx-search-focus { border-color: var(--mg); background: var(--surface); }
-.cx-search-icon { font-size: 13px; color: var(--text-mute); flex: 0 0 auto; }
-.cx-search-input {
-  border: none; background: none; outline: none; font-size: 12.5px; color: var(--text); flex: 1; min-width: 0;
-  font-family: inherit;
-}
-.cx-search-input::placeholder { color: var(--text-mute); }
-.cx-search-spinner {
-  width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--mg);
-  animation: cx-spin .7s linear infinite; flex: 0 0 auto;
-}
-@keyframes cx-spin { to { transform: rotate(360deg); } }
-.cx-search-clear { border: none; background: none; color: var(--text-mute); cursor: pointer; font-size: 14px; padding: 0 2px; flex: 0 0 auto; line-height: 1; }
-.cx-search-clear:hover { color: var(--text); }
-.cx-search-dropdown {
-  position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--surface);
-  border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-lg);
-  max-height: 360px; overflow-y: auto; z-index: 40; padding: 6px;
-}
+/* ---------- 검색 결과 행 (헤더 검색 모달 안에서 재사용) ---------- */
 .cx-search-row { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 9px; cursor: pointer; }
 .cx-search-row:hover { background: var(--surface-hover); }
 .cx-search-row-disabled { opacity: 0.45; cursor: default; }
@@ -160,14 +129,14 @@ button { font-family: inherit; }
 .cx-search-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-search-play { font-size: 11px; color: var(--mg-dark); flex: 0 0 auto; }
 .cx-search-note { padding: 14px 10px; font-size: 11.5px; color: var(--text-mute); text-align: center; }
-.cx-topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
 .cx-icon-btn {
   position: relative; border: 1px solid var(--line); background: var(--surface); color: var(--text); width: 34px; height: 34px;
   border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 .cx-icon-btn:hover { background: var(--surface-hover); }
 .cx-icon-badge {
-  position: absolute; top: -3px; right: -3px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800;
+  position: absolute; top: -3px; right: -3px; background: var(--mg); color: #061011; font-size: 9px; font-weight: 800;
   min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px;
 }
 .cx-profile-chip {
@@ -178,50 +147,66 @@ button { font-family: inherit; }
 .cx-profile-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--indigo); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
 .cx-profile-chip span { font-size: 12px; font-weight: 700; }
 
-.cx-content { grid-area: main; padding: 26px 32px 110px; overflow-y: auto; }
-.cx-content-inner { max-width: 1100px; }
-.cx-section-title { font-weight: 800; font-size: 22px; margin: 6px 0 18px; letter-spacing: -0.4px; color: var(--text); }
+.cx-content { padding: 0 32px 30px; }
+.cx-content-inner { max-width: 1100px; margin: 0 auto; }
+.cx-scroll-section { padding: 52px 0 56px; border-top: 1px solid var(--line); }
+.cx-scroll-section:first-of-type { border-top: none; padding-top: 8px; }
+/* 진짜 탭 패널 — 헤더 메뉴 클릭 시 이 위치로 스크롤하고, 안쪽 내용만 통째로 바뀐다 */
+.cx-tabpanel { scroll-margin-top: 88px; min-height: 40vh; }
+.cx-eyebrow { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--mg); margin-bottom: 8px; }
+/* 마누스 원본의 display-type — 큰 헤드라인 전용 서체(Archivo). 한글 본문엔 안 쓰고 대형 타이틀에만. */
+.cx-display { font-family: 'Archivo', 'Noto Sans KR', 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.045em; }
+.cx-section-title { font-weight: 800; font-size: 26px; margin: 0 0 18px; letter-spacing: -0.03em; color: var(--text); }
 .cx-muted { font-size: 12px; color: var(--text-mute); line-height: 1.6; }
 
-/* 하단 미니 플레이어 바 (데스크톱 전용 장식) */
+/* 하단 미니 플레이어 바 */
 .cx-playerbar {
-  position: fixed; left: 240px; right: 0; bottom: 0; height: 78px; z-index: 25;
+  position: fixed; left: 0; right: 0; bottom: 0; height: 78px; z-index: 40;
   background: var(--surface-2); border-top: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  display: grid; grid-template-columns: minmax(0,1fr) minmax(0,480px) minmax(0,1fr);
+  align-items: center; column-gap: 20px; padding: 0 20px;
 }
-.cx-playerbar-track { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; max-width: 320px; }
+.cx-playerbar-track { display: flex; align-items: center; gap: 12px; min-width: 0; max-width: 320px; justify-self: start; }
 .cx-playerbar-cover { width: 48px; height: 48px; border-radius: 6px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-mute); background-color: var(--surface-hover); background-size: cover; background-position: center; }
 .cx-playerbar-meta { min-width: 0; }
 .cx-playerbar-title { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-playerbar-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cx-playerbar-mid { flex: 1.4; display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: 480px; }
-.cx-playerbar-controls { display: flex; align-items: center; gap: 18px; }
+.cx-playerbar-mid { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; justify-self: center; }
+.cx-playerbar-controls { display: flex; align-items: center; justify-content: center; gap: 18px; }
 .cx-playerbar-controls span { color: var(--text-soft); font-size: 15px; cursor: pointer; }
 .cx-play-fab-mid {
-  width: 30px; height: 30px; border-radius: 50%; background: var(--text); color: #fff; display: flex; align-items: center;
-  justify-content: center; font-size: 12px; cursor: pointer;
+  width: 30px; height: 30px; border-radius: 50%; background: #f3f7f6; color: #061011; display: flex; align-items: center;
+  justify-content: center; font-size: 12px; cursor: pointer; transition: background .12s ease;
 }
+.cx-play-fab-mid:hover { background: var(--mg); }
 .cx-playerbar-progress { width: 100%; display: flex; align-items: center; gap: 8px; }
 .cx-playerbar-progress span { font-size: 9.5px; color: var(--text-mute); }
-.cx-progress-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(22,32,29,0.10); position: relative; overflow: hidden; }
-.cx-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--text); border-radius: 2px; }
-.cx-playerbar-vol { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px; color: var(--text-soft); font-size: 14px; }
-.cx-vol-track { width: 80px; height: 3px; border-radius: 2px; background: rgba(22,32,29,0.10); position: relative; }
-.cx-vol-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 65%; background: var(--text-soft); border-radius: 2px; }
+.cx-progress-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+.cx-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--mg); border-radius: 2px; }
+.cx-playerbar-vol { display: flex; align-items: center; gap: 8px; justify-self: end; color: var(--text-soft); font-size: 14px; }
+.cx-vol-range {
+  -webkit-appearance: none; appearance: none; width: 80px; height: 3px; border-radius: 2px; cursor: pointer; outline: none;
+}
+.cx-vol-range::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: #fff; cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+}
+.cx-vol-range::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: #fff; border: none; cursor: pointer; }
+.cx-vol-range::-moz-range-track { background: transparent; }
+.cx-queue-btn { background: none; border: none; color: var(--text-soft); font-size: 15px; cursor: pointer; display: flex; align-items: center; }
+.cx-queue-btn:hover, .cx-queue-btn.cx-queue-btn-active { color: var(--mg); }
+.cx-queue-panel {
+  position: fixed; right: 20px; bottom: 94px; width: 300px; max-height: 340px; overflow-y: auto; z-index: 45;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); padding: 6px;
+}
+.cx-queue-panel-title { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-mute); padding: 10px 10px 8px; }
+.cx-queue-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+.cx-queue-row:hover { background: var(--surface-hover); }
+.cx-queue-row-active .cx-search-title { color: var(--mg); }
 
 @media (max-width: 860px) {
-  .cx-app { grid-template-columns: 1fr; grid-template-rows: 60px 1fr; grid-template-areas: "top" "main"; }
-  .cx-nav {
-    grid-row: auto; position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: auto; z-index: 30;
-    background: var(--bg-side); border-top: 1px solid var(--line); flex-direction: row; padding: 4px 0; gap: 0;
-  }
-  .cx-nav-logo, .cx-nav-spacer, .cx-nav-foot { display: none; }
-  .cx-navbtn { flex: 1; flex-direction: column; gap: 3px; padding: 7px 0 9px; border-radius: 0; color: var(--text-mute); font-size: 10px; }
-  .cx-navbtn.cx-nav-active { color: var(--mg-dark); background: none; }
-  .cx-search-wrap { display: none; }
-  .cx-content { padding: 16px 16px 90px; }
+  .cx-content { padding: 0 16px 30px; }
   .cx-content-inner { max-width: 100%; }
-  .cx-playerbar { display: none; }
 }
 
 /* ---------- 홈: 히어로 배너 ---------- */
@@ -245,15 +230,24 @@ button { font-family: inherit; }
 .cx-btn-white { background: #fff; color: #000; }
 .cx-btn-ghost-white { background: rgba(0,0,0,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.55); }
 
-.cx-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-.cx-stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 14px; text-align: center; transition: background .15s ease, transform .15s ease; }
-.cx-stat-tile:hover { background: var(--surface-hover); transform: translateY(-1px); }
-.cx-stat-emoji {
-  width: 34px; height: 34px; margin: 0 auto; border-radius: 50%; background: var(--mg-tint);
-  display: flex; align-items: center; justify-content: center; font-size: 15px;
+.cx-home-search-trigger {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 14px 18px; margin-bottom: 22px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-mute); font-size: 13px; font-weight: 600;
+  cursor: pointer; text-align: left; border-radius: 8px; transition: border-color .15s ease, color .15s ease;
 }
-.cx-stat-value { font-weight: 800; font-size: 14px; margin-top: 10px; color: var(--text); }
-.cx-stat-label { font-size: 10px; color: var(--text-mute); margin-top: 3px; }
+.cx-home-search-trigger:hover { border-color: var(--mg); color: var(--text); }
+.cx-home-search-trigger span:first-child { color: var(--mg); font-size: 15px; }
+
+/* 마누스 retentionSignals 패턴 — 카드 타일 대신 얇은 줄 구분 리스트, 값은 우측 정렬 강조 */
+.cx-stat-row { border-top: 1px solid var(--line); margin-bottom: 28px; }
+.cx-stat-tile {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
+  padding: 15px 2px; border-bottom: 1px solid var(--line); transition: background .15s ease;
+}
+.cx-stat-tile:hover { background: rgba(255,255,255,0.03); }
+.cx-stat-emoji { display: inline-block; margin-right: 8px; font-size: 14px; }
+.cx-stat-value { font-weight: 800; font-size: 19px; letter-spacing: -0.02em; color: var(--mg); text-align: right; }
+.cx-stat-label { font-size: 11px; font-weight: 600; color: var(--text-soft); }
 
 .cx-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-bottom: 20px; }
 .cx-card-title { font-weight: 800; font-size: 15px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--text); }
@@ -365,6 +359,99 @@ button { font-family: inherit; }
 .cx-chart-play-disabled { background: var(--surface-hover); color: var(--text-mute); }
 
 .cx-footnote { font-size: 10.5px; color: var(--text-mute); text-align: center; padding: 20px 4px 4px; line-height: 1.7; }
+
+/* ============================== kkbox-retention-kr(마누스) 구조 이식 ==============================
+   좌측 사이드바 탭 대신, 상단 고정 헤더 + 스크롤 앵커 방식(음악 둘러보기/나의 리마인드/맞춤 혜택/인기 차트)
+   + 화면 전체를 덮는 대형 히어로로 레이아웃 자체를 원본 참고 화면과 같은 구조로 바꾼다. */
+.cx-shell { min-height: 100vh; background: var(--bg); }
+.cx-main { padding-top: 72px; padding-bottom: 90px; }
+
+.cx-topheader {
+  position: fixed; inset-inline: 0; top: 0; z-index: 50; height: 72px;
+  display: flex; align-items: center; border-bottom: 1px solid transparent;
+  background: rgba(6,9,10,0.5); transition: background-color .3s ease, border-color .3s ease, backdrop-filter .3s ease;
+}
+.cx-topheader.cx-topheader-scrolled {
+  background: rgba(6,9,10,0.9); border-bottom-color: var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+}
+.cx-topheader-inner {
+  width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center;
+  justify-content: space-between; gap: 20px;
+}
+.cx-topheader-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; background: none; border: none; padding: 0; }
+.cx-topheader-logo .cx-logo-mark { width: 34px; height: 34px; font-size: 15px; }
+.cx-topheader-logo-word { font-weight: 800; font-size: 18px; letter-spacing: -0.04em; color: var(--mg); }
+.cx-topheader-logo-div { width: 1px; height: 12px; background: rgba(255,255,255,0.22); }
+.cx-topheader-logo-sub { font-size: 8.5px; font-weight: 800; letter-spacing: 0.18em; color: rgba(255,255,255,0.38); }
+.cx-topheader-nav { display: none; align-items: center; gap: 28px; }
+@media (min-width: 1024px) { .cx-topheader-nav { display: flex; } }
+.cx-topheader-nav button {
+  display: flex; align-items: center; gap: 4px; border: none; background: none; cursor: pointer;
+  font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.72); padding: 0;
+}
+.cx-topheader-nav button:hover, .cx-topheader-nav button.cx-nav-active { color: #fff; }
+.cx-topheader-actions { display: flex; align-items: center; gap: 4px; }
+.cx-header-icon-btn {
+  position: relative; display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 8px; border: none;
+  background: none; color: rgba(255,255,255,0.78); cursor: pointer; font-size: 12px; font-weight: 700;
+}
+.cx-header-icon-btn:hover { color: #fff; }
+.cx-header-icon-btn.cx-header-search { color: var(--mg); }
+.cx-header-icon-badge {
+  position: absolute; top: 2px; right: 0; background: var(--mg); color: #061011; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px;
+}
+.cx-header-cta {
+  margin-left: 6px; display: none; align-items: center; height: 38px; padding: 0 16px; border: 1px solid rgba(0,213,200,0.45);
+  color: var(--mg); font-size: 11.5px; font-weight: 800; background: none; cursor: pointer; white-space: nowrap;
+}
+.cx-header-cta:hover { background: var(--mg); color: #061011; }
+@media (min-width: 640px) { .cx-header-cta { display: inline-flex; } }
+
+/* 대형 히어로 — 원본 "LISTEN, AND BE HEARD" 구도 */
+.cx-hero2 {
+  position: relative; overflow: hidden; min-height: 86vh; display: flex; align-items: center;
+  background: radial-gradient(120% 90% at 82% 78%, #0d2b2d 0%, #080b0c 55%, #05080a 100%);
+  padding: 120px 20px 70px;
+}
+.cx-hero2-inner { position: relative; width: 100%; max-width: 1440px; margin: 0 auto; }
+.cx-hero2-eyebrow { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mg); margin-bottom: 22px; }
+.cx-hero2-title {
+  font-weight: 900; letter-spacing: -0.045em; line-height: 0.94; color: #f3f7f6; margin: 0;
+  font-size: clamp(2.6rem, 8vw, 6.2rem); max-width: 1100px;
+}
+.cx-hero2-sub { margin-top: 26px; max-width: 640px; font-size: 13px; font-weight: 500; line-height: 1.7; color: rgba(255,255,255,0.72); }
+.cx-hero2-cta { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
+.cx-hero2-vertical {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: none; align-items: center; gap: 10px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: rgba(255,255,255,0.4); writing-mode: vertical-rl;
+}
+@media (min-width: 768px) { .cx-hero2-vertical { display: flex; } }
+.cx-hero2-vertical span.cx-vline { display: inline-block; width: 1px; height: 48px; background: rgba(255,255,255,0.28); writing-mode: horizontal-tb; }
+
+/* 검색 모달 — 원본은 다이얼로그, 여기서는 오버레이 패널로 동일한 톤 이식 */
+.cx-search-modal-overlay {
+  position: fixed; inset: 0; z-index: 90; background: rgba(3,5,6,0.7); backdrop-filter: blur(4px);
+  display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px;
+}
+.cx-search-modal {
+  width: 100%; max-width: 560px; background: rgba(9,19,21,0.98); border: 1px solid var(--line);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5); max-height: 70vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.cx-search-modal-row { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding: 16px 18px; }
+.cx-search-modal-row input {
+  flex: 1; min-width: 0; background: none; border: none; outline: none; color: var(--text); font-size: 14px;
+}
+.cx-search-modal-row input::placeholder { color: var(--text-mute); }
+.cx-search-modal-close { border: none; background: none; color: var(--text-mute); cursor: pointer; font-size: 13px; }
+.cx-search-modal-close:hover { color: var(--text); }
+.cx-search-modal-results { overflow-y: auto; padding: 8px; }
+
+@media (max-width: 640px) {
+  .cx-main { padding-top: 64px; }
+  .cx-hero2 { min-height: 70vh; padding: 100px 18px 56px; }
+}
 </style>
 </head>
 <body>
@@ -684,13 +771,6 @@ const { useState, useMemo, useEffect, useRef } = React;
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
 const API_BASE = window.location.origin;
 
-// 데모용 msno 목록입니다. 실제 kkbox_serving.customer_churn_scores 에 있는 msno 값으로 교체해주세요.
-// (예: SELECT msno FROM customer_churn_scores ORDER BY RAND() LIMIT 8; 등으로 뽑아서 여기 채워넣으면 됩니다)
-const SAMPLE_MSNO = [
-  { msno: "SAMPLE_MSNO_1", label: "예시 고객 1" },
-  { msno: "SAMPLE_MSNO_2", label: "예시 고객 2" },
-];
-
 // 세그먼트(위험도×LTV, 실데이터 필드 조합)별 쿠폰 자동 매칭 — analytics/04_ltv.ipynb 세그먼트 기준
 const COUPON_RULES = {
   "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", alt: false },
@@ -839,23 +919,11 @@ function LoginScreen({ onLogin }) {
           <input class="cx-input" type="text" required value=${msno}
             onInput=${(e) => setMsno(e.target.value)} placeholder="msno를 입력하세요" />
 
-          <div class="cx-sample-grid">
-            ${SAMPLE_MSNO.map(
-              (s) => html`
-                <button type="button" key=${s.msno} class="cx-sample-btn" onClick=${() => setMsno(s.msno)}>
-                  <b>${s.label}</b>
-                  <span class="cx-sample-code">${s.msno}</span>
-                </button>
-              `
-            )}
-          </div>
-
           ${error ? html`<div class="cx-error">${error}</div>` : null}
           <button class="cx-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
         </form>
 
         <div class="cx-login-footnote">
-          실제 kkbox_serving.customer_churn_scores 테이블에 있는 msno만 로그인됩니다.<br/>
           관리자이신가요? kkbox_admin.html 파일을 열어주세요.
         </div>
       </div>
@@ -890,44 +958,35 @@ function personaCopy(risk) {
   };
 }
 
-function HomeTab({ risk, loading, error, goTab, tracks, tracksLoading, onPlay }) {
+function HomeTab({ risk, loading, error, goTab, tracks, tracksLoading, onPlay, onOpenSearch }) {
   if (loading) return html`<p class="cx-muted">불러오는 중...</p>`;
   if (error) return html`<div class="cx-empty">${error}</div>`;
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
 
-  const p = personaCopy(risk);
   return html`
     <div>
-      <div class=${p.heroClass}>
-        <span class="cx-hero-badge">${p.badge}</span>
-        <div class="cx-hero-title">${p.title}</div>
-        <div class="cx-hero-sub">${p.sub}</div>
-        <div class="cx-hero-cta">
-          <button class="cx-btn cx-btn-white" onClick=${() => goTab(risk.risk_tier === "고위험" ? "benefits" : "recommend")}>${p.cta}</button>
-          <button class="cx-btn cx-btn-ghost-white" onClick=${() => goTab("notif")}>알림 확인</button>
-        </div>
-      </div>
+      <button type="button" class="cx-home-search-trigger" onClick=${onOpenSearch}>
+        <span>🔍</span>
+        <span>곡, 아티스트, 재생목록 검색하기</span>
+      </button>
 
       <div class="cx-stat-row">
         <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">💳</div>
+          <div class="cx-stat-label"><span class="cx-stat-emoji">💳</span>월 평균 결제</div>
           <div class="cx-stat-value">₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue).toLocaleString() : "-"}</div>
-          <div class="cx-stat-label">월 평균 결제</div>
         </div>
         <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">📅</div>
+          <div class="cx-stat-label"><span class="cx-stat-emoji">📅</span>구독 상태</div>
           <div class="cx-stat-value">${formatDday(risk.lifecycle_status, risk.days_to_expire).compact}</div>
-          <div class="cx-stat-label">구독 상태</div>
         </div>
         <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">🕘</div>
+          <div class="cx-stat-label"><span class="cx-stat-emoji">🕘</span>마지막 결제</div>
           <div class="cx-stat-value">${risk.days_since_last_txn ?? "-"}일 전</div>
-          <div class="cx-stat-label">마지막 결제</div>
         </div>
       </div>
 
       <div class="cx-card">
-        <div class="cx-card-title">이번 주 추천 미리보기 <button class="cx-link-btn" onClick=${() => goTab("recommend")}>전체보기 →</button></div>
+        <div class="cx-card-title">이번 주 추천 미리보기 <button class="cx-link-btn" onClick=${() => goTab("discover")}>전체보기 →</button></div>
         <p class="cx-muted" style=${{ marginBottom: "12px" }}>회원님의 최근 이용 패턴에 맞춰 준비한 플레이리스트가 있어요. 커버를 누르면 30초 미리듣기가 재생돼요.</p>
         ${tracksLoading && !tracks.length
           ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
@@ -964,7 +1023,8 @@ function RecommendTab({ risk, tracks, tracksLoading, onPlay }) {
 
   return html`
     <div>
-      <div class="cx-section-title">🎧 취향 기반 추천</div>
+      <span class="cx-eyebrow">FOR YOUR RETURN</span>
+      <div class="cx-section-title cx-display">🎧 취향 기반 추천</div>
       <div class="cx-tag-row">
         <span class="cx-tag">${highRisk ? "컴백 추천" : "위클리 추천"}</span>
         ${risk.ltv_tier === "고가치" ? html`<span class="cx-badge-vip">VIP PICK</span>` : null}
@@ -1046,7 +1106,8 @@ function RecommendTab({ risk, tracks, tracksLoading, onPlay }) {
 function ChartTab({ chart, loading, error, onPlay }) {
   return html`
     <div>
-      <div class="cx-section-title">🔥 실시간 인기 차트</div>
+      <span class="cx-eyebrow">KKBOX CHART</span>
+      <div class="cx-section-title cx-display">🔥 실시간 인기 차트</div>
       <p class="cx-muted" style=${{ marginBottom: "16px" }}>
         Apple Music 공식 대한민국 인기곡 차트를 실시간으로 가져와요. 곡을 누르면 30초 미리듣기가 재생됩니다.
       </p>
@@ -1088,7 +1149,8 @@ function BenefitsTab({ risk }) {
   const c = COUPON_RULES[risk.segment] || COUPON_RULES["저위험/저가치"];
   return html`
     <div>
-      <div class="cx-section-title">🎁 나를 위한 혜택</div>
+      <span class="cx-eyebrow">BENEFITS FOR YOU</span>
+      <div class="cx-section-title cx-display">🎁 나를 위한 혜택</div>
       <div class="cx-coupon ${c.alt ? "cx-coupon-alt" : ""}">
         <span class="cx-coupon-badge">${c.badge}</span>
         <div class="cx-coupon-title">${c.title}</div>
@@ -1115,7 +1177,8 @@ function NotifTab({ actions, loading, error }) {
   };
   return html`
     <div>
-      <div class="cx-section-title">🔔 알림함</div>
+      <span class="cx-eyebrow">STAY IN THE LOOP</span>
+      <div class="cx-section-title cx-display">🔔 알림함</div>
       ${loading
         ? html`<p class="cx-muted">불러오는 중...</p>`
         : error
@@ -1146,16 +1209,20 @@ function NotifTab({ actions, loading, error }) {
 
 /* ============================== 루트 ============================== */
 
-const TABS = [
-  { key: "home", label: "홈", icon: "🏠" },
-  { key: "chart", label: "차트", icon: "🔥" },
-  { key: "recommend", label: "추천", icon: "🎧" },
-  { key: "benefits", label: "혜택", icon: "🎁" },
-  { key: "notif", label: "알림", icon: "🔔" },
+// kkbox-retention-kr(마누스) 헤더 참고 — 상단 고정 헤더의 메뉴로 노출되는 항목만.
+// "홈"(히어로+요약)은 로고를 누르면 가는 맨 위 섹션이라 메뉴에는 안 넣는다.
+const NAV_ITEMS = [
+  { key: "charts", label: "인기 차트" },
+  { key: "discover", label: "음악 둘러보기" },
+  { key: "reminder", label: "나의 리마인드" },
+  { key: "benefits", label: "맞춤 혜택" },
 ];
-
 function CustomerApp({ auth, onLogout }) {
-  const [tab, setTab] = useState("home");
+  // 진짜 탭 방식 — 헤더 메뉴를 누르면 그 섹션만 보이고 나머지는 렌더링 자체를 안 한다.
+  // 실제 데이터는 tab과 무관하게 마운트 시 한 번에 다 불러오고 있어서(useEffect([auth])),
+  // 탭을 왔다갔다 해도 다시 로딩되거나 하지 않는다.
+  const [activeSection, setActiveSection] = useState("discover");
+  const [theme, setTheme] = useState("dark"); // "dark" | "light"
   const [risk, setRisk] = useState(null);
   const [riskLoading, setRiskLoading] = useState(true);
   const [riskError, setRiskError] = useState("");
@@ -1178,14 +1245,35 @@ function CustomerApp({ auth, onLogout }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(70);
+  const [mutedVolume, setMutedVolume] = useState(70);
+  const [queueOpen, setQueueOpen] = useState(false);
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume / 100;
+  }, [volume]);
+  function toggleMute() {
+    if (volume > 0) {
+      setMutedVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(mutedVolume || 70);
+    }
+  }
 
-  // 실제 검색 (상단 검색창 — /music/search 호출, 디바운스 적용)
+  // 실제 검색 (헤더 검색 모달 — /music/search 호출, 디바운스 적용)
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  // 헤더 배경 전환(스크롤 전엔 투명, 스크롤 후엔 딥틸 유리 질감) — 마누스 SiteHeader와 동일한 패턴.
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setHeaderScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const term = searchTerm.trim();
@@ -1299,101 +1387,108 @@ function CustomerApp({ auth, onLogout }) {
 
   const progressPct = duration ? Math.min(100, (currentTime / duration) * 100) : 0;
 
+  // 헤더 메뉴 클릭 -> 진짜 탭 전환(해당 섹션만 렌더링) + 탭 패널 위치로 스크롤.
+  function scrollToSection(key) {
+    setActiveSection(key);
+    const panel = document.getElementById("tab-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // 로고 클릭 -> 탭 전환이 아니라 그냥 맨 위 히어로로.
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const heroCopy = risk ? personaCopy(risk) : null;
+
   return html`
-    <div class="cx-app">
-      <nav class="cx-nav">
-        <div class="cx-nav-logo">
-          <span class="cx-logo-mark">K</span>
-          <span class="cx-nav-logo-word">KKBOX Music</span>
-        </div>
-        ${TABS.map(
-          (t) => html`
-            <button key=${t.key} class="cx-navbtn ${tab === t.key ? "cx-nav-active" : ""}" onClick=${() => setTab(t.key)}>
-              <span class="cx-navicon">${t.icon}</span>
-              <span>${t.label}</span>
-            </button>
-          `
-        )}
-        <div class="cx-nav-spacer"></div>
-        ${risk ? html`
-          <div class="cx-nav-foot">
-            <div class="cx-nav-seg">구독 상태<br/><b>${formatDday(risk.lifecycle_status, risk.days_to_expire).compact}</b></div>
-          </div>
-        ` : null}
-      </nav>
+    <div class="cx-shell ${theme === "light" ? "cx-theme-light" : ""}">
+      <header class="cx-topheader ${headerScrolled ? "cx-topheader-scrolled" : ""}">
+        <div class="cx-topheader-inner">
+          <button type="button" class="cx-topheader-logo" onClick=${scrollToTop}>
+            <span class="cx-logo-mark">K</span>
+            <span class="cx-topheader-logo-word">KKBOX</span>
+          </button>
 
-      <div class="cx-topbar">
-        <div class="cx-search-wrap">
-          <div class="cx-search-input-row ${searchFocused ? "cx-search-focus" : ""}">
-            <span class="cx-search-icon">🔍</span>
-            <input
-              class="cx-search-input"
-              type="text"
-              placeholder="재생목록, 아티스트, 곡 검색"
-              value=${searchTerm}
-              onInput=${(e) => { setSearchTerm(e.target.value); setSearchOpen(true); }}
-              onFocus=${() => { setSearchFocused(true); if (searchTerm.trim()) setSearchOpen(true); }}
-              onBlur=${() => { setSearchFocused(false); setTimeout(() => setSearchOpen(false), 150); }}
-            />
-            ${searchLoading ? html`<span class="cx-search-spinner"></span>` : null}
-            ${searchTerm && !searchLoading
-              ? html`<button type="button" class="cx-search-clear" onMouseDown=${(e) => e.preventDefault()} onClick=${() => { setSearchTerm(""); setSearchResults([]); }}>✕</button>`
-              : null}
-          </div>
-          ${searchOpen && searchTerm.trim()
-            ? html`
-                <div class="cx-search-dropdown" onMouseDown=${(e) => e.preventDefault()}>
-                  ${searchLoading
-                    ? html`<div class="cx-search-note">검색 중...</div>`
-                    : searchError
-                    ? html`<div class="cx-search-note">${searchError}</div>`
-                    : !searchResults.length
-                    ? html`<div class="cx-search-note">"${searchTerm}"에 대한 검색 결과가 없어요.</div>`
-                    : searchResults.map(
-                        (t, i) => html`
-                          <div
-                            class="cx-search-row ${!t.previewUrl ? "cx-search-row-disabled" : ""}"
-                            key=${i}
-                            onClick=${() => handleSearchResultClick(t)}
-                          >
-                            ${t.artwork
-                              ? html`<img class="cx-search-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-search-art cx-search-art-empty", textContent: "🎵" })); }} />`
-                              : html`<div class="cx-search-art cx-search-art-empty">🎵</div>`}
-                            <div class="cx-search-meta">
-                              <div class="cx-search-title">${t.title}</div>
-                              <div class="cx-search-artist">${t.artist}</div>
-                            </div>
-                            <span class="cx-search-play">${t.previewUrl ? "▶" : "–"}</span>
-                          </div>
-                        `
-                      )}
-                </div>
+          <nav class="cx-topheader-nav">
+            ${NAV_ITEMS.map(
+              (item) => html`
+                <button key=${item.key} class=${activeSection === item.key ? "cx-nav-active" : ""} onClick=${() => scrollToSection(item.key)}>
+                  ${item.label}
+                </button>
               `
-            : null}
-        </div>
-        <div class="cx-topbar-actions">
-          <button class="cx-icon-btn" title="알림함" onClick=${() => setTab("notif")}>
-            🔔${actions.length > 0 ? html`<span class="cx-icon-badge">${actions.length}</span>` : null}
-          </button>
-          <button class="cx-profile-chip" title="로그아웃" onClick=${onLogout}>
-            <span class="cx-profile-avatar">${(auth.msno || "?").slice(0, 1).toUpperCase()}</span>
-            <span>로그아웃</span>
-          </button>
-        </div>
-      </div>
+            )}
+          </nav>
 
-      <div class="cx-content">
-        <div class="cx-content-inner">
-          ${tab === "home" ? html`<${HomeTab} risk=${risk} loading=${riskLoading} error=${riskError} goTab=${setTab}
-              tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />` : null}
-          ${tab === "chart" ? html`<${ChartTab} chart=${chart} loading=${chartLoading} error=${chartError} onPlay=${playTrack} />` : null}
-          ${tab === "recommend" ? html`<${RecommendTab} risk=${risk}
-              tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />` : null}
-          ${tab === "benefits" ? html`<${BenefitsTab} risk=${risk} />` : null}
-          ${tab === "notif" ? html`<${NotifTab} actions=${actions} loading=${actionsLoading} error=${actionsError} />` : null}
-          <div class="cx-footnote">구독 상태·결제·추천/혜택 로직은 실제 DB 값을, 차트·추천 음원 정보는 Apple Music(iTunes) 공개 API를 실시간으로 사용합니다. 30초 미리듣기만 재생되며 일부 곡은 미리듣기가 제공되지 않을 수 있어요.</div>
+          <div class="cx-topheader-actions">
+            <button type="button" class="cx-header-icon-btn cx-header-search" onClick=${() => setSearchModalOpen(true)}>
+              🔍<span>검색</span>
+            </button>
+            <button class="cx-icon-btn" title="나의 리마인드" onClick=${() => scrollToSection("reminder")}>
+              🔔${actions.length > 0 ? html`<span class="cx-icon-badge">${actions.length}</span>` : null}
+            </button>
+            <button class="cx-icon-btn" title=${theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"} onClick=${() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>
+              ${theme === "dark" ? "☀️" : "🌙"}
+            </button>
+            <button type="button" class="cx-header-cta" onClick=${() => scrollToSection("reminder")}>내 리마인드 보기</button>
+            <button class="cx-profile-chip" title="로그아웃" onClick=${onLogout}>
+              <span class="cx-profile-avatar">${(auth.msno || "?").slice(0, 1).toUpperCase()}</span>
+              <span>로그아웃</span>
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
+
+      <main class="cx-main">
+        <section id="top" class="cx-hero2">
+          <div class="cx-hero2-inner">
+            <span class="cx-hero2-eyebrow">LOSSLESS MUSIC · PERSONAL REMINDER</span>
+            <h1 class="cx-hero2-title cx-display">${heroCopy ? heroCopy.title : "LISTEN, AND BE HEARD"}</h1>
+            <p class="cx-hero2-sub">${heroCopy ? heroCopy.sub : riskLoading ? "회원님 데이터를 불러오는 중이에요..." : riskError || "이용 데이터를 찾을 수 없어요."}</p>
+            ${heroCopy ? html`
+              <div class="cx-hero2-cta">
+                <button class="cx-btn cx-btn-white" onClick=${() => scrollToSection(risk.risk_tier === "고위험" ? "benefits" : "discover")}>${heroCopy.cta}</button>
+                <button class="cx-btn cx-btn-ghost-white" onClick=${() => scrollToSection("reminder")}>알림 확인</button>
+              </div>
+            ` : null}
+          </div>
+          <span class="cx-hero2-vertical"><span>LISTEN, AND BE HEARD</span><span class="cx-vline"></span></span>
+        </section>
+
+        <div class="cx-content">
+          <div class="cx-content-inner">
+            <section id="home-summary" class="cx-scroll-section">
+              <${HomeTab} risk=${risk} loading=${riskLoading} error=${riskError} goTab=${scrollToSection}
+                tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack}
+                onOpenSearch=${() => setSearchModalOpen(true)} />
+            </section>
+
+            <div id="tab-panel" class="cx-tabpanel">
+              ${activeSection === "discover" ? html`
+                <section class="cx-scroll-section">
+                  <${RecommendTab} risk=${risk}
+                    tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />
+                </section>
+              ` : null}
+              ${activeSection === "reminder" ? html`
+                <section class="cx-scroll-section">
+                  <${NotifTab} actions=${actions} loading=${actionsLoading} error=${actionsError} />
+                </section>
+              ` : null}
+              ${activeSection === "benefits" ? html`
+                <section class="cx-scroll-section">
+                  <${BenefitsTab} risk=${risk} />
+                </section>
+              ` : null}
+              ${activeSection === "charts" ? html`
+                <section class="cx-scroll-section">
+                  <${ChartTab} chart=${chart} loading=${chartLoading} error=${chartError} onPlay=${playTrack} />
+                </section>
+              ` : null}
+            </div>
+          </div>
+        </div>
+      </main>
 
       <audio
         ref=${audioRef}
@@ -1402,6 +1497,52 @@ function CustomerApp({ auth, onLogout }) {
         onEnded=${() => skip(1)}
         style=${{ display: "none" }}
       ></audio>
+
+      ${searchModalOpen ? html`
+        <div class="cx-search-modal-overlay" onClick=${() => setSearchModalOpen(false)}>
+          <div class="cx-search-modal" onClick=${(e) => e.stopPropagation()}>
+            <div class="cx-search-modal-row">
+              <span>🔍</span>
+              <input
+                autoFocus=${true}
+                type="text"
+                placeholder="재생목록, 아티스트, 곡 검색"
+                value=${searchTerm}
+                onInput=${(e) => setSearchTerm(e.target.value)}
+              />
+              <button type="button" class="cx-search-modal-close" onClick=${() => { setSearchModalOpen(false); setSearchTerm(""); }}>✕</button>
+            </div>
+            <div class="cx-search-modal-results">
+              ${searchLoading
+                ? html`<div class="cx-search-note">검색 중...</div>`
+                : searchError
+                ? html`<div class="cx-search-note">${searchError}</div>`
+                : !searchTerm.trim()
+                ? html`<div class="cx-search-note">곡, 아티스트를 검색해보세요.</div>`
+                : !searchResults.length
+                ? html`<div class="cx-search-note">"${searchTerm}"에 대한 검색 결과가 없어요.</div>`
+                : searchResults.map(
+                    (t, i) => html`
+                      <div
+                        class="cx-search-row ${!t.previewUrl ? "cx-search-row-disabled" : ""}"
+                        key=${i}
+                        onClick=${() => { handleSearchResultClick(t); setSearchModalOpen(false); }}
+                      >
+                        ${t.artwork
+                          ? html`<img class="cx-search-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-search-art cx-search-art-empty", textContent: "🎵" })); }} />`
+                          : html`<div class="cx-search-art cx-search-art-empty">🎵</div>`}
+                        <div class="cx-search-meta">
+                          <div class="cx-search-title">${t.title}</div>
+                          <div class="cx-search-artist">${t.artist}</div>
+                        </div>
+                        <span class="cx-search-play">${t.previewUrl ? "▶" : "–"}</span>
+                      </div>
+                    `
+                  )}
+            </div>
+          </div>
+        </div>
+      ` : null}
 
       ${nowPlaying ? html`
         <div class="cx-playerbar">
@@ -1431,9 +1572,42 @@ function CustomerApp({ auth, onLogout }) {
             </div>
           </div>
           <div class="cx-playerbar-vol">
-            <span>🔊</span>
-            <div class="cx-vol-track"><div class="cx-vol-fill"></div></div>
+            <button type="button" class="cx-queue-btn ${queueOpen ? "cx-queue-btn-active" : ""}" title="재생목록" onClick=${() => setQueueOpen((v) => !v)}>☰</button>
+            <span onClick=${toggleMute} style=${{ cursor: "pointer" }}>${volume === 0 ? "🔇" : volume < 50 ? "🔉" : "🔊"}</span>
+            <input
+              type="range"
+              class="cx-vol-range"
+              min="0"
+              max="100"
+              value=${volume}
+              onInput=${(e) => setVolume(Number(e.target.value))}
+              style=${{ background: `linear-gradient(to right, var(--mg) 0%, var(--mg) ${volume}%, var(--line) ${volume}%, var(--line) 100%)` }}
+            />
           </div>
+        </div>
+      ` : null}
+
+      ${queueOpen && nowPlaying ? html`
+        <div class="cx-queue-panel">
+          <div class="cx-queue-panel-title">재생목록</div>
+          ${(playQueue.length ? playQueue : (risk ? (risk.risk_tier === "고위험" ? comebackTracks : loyalTracks) : [])).map(
+            (t, i) => html`
+              <div
+                class="cx-queue-row ${t.previewUrl === nowPlaying.previewUrl ? "cx-queue-row-active" : ""}"
+                key=${i}
+                onClick=${() => { playTrack(t, playQueue.length ? playQueue : (risk ? (risk.risk_tier === "고위험" ? comebackTracks : loyalTracks) : [])); }}
+              >
+                ${t.artwork
+                  ? html`<img class="cx-search-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-search-art cx-search-art-empty", textContent: "🎵" })); }} />`
+                  : html`<div class="cx-search-art cx-search-art-empty">🎵</div>`}
+                <div class="cx-search-meta">
+                  <div class="cx-search-title">${t.title}</div>
+                  <div class="cx-search-artist">${t.artist}</div>
+                </div>
+                ${t.previewUrl === nowPlaying.previewUrl && isPlaying ? html`<span class="cx-search-play">▶</span>` : null}
+              </div>
+            `
+          )}
         </div>
       ` : null}
     </div>
