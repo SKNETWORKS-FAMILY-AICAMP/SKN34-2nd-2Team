@@ -195,8 +195,10 @@ body {
 .filter-count b { color: var(--series-2); font-size: 13px; }
 
 .ac-body { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
+.ac-list-col { display: flex; flex-direction: column; min-width: 0; }
 .ac-table-wrap { border: 1px solid var(--gridline); border-radius: 8px; overflow: hidden; max-height: 340px; overflow-y: auto; }
 .ac-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.ac-pagination { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 0 2px; }
 .ac-table thead th {
   position: sticky; top: 0; background: var(--page-plane); text-align: left; padding: 7px 9px;
   font-size: 10px; color: var(--muted-ink); border-bottom: 1px solid var(--gridline);
@@ -832,9 +834,12 @@ function CustomerDetail({ customer, auth }) {
   `;
 }
 
+const AC_PAGE_SIZE = 50;
+
 function ActionCenter({ auth }) {
   const [riskFilter, setRiskFilter] = useState("all");
   const [segmentFilter, setSegmentFilter] = useState("all");
+  const [page, setPage] = useState(1);
   const [customers, setCustomers] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -845,7 +850,7 @@ function ActionCenter({ auth }) {
     if (!auth) return;
     setLoading(true);
     setError("");
-    const params = new URLSearchParams({ page_size: "50" });
+    const params = new URLSearchParams({ page_size: String(AC_PAGE_SIZE), page: String(page) });
     if (riskFilter !== "all") params.set("risk_tier", riskFilter);
     if (segmentFilter !== "all") params.set("segment", segmentFilter);
     fetch(`${API_BASE}/admin/customers?${params.toString()}`, {
@@ -863,14 +868,23 @@ function ActionCenter({ auth }) {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [auth, riskFilter, segmentFilter]);
+  }, [auth, riskFilter, segmentFilter, page]);
+
+  const totalPages = Math.max(1, Math.ceil(total / AC_PAGE_SIZE));
+  const rangeStart = total === 0 ? 0 : (page - 1) * AC_PAGE_SIZE + 1;
+  const rangeEnd = Math.min(page * AC_PAGE_SIZE, total);
+
+  function changeFilter(setter, value) {
+    setter(value);
+    setPage(1); // 필터 바꾸면 1페이지부터 다시
+  }
 
   return html`
     <div class="action-center">
       <div class="ac-filters">
         <div class="filter-block">
           <div class="filter-label">위험도</div>
-          <select class="select" value=${riskFilter} onChange=${(e) => setRiskFilter(e.target.value)}>
+          <select class="select" value=${riskFilter} onChange=${(e) => changeFilter(setRiskFilter, e.target.value)}>
             <option value="all">전체</option>
             <option value="고위험">고위험</option>
             <option value="저위험">저위험</option>
@@ -878,7 +892,7 @@ function ActionCenter({ auth }) {
         </div>
         <div class="filter-block">
           <div class="filter-label">세그먼트</div>
-          <select class="select" value=${segmentFilter} onChange=${(e) => setSegmentFilter(e.target.value)}>
+          <select class="select" value=${segmentFilter} onChange=${(e) => changeFilter(setSegmentFilter, e.target.value)}>
             <option value="all">전체</option>
             <option value="고위험/고가치">고위험/고가치</option>
             <option value="고위험/저가치">고위험/저가치</option>
@@ -886,43 +900,54 @@ function ActionCenter({ auth }) {
             <option value="저위험/저가치">저위험/저가치</option>
           </select>
         </div>
-        <div class="filter-count">전체 <b>${total.toLocaleString()}</b>명 중 ${customers.length}명 표시 (위험도 순)</div>
+        <div class="filter-count">전체 <b>${total.toLocaleString()}</b>명 중 ${rangeStart.toLocaleString()}–${rangeEnd.toLocaleString()}명 표시 (위험도 순)</div>
       </div>
       <div class="ac-body">
-        <div class="ac-table-wrap">
-          ${loading
-            ? html`<div class="detail-empty">불러오는 중...</div>`
-            : error
-            ? html`<div class="detail-empty">${error}</div>`
-            : html`
-                <table class="ac-table">
-                  <thead>
-                    <tr>
-                      <th>고객 ID (msno)</th>
-                      <th>위험도</th>
-                      <th>세그먼트</th>
-                      <th>만료 D-day</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${customers.map(
-                      (c) => html`
-                        <tr key=${c.msno} class=${selected && selected.msno === c.msno ? "row-selected" : ""} onClick=${() => setSelected(c)}>
-                          <td class="mono-cell">${c.msno}</td>
-                          <td><span class="chip ${c.risk_tier === "고위험" ? "chip-critical" : "chip-warning"} chip-sm">${c.churn_proba.toFixed(3)}</span></td>
-                          <td>${c.segment}</td>
-                          <td>${c.days_to_expire != null ? `D-${c.days_to_expire}` : "-"}</td>
-                        </tr>
-                      `
-                    )}
-                  </tbody>
-                </table>
-              `}
+        <div class="ac-list-col">
+          <div class="ac-table-wrap">
+            ${loading
+              ? html`<div class="detail-empty">불러오는 중...</div>`
+              : error
+              ? html`<div class="detail-empty">${error}</div>`
+              : html`
+                  <table class="ac-table">
+                    <thead>
+                      <tr>
+                        <th>고객 ID (msno)</th>
+                        <th>위험도</th>
+                        <th>세그먼트</th>
+                        <th>만료 D-day</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${customers.map(
+                        (c) => html`
+                          <tr key=${c.msno} class=${selected && selected.msno === c.msno ? "row-selected" : ""} onClick=${() => setSelected(c)}>
+                            <td class="mono-cell">${c.msno}</td>
+                            <td><span class="chip ${c.risk_tier === "고위험" ? "chip-critical" : "chip-warning"} chip-sm">${c.churn_proba.toFixed(3)}</span></td>
+                            <td>${c.segment}</td>
+                            <td>${c.days_to_expire != null ? `D-${c.days_to_expire}` : "-"}</td>
+                          </tr>
+                        `
+                      )}
+                    </tbody>
+                  </table>
+                `}
+          </div>
+          ${!loading && !error
+            ? html`
+                <div class="ac-pagination">
+                  <button type="button" class="btn btn-ghost btn-sm" disabled=${page <= 1} onClick=${() => setPage((p) => Math.max(1, p - 1))}>← 이전</button>
+                  <span class="small-muted">${page} / ${totalPages} 페이지</span>
+                  <button type="button" class="btn btn-ghost btn-sm" disabled=${page >= totalPages} onClick=${() => setPage((p) => Math.min(totalPages, p + 1))}>다음 →</button>
+                </div>
+              `
+            : null}
         </div>
         <${CustomerDetail} customer=${selected} auth=${auth} />
       </div>
       <p class="small-muted" style=${{ marginTop: "8px" }}>
-        ※ 위 목록은 실제 DB(customer_churn_scores)에서 위험도 순으로 불러온 실데이터입니다. 최대 50명까지 표시됩니다.
+        ※ 위 목록은 실제 DB(customer_churn_scores)에서 위험도 순으로 불러온 실데이터입니다. 페이지당 ${AC_PAGE_SIZE}명씩 표시됩니다.
       </p>
     </div>
   `;
