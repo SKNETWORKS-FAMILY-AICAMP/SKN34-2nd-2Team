@@ -259,6 +259,206 @@ body {
 .priority-table td { padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
 .priority-rank { font-weight: 800; color: var(--series-2); }
 
+/* ---------- 고객군 캠페인 ---------- */
+.campaign-builder { display: flex; flex-direction: column; gap: 14px; }
+.campaign-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.campaign-step { background: var(--page-plane); border: 1px solid var(--gridline); border-radius: 9px; padding: 9px 10px; }
+.campaign-step b { display: block; font-size: 10.5px; margin-bottom: 3px; }
+.campaign-step span { font-size: 9.5px; color: var(--muted-ink); }
+.campaign-form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.campaign-form-grid .field-group { margin-bottom: 0; }
+.campaign-preview { background: var(--page-plane); border: 1px solid var(--gridline); border-radius: 10px; padding: 12px; }
+.campaign-preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.campaign-preview-item { background: #fff; border: 1px solid var(--gridline); border-radius: 8px; padding: 9px; }
+.campaign-preview-label { font-size: 9.5px; color: var(--muted-ink); }
+.campaign-preview-value { font-size: 17px; font-weight: 800; margin-top: 3px; }
+.campaign-confirm { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; color: var(--text-secondary); }
+.campaign-confirm input { margin-top: 2px; }
+.campaign-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; flex-wrap: wrap; }
+.campaign-warning { background: #fff3d6; color: #795200; border: 1px solid #efd895; border-radius: 8px; padding: 8px 10px; font-size: 11px; }
+.campaign-success { background: #eaf8ee; color: #076628; border: 1px solid #bfe4c9; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; }
+.campaign-sample-wrap { max-height: 220px; overflow-y: auto; border: 1px solid var(--gridline); border-radius: 8px; }
+.campaign-sample-wrap .priority-table { margin-top: 0; }
+.campaign-draft-panel {
+  border: 1px solid #bed6f2; border-radius: 11px; padding: 13px 14px;
+  background: linear-gradient(135deg, #f5f9fe, #edf5fd);
+}
+.campaign-draft-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+.campaign-draft-title { font-size: 12px; font-weight: 800; color: #164f8e; }
+.campaign-draft-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.campaign-draft-customer {
+  display: inline-flex; align-items: center; gap: 7px; max-width: 100%;
+  border: 1px solid #d4e3f5; border-radius: 999px; padding: 5px 7px 5px 10px;
+  background: #fff; color: var(--text-secondary); font-size: 9.5px;
+}
+.campaign-draft-customer .mono-cell { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.campaign-draft-remove { border: 0; width: 20px; height: 20px; border-radius: 50%; background: #edf3fa; color: #57718e; cursor: pointer; }
+.campaign-draft-remove:hover { background: #dce9f7; color: #174e89; }
+.draft-add-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.draft-added-note { color: #087044; font-size: 10.5px; font-weight: 700; }
+
+/* ---------- 관리자 정보 구조 ---------- */
+.admin-shell { display: flex; flex-direction: column; min-height: 100vh; }
+.admin-sidebar {
+  position: sticky; top: 0; z-index: 20; padding: 14px 28px 0;
+  background:
+    radial-gradient(circle at 14% -80%, rgba(235, 104, 52, 0.22), transparent 36%),
+    linear-gradient(110deg, #111419 0%, #181d24 58%, #101318 100%);
+  color: #f5f6f7;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "brand spacer meta"
+    "nav nav nav";
+  align-items: center;
+  column-gap: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 24px rgba(14, 18, 24, 0.14);
+}
+.sidebar-brand { grid-area: brand; display: flex; align-items: center; gap: 11px; min-width: 190px; }
+.sidebar-brand .brand-mark {
+  width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(145deg, #f47a45, var(--series-2));
+  box-shadow: 0 7px 18px rgba(235,104,52,0.28);
+}
+.sidebar-brand-title { font-size: 14px; font-weight: 850; letter-spacing: 0.01em; }
+.sidebar-brand-sub { margin-top: 2px; color: #9fa9b5; font-size: 9.5px; }
+.sidebar-label { display: none; }
+.sidebar-nav {
+  grid-area: nav;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+  margin-top: 13px;
+}
+.sidebar-nav-btn {
+  position: relative;
+  min-width: 0;
+  min-height: 52px;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 0;
+  border-radius: 11px 11px 0 0;
+  padding: 9px 13px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  text-align: left;
+  background: rgba(255,255,255,0.025);
+  color: #ccd3db;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+.sidebar-nav-btn::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: transparent;
+}
+.sidebar-nav-btn:hover {
+  background: rgba(255,255,255,0.075);
+  border-color: rgba(255,255,255,0.13);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.sidebar-nav-btn.sidebar-nav-active {
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.07));
+  border-color: rgba(255,255,255,0.17);
+  color: #fff;
+  box-shadow: 0 -7px 20px rgba(0,0,0,0.12);
+}
+.sidebar-nav-btn.sidebar-nav-active::after { background: var(--series-2); }
+.sidebar-nav-label { width: 100%; font-size: 11.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-nav-hint { width: 100%; color: #8f99a5; font-size: 8.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-nav-btn:hover .sidebar-nav-hint,
+.sidebar-nav-btn.sidebar-nav-active .sidebar-nav-hint { color: #b7c0ca; }
+.sidebar-meta {
+  grid-area: meta;
+  position: relative;
+  padding: 7px 12px 7px 28px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.035);
+  color: #a7b0bb;
+  font-size: 8.8px;
+  line-height: 1.45;
+  text-align: left;
+}
+.sidebar-meta::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 13px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #39c98a;
+  box-shadow: 0 0 0 4px rgba(57,201,138,0.12);
+}
+.admin-workspace { min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
+.admin-topbar {
+  position: relative; z-index: 10; min-height: 74px; padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  background: rgba(252,252,251,0.96); border-bottom: 1px solid var(--border-hairline);
+}
+.page-title { margin: 0; font-size: 18px; font-weight: 850; letter-spacing: -0.015em; }
+.page-subtitle { margin-top: 4px; color: var(--muted-ink); font-size: 10.5px; }
+.admin-user-row { display: flex; align-items: center; gap: 10px; color: var(--text-secondary); font-size: 10.5px; }
+.admin-draft-btn {
+  border: 1px solid #cbdcf0; border-radius: 999px; padding: 7px 11px;
+  background: #edf5fd; color: #174f8d; font-size: 10.5px; font-weight: 800; cursor: pointer;
+}
+.admin-draft-btn:hover { background: #dfeefa; border-color: #a9c7e8; }
+.admin-page-content { flex: 1; padding: 24px 28px 40px; max-width: 1380px; width: 100%; margin: 0 auto; }
+.priority-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+.priority-card { border: 1px solid var(--gridline); background: var(--surface-1); border-radius: 10px; padding: 14px; }
+.priority-card-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 8px; }
+.priority-card-title { font-size: 11.5px; font-weight: 800; }
+.priority-card-value { font-size: 21px; font-weight: 800; }
+.priority-card-copy { min-height: 32px; margin: 5px 0 10px; color: var(--text-secondary); font-size: 10px; }
+.insight-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; }
+.insight-card { border: 1px solid var(--gridline); border-radius: 10px; background: var(--surface-1); padding: 14px; }
+.insight-card-title { font-size: 11.5px; font-weight: 800; margin-bottom: 6px; }
+.insight-card-body { color: var(--text-secondary); font-size: 10.5px; line-height: 1.55; }
+.evidence-tag { display: inline-block; margin-bottom: 7px; border-radius: 999px; padding: 2px 7px; background: #e9f1fb; color: #1c5cab; font-size: 9px; font-weight: 800; }
+.evidence-tag.offline { background: #f2ecfb; color: #5c3ca5; }
+.model-metric-note { margin-top: 8px; color: var(--muted-ink); font-size: 9.5px; }
+.page-action-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.governance-list { display: grid; gap: 8px; }
+.governance-item { padding: 10px 12px; border-left: 3px solid var(--baseline); background: var(--page-plane); font-size: 10.5px; }
+.governance-item b { display: block; margin-bottom: 3px; }
+.governance-item span { color: var(--text-secondary); }
+
+@media (max-width: 900px) {
+  .admin-sidebar { padding: 11px 14px 0; column-gap: 12px; }
+  .sidebar-brand-sub, .sidebar-meta { display: none; }
+  .sidebar-nav { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; scrollbar-width: thin; }
+  .sidebar-nav-btn { flex: 0 0 142px; min-height: 48px; padding: 8px 10px 9px; }
+  .sidebar-nav-hint { display: none; }
+  .campaign-steps, .campaign-form-grid, .campaign-preview-grid { grid-template-columns: 1fr 1fr; }
+  .priority-grid, .insight-grid { grid-template-columns: 1fr; }
+  .ac-body { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .campaign-steps, .campaign-form-grid, .campaign-preview-grid, .kpi-row, .grid-2 { grid-template-columns: 1fr; }
+  .sidebar-brand-title { display: none; }
+  .sidebar-brand { gap: 0; }
+  .sidebar-brand { min-width: auto; }
+  .sidebar-nav { padding-bottom: 0; }
+  .sidebar-nav-btn { flex-basis: 112px; align-items: center; text-align: center; }
+  .admin-page-content { padding: 16px; }
+  .admin-topbar { padding: 12px 16px; }
+  .admin-user-row span { display: none; }
+}
+
 /* ---------- 로그인 / 회원가입 화면 ---------- */
 .login-shell {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -628,7 +828,7 @@ const html = htm.bind(React.createElement);
 const { useState, useMemo, useEffect } = React;
 
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
-const API_BASE = "http://192.168.0.23:8000";
+const API_BASE = window.location.origin;
 
 /* ============================== 실제 데이터 (관리자 API에서 실시간 조회) ============================== */
 // 아래 mock 상수들은 전부 제거하고, AdminTab이 /admin/kpis + /admin/customers를 실시간으로
@@ -809,35 +1009,11 @@ function RetentionLine({ points }) {
 
 /* ============================== 운영 대시보드 (액션센터) ============================== */
 
-function CustomerDetail({ customer, auth }) {
-  const [sending, setSending] = useState(null);
-  const [sentTypes, setSentTypes] = useState([]);
-  const [error, setError] = useState("");
+function CustomerDetail({ customer, draftCustomers, onAddToDraft, onOpenCampaign }) {
   const [copied, setCopied] = useState(false);
 
   if (!customer) {
     return html`<div class="detail-empty">왼쪽 목록에서 고객을 선택하면 상세 정보가 표시됩니다.</div>`;
-  }
-
-  async function sendAction(actionType) {
-    setSending(actionType);
-    setError("");
-    try {
-      const res = await fetch(`${API_BASE}/admin/customers/${customer.msno}/actions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
-        body: JSON.stringify({ action_type: actionType }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || `발송 실패 (${res.status})`);
-      }
-      setSentTypes((prev) => (prev.includes(actionType) ? prev : [...prev, actionType]));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSending(null);
-    }
   }
 
   function copyMsno() {
@@ -850,6 +1026,7 @@ function CustomerDetail({ customer, auth }) {
   }
 
   const actionLabels = getActionLabels(customer);
+  const isInDraft = draftCustomers.some((item) => item.msno === customer.msno);
 
   return html`
     <div class="detail-panel">
@@ -858,47 +1035,313 @@ function CustomerDetail({ customer, auth }) {
         <span class="chip ${customer.risk_tier === "고위험" ? "chip-critical" : "chip-warning"}">위험도 ${customer.churn_proba.toFixed(3)}</span>
         <span class="chip">${displaySegment(customer.segment)}</span>
       </div>
-      <div class="detail-sub-title">고객 요약 (실데이터)</div>
+      <div class="detail-sub-title">고객 요약</div>
       <div class="row gap8" style=${{ flexWrap: "wrap", marginBottom: "6px" }}>
         <span class="chip chip-accent">월평균 결제액 ${fmtNTD(customer.avg_monthly_revenue)}</span>
         <span class="chip chip-accent">근사 LTV ${fmtNTD(customer.ltv_approx)}</span>
         <span class="chip ${formatLifecycle(customer.lifecycle_status, customer.days_to_expire).cls}">${formatLifecycle(customer.lifecycle_status, customer.days_to_expire).text}</span>
         <span class="chip">마지막 결제 ${customer.days_since_last_txn ?? "-"}일 전</span>
       </div>
-      <p class="small-muted" style=${{ margin: "0 0 10px" }}>※ ${DATA_OBSERVED_AT} 스냅샷입니다 — D-day/마지막 결제일은 오늘 기준 실시간 정보가 아닙니다.</p>
       <div class="detail-sub-title">추천 액션</div>
       <div class="row gap8" style=${{ flexWrap: "wrap" }}>
-        <button class="btn btn-primary btn-sm" disabled=${sending === "reminder"} onClick=${() => sendAction("reminder")}>
-          ${sentTypes.includes("reminder") ? `✓ ${actionLabels.reminder} 완료` : sending === "reminder" ? "발송 중..." : actionLabels.reminder}
-        </button>
-        <button class="btn btn-ghost btn-sm" disabled=${sending === "discount_offer"} onClick=${() => sendAction("discount_offer")}>
-          ${sentTypes.includes("discount_offer") ? `✓ ${actionLabels.discount_offer} 완료` : sending === "discount_offer" ? "발송 중..." : actionLabels.discount_offer}
-        </button>
+        <span class="chip chip-good">${actionLabels.reminder}</span>
+        <span class="chip chip-accent">${actionLabels.discount_offer}</span>
       </div>
-      ${error ? html`<div class="login-error" style=${{ marginTop: "8px" }}>${error}</div>` : null}
-      ${sentTypes.length > 0
-        ? html`
-            <div class="winback-hero" style=${{ marginTop: "10px", background: "#eefaf1", border: "1px solid #cdeed7" }}>
-              <b>📱 고객모드에서 확인하려면</b>
-              <div class="small-muted">kkbox_customer.html 을 열고, 아래 고객 ID로 로그인하면 방금 보낸 알림이 바로 보여요.</div>
-              <div class="coupon-code" style=${{ background: "#fff", border: "1px dashed var(--series-1)", color: "var(--text-primary)", width: "100%" }}>
-                <span class="mono-cell" style=${{ fontSize: "12px" }}>${customer.msno}</span>
-                <button type="button" class="btn btn-ghost btn-sm" onClick=${copyMsno}>${copied ? "복사됨!" : "복사"}</button>
-              </div>
-            </div>
-          `
-        : html`
-            <p class="small-muted" style=${{ marginTop: "8px" }}>
-              발송하면 이 고객(${customer.msno})으로 kkbox_customer.html 에 로그인했을 때 알림 탭에 바로 표시됩니다.
-            </p>
-          `}
+      <div class="draft-add-row">
+        <button type="button" class="btn btn-primary btn-sm" disabled=${isInDraft || draftCustomers.length >= 500} onClick=${() => onAddToDraft(customer)}>
+          ${isInDraft ? "✓ 캠페인 초안에 추가됨" : draftCustomers.length >= 500 ? "초안 최대 500명" : "캠페인 초안에 추가"}
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" onClick=${copyMsno}>${copied ? "고객 ID 복사됨" : "고객 ID 복사"}</button>
+        ${draftCustomers.length
+          ? html`<button type="button" class="btn btn-ghost btn-sm" onClick=${onOpenCampaign}>초안 보기 (${draftCustomers.length}명)</button>`
+          : null}
+      </div>
+      <p class="small-muted" style=${{ margin: "8px 0 0" }}>발송은 캠페인 실행 화면에서 대상 검토와 제외 조건 확인 후 진행합니다.</p>
     </div>
   `;
 }
 
 const AC_PAGE_SIZE = 50;
 
-function ActionCenter({ auth }) {
+const CAMPAIGN_PURPOSES = {
+  retention: { label: "Retention", lifecycle: "구독활성", description: "구독 중인 고객의 이탈 예방" },
+  renewal: { label: "긴급 갱신", lifecycle: "갱신유예기간", description: "만료 후 30일 이내 재구독 지원" },
+  winback: { label: "Win-back", lifecycle: "장기만료", description: "장기만료 고객의 복귀 유도" },
+};
+
+function CampaignCenter({ auth, onCompleted, draftCustomers, onRemoveDraft, onClearDraft }) {
+  const [purpose, setPurpose] = useState("retention");
+  const [riskTier, setRiskTier] = useState("고위험");
+  const [segment, setSegment] = useState("고위험/고가치");
+  const [actionType, setActionType] = useState("reminder");
+  const [selectionMode, setSelectionMode] = useState(draftCustomers.length ? "manual" : "all_matching");
+  const [audienceLimit, setAudienceLimit] = useState(5000);
+  const [excludeRecentDays, setExcludeRecentDays] = useState(7);
+  const [campaignName, setCampaignName] = useState("구독활성 고위험·고월매출 리마인드");
+  const [preview, setPreview] = useState(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [launching, setLaunching] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState(null);
+  const draftCustomerKey = draftCustomers.map((customer) => customer.msno).join("|");
+
+  function invalidate() {
+    setPreview(null);
+    setConfirmed(false);
+    setResult(null);
+    setError("");
+  }
+
+  useEffect(() => {
+    setPreview(null);
+    setConfirmed(false);
+    setResult(null);
+    if (selectionMode === "manual" && draftCustomers.length === 0) {
+      setSelectionMode("all_matching");
+    }
+  }, [draftCustomerKey]);
+
+  function changePurpose(value) {
+    setPurpose(value);
+    const meta = CAMPAIGN_PURPOSES[value];
+    setCampaignName(`${meta.lifecycle} 고객군 ${ACTION_TYPE_LABELS[actionType]}`);
+    invalidate();
+  }
+
+  function changeActionType(value) {
+    setActionType(value);
+    setCampaignName(`${CAMPAIGN_PURPOSES[purpose].lifecycle} 고객군 ${ACTION_TYPE_LABELS[value]}`);
+    invalidate();
+  }
+
+  function buildPreviewParams() {
+    const params = new URLSearchParams({
+      purpose,
+      action_type: actionType,
+      selection_mode: selectionMode,
+      exclude_recent_days: String(excludeRecentDays),
+      sort_by: "churn_proba",
+    });
+    if (riskTier !== "all") params.set("risk_tier", riskTier);
+    if (segment !== "all") params.set("segment", segment);
+    if (selectionMode === "top_n") params.set("audience_limit", String(audienceLimit));
+    return params;
+  }
+
+  function buildAudienceBody() {
+    return {
+      purpose,
+      action_type: actionType,
+      risk_tier: selectionMode === "manual" || riskTier === "all" ? null : riskTier,
+      segment: selectionMode === "manual" || segment === "all" ? null : segment,
+      selection_mode: selectionMode,
+      audience_limit: selectionMode === "top_n" ? Number(audienceLimit) : null,
+      exclude_recent_days: Number(excludeRecentDays),
+      manual_msnos: selectionMode === "manual" ? draftCustomers.map((customer) => customer.msno) : [],
+    };
+  }
+
+  async function previewAudience() {
+    setLoading(true);
+    setError("");
+    setResult(null);
+    setConfirmed(false);
+    try {
+      const manualSelection = selectionMode === "manual";
+      const res = await fetch(
+        manualSelection
+          ? `${API_BASE}/admin/campaigns/preview`
+          : `${API_BASE}/admin/campaigns/preview?${buildPreviewParams().toString()}`,
+        manualSelection
+          ? {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
+              body: JSON.stringify(buildAudienceBody()),
+            }
+          : { headers: { Authorization: `Bearer ${auth.token}` } }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || `대상 미리보기 실패 (${res.status})`);
+      setPreview(data);
+    } catch (err) {
+      setError(err.message);
+      setPreview(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function launchCampaign() {
+    if (!preview || !preview.launchable || !confirmed) return;
+    setLaunching(true);
+    setError("");
+    setResult(null);
+    const requestKey = window.crypto && window.crypto.randomUUID
+      ? window.crypto.randomUUID()
+      : `campaign-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    try {
+      const res = await fetch(`${API_BASE}/admin/campaigns`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${auth.token}` },
+        body: JSON.stringify({
+          request_key: requestKey,
+          name: campaignName.trim(),
+          ...buildAudienceBody(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || `캠페인 실행 실패 (${res.status})`);
+      setResult(data);
+      setConfirmed(false);
+      if (selectionMode === "manual") onClearDraft();
+      if (onCompleted) onCompleted();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLaunching(false);
+    }
+  }
+
+  return html`
+    <div class="campaign-builder">
+      <p class="section-intro" style=${{ margin: 0 }}>
+        고객군 조건 또는 고객 탐색에서 직접 추가한 초안을 대상으로 캠페인을 실행합니다.
+        실행 전에 대상과 최근 동일 액션 제외 결과를 반드시 검토합니다.
+      </p>
+
+      <div class="campaign-steps">
+        <div class="campaign-step"><b>1. 목적</b><span>Retention·긴급 갱신·Win-back 분리</span></div>
+        <div class="campaign-step"><b>2. 대상</b><span>위험도·월매출·전체/상위 N명</span></div>
+        <div class="campaign-step"><b>3. 제외</b><span>최근 동일 액션 고객 자동 제외</span></div>
+        <div class="campaign-step"><b>4. 검토·실행</b><span>대상 수와 샘플 확인 후 일괄 기록</span></div>
+      </div>
+
+      ${draftCustomers.length
+        ? html`
+            <div class="campaign-draft-panel">
+              <div class="campaign-draft-head">
+                <div><div class="campaign-draft-title">고객 탐색에서 추가한 캠페인 초안 · ${draftCustomers.length}명</div><div class="small-muted">목적과 생명주기가 맞지 않거나 최근 동일 액션을 받은 고객은 미리보기에서 제외됩니다.</div></div>
+                <button type="button" class="btn btn-ghost btn-sm" onClick=${onClearDraft}>초안 비우기</button>
+              </div>
+              <div class="campaign-draft-list">
+                ${draftCustomers.slice(0, 30).map((customer) => html`
+                  <span key=${customer.msno} class="campaign-draft-customer">
+                    <span class="mono-cell">${customer.msno}</span>
+                    <span>${customer.lifecycle_status || "상태 미확인"}</span>
+                    <button type="button" class="campaign-draft-remove" aria-label="${customer.msno} 제거" title="초안에서 제거" onClick=${() => onRemoveDraft(customer.msno)}>×</button>
+                  </span>
+                `)}
+                ${draftCustomers.length > 30 ? html`<span class="small-muted">외 ${draftCustomers.length - 30}명</span>` : null}
+              </div>
+            </div>
+          `
+        : null}
+
+      <div class="campaign-form-grid">
+        <div class="field-group">
+          <label class="field-label">캠페인 목적</label>
+          <select class="select" value=${purpose} onChange=${(e) => changePurpose(e.target.value)}>
+            ${Object.entries(CAMPAIGN_PURPOSES).map(([key, meta]) => html`<option key=${key} value=${key}>${meta.label} · ${meta.lifecycle}</option>`)}
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">위험도</label>
+          <select class="select" disabled=${selectionMode === "manual"} value=${riskTier} onChange=${(e) => { setRiskTier(e.target.value); invalidate(); }}>
+            <option value="all">전체</option><option value="고위험">고위험</option><option value="저위험">저위험</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">월매출 세그먼트</label>
+          <select class="select" disabled=${selectionMode === "manual"} value=${segment} onChange=${(e) => { setSegment(e.target.value); invalidate(); }}>
+            <option value="all">전체</option>
+            <option value="고위험/고가치">고위험/고월매출</option>
+            <option value="고위험/저가치">고위험/저월매출</option>
+            <option value="저위험/고가치">저위험/고월매출</option>
+            <option value="저위험/저가치">저위험/저월매출</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">액션</label>
+          <select class="select" value=${actionType} onChange=${(e) => changeActionType(e.target.value)}>
+            <option value="reminder">리마인드</option><option value="discount_offer">할인 오퍼</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">대상 선택</label>
+          <select class="select" value=${selectionMode} onChange=${(e) => { setSelectionMode(e.target.value); invalidate(); }}>
+            <option value="all_matching">조건 충족 고객 전체</option>
+            <option value="top_n">위험도 상위 N명</option>
+            <option value="manual" disabled=${draftCustomers.length === 0}>직접 추가 고객 (${draftCustomers.length}명)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">상위 N명</label>
+          <input class="text-input" type="number" min="1" max="50000" disabled=${selectionMode !== "top_n"} value=${audienceLimit} onChange=${(e) => { setAudienceLimit(Number(e.target.value)); invalidate(); }} />
+        </div>
+        <div class="field-group">
+          <label class="field-label">동일 액션 제외 기간</label>
+          <select class="select" value=${excludeRecentDays} onChange=${(e) => { setExcludeRecentDays(Number(e.target.value)); invalidate(); }}>
+            <option value=${0}>제외 안 함</option><option value=${7}>최근 7일</option><option value=${14}>최근 14일</option><option value=${30}>최근 30일</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">캠페인 이름</label>
+          <input class="text-input" value=${campaignName} maxlength="120" onInput=${(e) => { setCampaignName(e.target.value); setResult(null); }} />
+        </div>
+      </div>
+
+      <div class="campaign-actions">
+        <span class="small-muted">${CAMPAIGN_PURPOSES[purpose].description} · 최근 동일 액션 고객 자동 제외</span>
+        <button type="button" class="btn btn-ghost" disabled=${loading || launching} onClick=${previewAudience}>
+          ${loading ? "계산 중..." : "대상 미리보기"}
+        </button>
+      </div>
+
+      ${error ? html`<div class="login-error" style=${{ margin: 0 }}>${error}</div>` : null}
+      ${preview
+        ? html`
+            <div class="campaign-preview">
+              <div class="campaign-preview-grid">
+                <div class="campaign-preview-item"><div class="campaign-preview-label">${selectionMode === "manual" ? "초안 고객" : "조건 충족"}</div><div class="campaign-preview-value">${(selectionMode === "manual" ? preview.requested_count : preview.matched_count).toLocaleString()}</div></div>
+                <div class="campaign-preview-item"><div class="campaign-preview-label">${selectionMode === "manual" ? "목적·상태 불일치" : "최근 동일 액션 제외"}</div><div class="campaign-preview-value">${(selectionMode === "manual" ? preview.excluded_condition_count : preview.excluded_recent_count).toLocaleString()}</div></div>
+                <div class="campaign-preview-item"><div class="campaign-preview-label">${selectionMode === "manual" ? "최근 동일 액션 제외" : "발송 가능"}</div><div class="campaign-preview-value">${(selectionMode === "manual" ? preview.excluded_recent_count : preview.eligible_count).toLocaleString()}</div></div>
+                <div class="campaign-preview-item"><div class="campaign-preview-label">최종 선택</div><div class="campaign-preview-value">${preview.selected_count.toLocaleString()}</div></div>
+              </div>
+              ${preview.warning ? html`<div class="campaign-warning">${preview.warning}</div>` : null}
+              ${(preview.sample || []).length
+                ? html`
+                    <div class="detail-sub-title" style=${{ marginTop: "10px" }}>발송 대상 샘플 10명</div>
+                    <div class="campaign-sample-wrap">
+                      <table class="priority-table">
+                        <thead><tr><th>고객 ID</th><th>위험도</th><th>월매출</th><th>구독 상태</th></tr></thead>
+                        <tbody>${preview.sample.map((c) => html`
+                          <tr key=${c.msno}><td class="mono-cell">${c.msno}</td><td>${Number(c.churn_proba).toFixed(3)}</td><td>${displaySegment(c.segment)}</td><td>${formatLifecycle(c.lifecycle_status, c.days_to_expire).text}</td></tr>
+                        `)}</tbody>
+                      </table>
+                    </div>
+                  `
+                : null}
+              <label class="campaign-confirm" style=${{ marginTop: "11px" }}>
+                <input type="checkbox" checked=${confirmed} disabled=${!preview.launchable || launching} onChange=${(e) => setConfirmed(e.target.checked)} />
+                <span>최종 ${preview.selected_count.toLocaleString()}명에게 캠페인을 실행하는 것을 확인했습니다.</span>
+              </label>
+              <div class="campaign-actions" style=${{ marginTop: "10px" }}>
+                <button type="button" class="btn btn-primary" disabled=${!confirmed || !preview.launchable || launching || !campaignName.trim()} onClick=${launchCampaign}>
+                  ${launching ? "일괄 기록 중..." : `${preview.selected_count.toLocaleString()}명 캠페인 실행`}
+                </button>
+              </div>
+            </div>
+          `
+        : null}
+      ${result
+        ? html`<div class="campaign-success"><b>${result.name}</b> 캠페인 #${result.id} 완료 · ${Number(result.recipient_count).toLocaleString()}명에게 ${ACTION_TYPE_LABELS[result.action_type]} 발송 기록을 생성했습니다.</div>`
+        : null}
+    </div>
+  `;
+}
+
+function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
   // 생애주기 선택이 첫 번째 스텝 — 기본값을 "구독활성(Retention 대상)"으로 둬서, 갱신유예/장기만료
   // 고객이 일반 Retention 목록에 섞여 보이지 않게 한다. 필요하면 아래 탭에서 다른 상태로 바꿔 본다.
   const [lifecycleFilter, setLifecycleFilter] = useState("구독활성");
@@ -1027,55 +1470,16 @@ function ActionCenter({ auth }) {
               `
             : null}
         </div>
-        <${CustomerDetail} customer=${selected} auth=${auth} />
+        <${CustomerDetail}
+          customer=${selected}
+          draftCustomers=${draftCustomers}
+          onAddToDraft=${onAddToDraft}
+          onOpenCampaign=${onOpenCampaign}
+        />
       </div>
       <p class="small-muted" style=${{ marginTop: "8px" }}>
         ※ 위 목록은 실제 DB(customer_churn_scores)에서 위험도 순으로 불러온 실데이터입니다 (${DATA_OBSERVED_AT}). 페이지당 ${AC_PAGE_SIZE}명씩 표시됩니다.
       </p>
-    </div>
-  `;
-}
-
-function ABTestMonitor() {
-  const groups = [
-    { key: "control", label: "Control", rate: 93.6, color: "var(--muted-ink)" },
-    { key: "t1", label: "Treatment 1 (리마인드)", rate: 94.8, color: "var(--series-1)" },
-    { key: "t2", label: "Treatment 2 (리마인드+할인)", rate: 95.6, color: "var(--series-2)" },
-  ];
-  return html`
-    <div>
-      <p class="login-error" style=${{ margin: "0 0 12px" }}>
-        ⚠ 미검증 가설 또는 예시 — 아래 전환율/증가율 수치는 실제 실험 결과가 아닙니다. 실험 A(만료 임박 리마인드)는 아직 실행 전이며,
-        표시된 수치는 A/B 테스트 설계 문서의 표본 설계를 참고해 가정한 목업(mock) 데이터입니다. customer_actions 기반 실제 발송
-        현황은 아래 "액션 발송 현황" 패널을 참고하세요.
-      </p>
-      <div class="kpi-row">
-        ${groups.map(
-          (g) => html`
-            <${StatTile}
-              key=${g.key}
-              label=${g.label}
-              value="${g.rate}%"
-              sub=${g.key === "control" ? "재구독률 (기준)" : `▲ ${(g.rate - 93.6).toFixed(1)}%p vs Control`}
-              status=${g.key === "control" ? "muted" : "good"}
-            />
-          `
-        )}
-      </div>
-      <div class="hbar-chart" style=${{ marginTop: "14px" }}>
-        ${groups.map(
-          (g) => html`
-            <div class="hbar-row" key=${g.key}>
-              <div class="hbar-label"><span class="hbar-label-main">${g.label}</span></div>
-              <div class="hbar-track" style=${{ height: "22px" }}>
-                <div class="hbar-fill" style=${{ width: `${g.rate}%`, background: g.color }}></div>
-              </div>
-              <div class="hbar-value">${g.rate}%</div>
-            </div>
-          `
-        )}
-      </div>
-      <p class="small-muted" style=${{ marginTop: "10px" }}>Guardrail: 수신거부율 사전 허용범위 이탈 시 조기 중단 (설계 문서 기준)</p>
     </div>
   `;
 }
@@ -1090,7 +1494,7 @@ async function fetchCustomerTotal(auth, params) {
   return data.total || 0;
 }
 
-function AdminTab({ auth }) {
+function LegacyAdminTab({ auth }) {
   const [kpis, setKpis] = useState(null);
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [highRiskTotal, setHighRiskTotal] = useState(0);
@@ -1226,7 +1630,13 @@ function AdminTab({ auth }) {
       </div>
 
       <div class="panel">
-        <div class="panel-title">이탈방지 액션센터</div>
+        <div class="panel-title">고객군 캠페인 실행</div>
+        <${CampaignCenter} auth=${auth} />
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">개별 고객 조회·예외 발송</div>
+        <p class="section-intro" style=${{ margin: "0 0 10px" }}>고객군 캠페인이 기본 흐름이며, 아래 기능은 고객 문의 대응이나 예외 처리용입니다.</p>
         <${ActionCenter} auth=${auth} />
       </div>
 
@@ -1266,12 +1676,13 @@ function AdminTab({ auth }) {
                   ${actionsSummary.recent && actionsSummary.recent.length
                     ? html`
                         <table class="priority-table">
-                          <thead><tr><th>고객 ID</th><th>유형</th><th>세그먼트</th><th>발송자</th><th>발송일시</th></tr></thead>
+                          <thead><tr><th>고객 ID</th><th>캠페인</th><th>유형</th><th>세그먼트</th><th>발송자</th><th>발송일시</th></tr></thead>
                           <tbody>
                             ${actionsSummary.recent.map(
                               (r, i) => html`
                                 <tr key=${i}>
                                   <td class="mono-cell">${r.msno}</td>
+                                  <td>${r.campaign_name || "개별 발송"}</td>
                                   <td><span class="chip chip-sm">${ACTION_TYPE_LABELS[r.action_type] || r.action_type}</span></td>
                                   <td>${r.segment || "-"}</td>
                                   <td>${r.sent_by || "-"}</td>
@@ -1288,12 +1699,283 @@ function AdminTab({ auth }) {
             `}
       </div>
 
-      <div class="panel">
-        <div class="panel-title">A/B 테스트 모니터 (예시 화면)</div>
-        <${ABTestMonitor} />
+    </div>
+  `;
+}
+
+const FINAL_MODEL_METRICS = {
+  model: "LightGBM Enhanced v2",
+  featureCount: 57,
+  rocAuc: 0.903610,
+  prAuc: 0.583427,
+  precision: 0.546177,
+  recall: 0.563445,
+  f1: 0.554677,
+  threshold: 0.270839,
+};
+
+const ADMIN_NAV_ITEMS = [
+  { key: "overview", label: "운영 홈", subtitle: "오늘 판단하고 실행할 고객군을 한눈에 확인" },
+  { key: "analysis", label: "분석 센터", subtitle: "모델 성능·이탈 동인·퍼널·리텐션 분석" },
+  { key: "customers", label: "고객 탐색", subtitle: "생명주기와 위험도 기준 고객 조회·상세 확인" },
+  { key: "campaigns", label: "캠페인 실행", subtitle: "고객군을 정의하고 대상 검토 후 일괄 액션 실행" },
+  { key: "history", label: "발송 이력", subtitle: "실제 캠페인과 고객별 발송 기록 확인" },
+  { key: "governance", label: "모델·데이터", subtitle: "관측 시점·모델 버전·해석 한계 관리" },
+];
+
+function PriorityCustomersTable({ rows }) {
+  if (!rows || !rows.length) return html`<p class="small-muted">우선 관리 고객이 없습니다.</p>`;
+  return html`
+    <div class="ac-table-wrap" style=${{ maxHeight: "none" }}>
+      <table class="priority-table">
+        <thead><tr><th>#</th><th>고객 ID</th><th>위험도</th><th>월평균 결제액</th><th>근사 LTV</th></tr></thead>
+        <tbody>${rows.map((row, index) => html`
+          <tr key=${row.msno}>
+            <td class="priority-rank">${index + 1}</td>
+            <td class="mono-cell">${row.msno}</td>
+            <td><span class="chip chip-critical chip-sm">${Number(row.churn_proba).toFixed(3)}</span></td>
+            <td>${fmtNTD(row.avg_monthly_revenue)}</td>
+            <td><b>${fmtNTD(row.ltv_approx)}</b></td>
+          </tr>
+        `)}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function OverviewView({ overview, priorityCustomers, actionsSummary, onNavigate }) {
+  const summary = overview.summary || {};
+  const activity = overview.activity || {};
+  return html`
+    <div>
+      <div class="kpi-row">
+        <${StatTile} label="예측 대상 고객" value=${Number(summary.total_customers || 0).toLocaleString()} sub="customer_churn_scores 실DB" />
+        <${StatTile} label="Retention 고위험" value=${Number(summary.retention_high_risk || 0).toLocaleString()} sub="구독활성 고객" status="warning" />
+        <${StatTile} label="긴급 갱신 고위험" value=${Number(summary.renewal_high_risk || 0).toLocaleString()} sub="갱신유예기간" status="critical" />
+        <${StatTile} label="Win-back 후보" value=${Number(summary.winback_total || 0).toLocaleString()} sub="장기만료 전체" status="muted" />
+      </div>
+
+      <div class="priority-grid">
+        <div class="priority-card">
+          <div class="priority-card-head"><span class="priority-card-title">Retention 1순위</span><span class="evidence-tag">실DB</span></div>
+          <div class="priority-card-value">${Number(summary.retention_priority || 0).toLocaleString()}명</div>
+          <div class="priority-card-copy">구독활성·고위험·고월매출 고객. 상담이나 개인화 혜택의 ROI 우선순위입니다.</div>
+          <button type="button" class="btn btn-ghost btn-sm" onClick=${() => onNavigate("campaigns")}>캠페인 만들기</button>
+        </div>
+        <div class="priority-card">
+          <div class="priority-card-head"><span class="priority-card-title">긴급 갱신</span><span class="evidence-tag">실DB</span></div>
+          <div class="priority-card-value">${Number(summary.renewal_high_risk || 0).toLocaleString()}명</div>
+          <div class="priority-card-copy">만료 후 30일 이내의 고위험 고객. 결제·만료 상태 안내를 우선합니다.</div>
+          <button type="button" class="btn btn-ghost btn-sm" onClick=${() => onNavigate("customers")}>고객 확인</button>
+        </div>
+        <div class="priority-card">
+          <div class="priority-card-head"><span class="priority-card-title">Win-back 분리 운영</span><span class="evidence-tag">실DB</span></div>
+          <div class="priority-card-value">${Number(summary.winback_high_risk || 0).toLocaleString()}명</div>
+          <div class="priority-card-copy">이미 장기만료된 고위험 고객. 일반 Retention 캠페인과 섞지 않습니다.</div>
+          <button type="button" class="btn btn-ghost btn-sm" onClick=${() => onNavigate("campaigns")}>Win-back 설계</button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-title">최우선 케어 고객 Top 5</div>
+          <p class="section-intro" style=${{ margin: "0 0 8px" }}>구독활성·고위험·고월매출 고객을 근사 LTV 순으로 정렬했습니다.</p>
+          <${PriorityCustomersTable} rows=${priorityCustomers} />
+        </div>
+        <div class="panel">
+          <div class="panel-title">실행 현황</div>
+          <div class="kpi-row kpi-row-2x2">
+            <${StatTile} label="캠페인" value=${Number(activity.campaign_total || 0).toLocaleString()} sub="실행 완료 캠페인" />
+            <${StatTile} label="총 발송 기록" value=${Number(activity.action_total || 0).toLocaleString()} sub="customer_actions" />
+            <${StatTile} label="대상 고객" value=${Number(activity.action_customers || 0).toLocaleString()} sub="중복 제거" />
+            <${StatTile} label="전환 데이터" value="미수집" sub="성과로 해석하지 않음" status="muted" />
+          </div>
+          <p class="small-muted">현재 화면은 발송 기록만 집계합니다. 클릭·재구독·증분 매출은 이벤트 데이터 구축 후 제공합니다.</p>
+        </div>
       </div>
     </div>
   `;
+}
+
+function BusinessInsights({ overview }) {
+  const summary = overview.summary || {};
+  return html`
+    <div>
+      <div class="panel-title">선별된 비즈니스·마케팅 인사이트</div>
+      <div class="insight-grid">
+        <div class="insight-card">
+          <span class="evidence-tag">현재 Serving DB</span>
+          <div class="insight-card-title">고위험 고객도 생명주기별로 다른 처치가 필요</div>
+          <div class="insight-card-body">구독활성 ${Number(summary.retention_high_risk || 0).toLocaleString()}명은 이탈 예방, 갱신유예 ${Number(summary.renewal_high_risk || 0).toLocaleString()}명은 결제·갱신 지원, 장기만료 ${Number(summary.winback_high_risk || 0).toLocaleString()}명은 Win-back으로 분리해야 합니다.</div>
+        </div>
+        <div class="insight-card">
+          <span class="evidence-tag">현재 Serving DB</span>
+          <div class="insight-card-title">월매출은 위험도가 아니라 처치비용 배분 기준</div>
+          <div class="insight-card-body">고월매출 고객은 이탈 가능성이 더 높다는 의미가 아닙니다. 동일 위험도 안에서 상담·할인 비용을 우선 배정하기 위한 ROI 층화 변수로 사용합니다.</div>
+        </div>
+        <div class="insight-card">
+          <span class="evidence-tag offline">과거 Test 코호트</span>
+          <div class="insight-card-title">예산이 작으면 위험도 상위 5%</div>
+          <div class="insight-card-body">Test 기준 상위 5%는 Precision 61.06%, Recall 47.76%, Lift 9.55배였습니다. 혜택 단가가 높을 때 정밀 타깃 후보입니다.</div>
+        </div>
+        <div class="insight-card">
+          <span class="evidence-tag offline">과거 Test 코호트</span>
+          <div class="insight-card-title">포착 범위가 중요하면 위험도 상위 10%</div>
+          <div class="insight-card-body">Test 기준 상위 10%는 Precision 43.37%, Recall 67.86%, Lift 6.79배였습니다. 더 많은 이탈 고객을 포착할 때 적합합니다.</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function AnalysisView({ overview, kpis }) {
+  const shapTop10 = ((kpis && kpis.shap_importance) || []).slice(0, 10);
+  const retentionPoints = buildRetentionPoints(kpis && kpis.retention_cohort);
+  const segmentData = (overview.segment_counts || []).map((row) => ({ ...row, display: displaySegment(row.segment) }));
+  const lifecycleData = (overview.lifecycle_counts || []).map((row) => ({ ...row, label: `${row.lifecycle_status} · ${row.risk_tier}` }));
+  return html`
+    <div>
+      <div class="kpi-row">
+        <${StatTile} label="Test PR-AUC" value=${FINAL_MODEL_METRICS.prAuc.toFixed(4)} sub="불균형 이탈 클래스 주요 지표" status="good" />
+        <${StatTile} label="ROC-AUC" value=${FINAL_MODEL_METRICS.rocAuc.toFixed(4)} sub="전체 순위 판별력" status="good" />
+        <${StatTile} label="Precision / Recall" value="54.62% / 56.34%" sub="Threshold 0.270839" status="warning" />
+        <${StatTile} label="F1" value=${FINAL_MODEL_METRICS.f1.toFixed(4)} sub="Precision·Recall 균형" />
+      </div>
+      <div class="grid-2">
+        <div class="panel"><div class="panel-title">SHAP 이탈 동인 Top 10</div><p class="section-intro" style=${{ margin: "0 0 8px" }}>예측 근거이며 마케팅 처치의 인과 효과가 아닙니다.</p><${HBarChart} data=${shapTop10} valueKey="mean_abs_shap" labelKey="feature_ko" subLabelKey="feature" /></div>
+        <div class="panel"><div class="panel-title">퍼널 · 전체 대비 비율</div><p class="section-intro" style=${{ margin: "0 0 8px" }}>가입 전체 모집단 기반이며 예측 코호트와 분모가 다릅니다.</p><${HBarChart} data=${(kpis && kpis.funnel_stats) || []} valueKey="overall_pct" labelKey="stage" unit="%" maxOverride=${100} /></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel"><div class="panel-title">위험 × 월매출 세그먼트</div><${HBarChart} data=${segmentData} valueKey="cnt" labelKey="display" unit="명" /></div>
+        <div class="panel"><div class="panel-title">생명주기 × 위험도</div><${HBarChart} data=${lifecycleData} valueKey="cnt" labelKey="label" unit="명" /></div>
+      </div>
+      <div class="panel"><div class="panel-title">코호트 리텐션 · 관측된 지점</div><p class="section-intro" style=${{ margin: "0 0 8px" }}>가입월별 코호트를 평균해 장기 이용 흐름을 확인합니다.</p><${RetentionLine} points=${retentionPoints} /></div>
+      <${BusinessInsights} overview=${overview} />
+    </div>
+  `;
+}
+
+function CustomerView({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
+  return html`
+    <div>
+      <div class="panel">
+        <div class="panel-title">고객 목록과 상세</div>
+        <p class="section-intro">고객을 검토해 캠페인 초안에 담을 수 있습니다. 발송은 캠페인 실행 화면에서만 진행됩니다.</p>
+        <${ActionCenter} auth=${auth} draftCustomers=${draftCustomers} onAddToDraft=${onAddToDraft} onOpenCampaign=${onOpenCampaign} />
+      </div>
+    </div>
+  `;
+}
+
+function MarketingPlaybooks({ overview }) {
+  const summary = overview.summary || {};
+  return html`
+    <div class="priority-grid">
+      <div class="priority-card"><div class="priority-card-head"><span class="priority-card-title">Retention</span><span class="evidence-tag">실행 가능</span></div><div class="priority-card-value">${Number(summary.retention_high_risk || 0).toLocaleString()}명</div><div class="priority-card-copy">구독활성 고위험 고객. 고월매출은 개인화·상담, 저월매출은 저비용 자동 리마인드를 우선합니다.</div></div>
+      <div class="priority-card"><div class="priority-card-head"><span class="priority-card-title">긴급 갱신</span><span class="evidence-tag">실행 가능</span></div><div class="priority-card-value">${Number(summary.renewal_high_risk || 0).toLocaleString()}명</div><div class="priority-card-copy">갱신유예 고위험 고객. 할인보다 현재 구독·결제·만료 일정 안내를 먼저 제공합니다.</div></div>
+      <div class="priority-card"><div class="priority-card-head"><span class="priority-card-title">Win-back</span><span class="evidence-tag">실행 가능</span></div><div class="priority-card-value">${Number(summary.winback_high_risk || 0).toLocaleString()}명</div><div class="priority-card-copy">장기만료 고위험 고객. Retention과 분리해 복귀 혜택의 비용 상한을 별도로 관리합니다.</div></div>
+    </div>
+  `;
+}
+
+function CampaignView({ auth, overview, onCompleted, draftCustomers, onRemoveDraft, onClearDraft }) {
+  return html`
+    <div>
+      <${MarketingPlaybooks} overview=${overview} />
+      <div class="panel"><div class="panel-title">고객군 캠페인 만들기</div><${CampaignCenter} auth=${auth} onCompleted=${onCompleted} draftCustomers=${draftCustomers} onRemoveDraft=${onRemoveDraft} onClearDraft=${onClearDraft} /></div>
+    </div>
+  `;
+}
+
+function ActionHistoryPanel({ actionsSummary }) {
+  if (!actionsSummary || !actionsSummary.total) return html`<div class="detail-empty">아직 발송된 액션이 없습니다.</div>`;
+  return html`
+    <div>
+      <div class="kpi-row">
+        <${StatTile} label="총 발송 기록" value=${Number(actionsSummary.total).toLocaleString()} sub="customer_actions" />
+        ${(actionsSummary.by_type || []).map((item) => html`<${StatTile} key=${item.action_type} label=${ACTION_TYPE_LABELS[item.action_type] || item.action_type} value=${Number(item.cnt).toLocaleString()} sub="발송 건수" />`)}
+      </div>
+      <div class="ac-table-wrap" style=${{ maxHeight: "360px" }}><table class="priority-table"><thead><tr><th>고객</th><th>캠페인</th><th>액션</th><th>세그먼트</th><th>담당자</th><th>발송일시</th></tr></thead><tbody>
+        ${(actionsSummary.recent || []).map((row, index) => html`<tr key=${index}><td class="mono-cell">${row.msno}</td><td>${row.campaign_name || "개별 발송"}</td><td>${ACTION_TYPE_LABELS[row.action_type] || row.action_type}</td><td>${displaySegment(row.segment)}</td><td>${row.sent_by || "-"}</td><td>${fmtSentAt(row.sent_at)}</td></tr>`)}
+      </tbody></table></div>
+    </div>
+  `;
+}
+
+function CampaignHistoryPanel({ campaigns }) {
+  if (!campaigns || !campaigns.length) return html`<div class="detail-empty">아직 고객군 캠페인이 없습니다. 캠페인 실행 화면에서 대상 미리보기 후 생성할 수 있습니다.</div>`;
+  return html`
+    <div class="ac-table-wrap" style=${{ maxHeight: "360px" }}><table class="priority-table"><thead><tr><th>캠페인</th><th>목적</th><th>액션</th><th>대상</th><th>제외</th><th>담당자</th><th>실행일시</th></tr></thead><tbody>
+      ${campaigns.map((row) => html`<tr key=${row.id}><td>#${row.id} ${row.name}</td><td>${CAMPAIGN_PURPOSES[row.purpose] ? CAMPAIGN_PURPOSES[row.purpose].label : row.purpose}</td><td>${ACTION_TYPE_LABELS[row.action_type] || row.action_type}</td><td>${Number(row.recipient_count).toLocaleString()}명</td><td>${Number(row.excluded_count).toLocaleString()}명</td><td>${row.created_by || "-"}</td><td>${fmtSentAt(row.launched_at || row.created_at)}</td></tr>`)}
+    </tbody></table></div>
+  `;
+}
+
+function HistoryView({ actionsSummary, campaigns }) {
+  return html`
+    <div>
+      <div class="campaign-warning">현재는 발송 기록만 제공합니다. 클릭률·재구독률·증분 매출은 수집하지 않았으므로 캠페인 성과로 표시하지 않습니다.</div>
+      <div class="panel" style=${{ marginTop: "16px" }}><div class="panel-title">고객군 캠페인 이력</div><${CampaignHistoryPanel} campaigns=${campaigns} /></div>
+      <div class="panel"><div class="panel-title">최근 고객별 발송 기록</div><${ActionHistoryPanel} actionsSummary=${actionsSummary} /></div>
+    </div>
+  `;
+}
+
+function GovernanceView({ overview }) {
+  const summary = overview.summary || {};
+  return html`
+    <div>
+      <div class="grid-2">
+        <div class="panel"><div class="panel-title">운영 모델</div><table class="priority-table"><tbody>
+          <tr><th>모델</th><td>${FINAL_MODEL_METRICS.model}</td></tr><tr><th>입력 피처</th><td>${FINAL_MODEL_METRICS.featureCount}개</td></tr><tr><th>관측 종료일</th><td>2017-01-31</td></tr><tr><th>Test PR-AUC</th><td>${FINAL_MODEL_METRICS.prAuc.toFixed(6)}</td></tr><tr><th>Test ROC-AUC</th><td>${FINAL_MODEL_METRICS.rocAuc.toFixed(6)}</td></tr><tr><th>Threshold</th><td>${FINAL_MODEL_METRICS.threshold.toFixed(6)}</td></tr><tr><th>Serving 고객</th><td>${Number(summary.total_customers || 0).toLocaleString()}명</td></tr>
+        </tbody></table></div>
+        <div class="panel"><div class="panel-title">해석 안전장치</div><div class="governance-list">
+          <div class="governance-item"><b>스냅샷 데이터</b><span>현재 실시간 고객 상태가 아니라 2017-01-31까지 관측된 과거 상태입니다.</span></div>
+          <div class="governance-item"><b>SHAP 비인과성</b><span>이탈 예측 근거이며 특정 마케팅 액션의 효과를 증명하지 않습니다.</span></div>
+          <div class="governance-item"><b>근사 LTV</b><span>월평균 결제액과 예상 잔존기간으로 계산한 분석용 근사값입니다.</span></div>
+          <div class="governance-item"><b>미래 코호트 검증 필요</b><span>실제 배포 성능은 시간적으로 분리된 이후 코호트에서 다시 평가해야 합니다.</span></div>
+        </div></div>
+      </div>
+    </div>
+  `;
+}
+
+function AdminWorkspace({ auth, activeView, onNavigate, draftCustomers, onAddToDraft, onRemoveDraft, onClearDraft }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (!auth) return;
+    setLoading(true);
+    setError("");
+    const headers = { Authorization: `Bearer ${auth.token}` };
+    const getJson = (path, label) => fetch(`${API_BASE}${path}`, { headers }).then(async (response) => {
+      if (!response.ok) throw new Error(`${label} 조회 실패 (${response.status})`);
+      return response.json();
+    });
+    Promise.all([
+      getJson("/admin/overview", "운영 현황"),
+      getJson("/admin/kpis", "분석 KPI"),
+      getJson(`/admin/customers?${new URLSearchParams({ segment: "고위험/고가치", lifecycle_status: "구독활성", sort_by: "ltv_approx", page_size: "5" }).toString()}`, "우선순위 고객"),
+      getJson("/admin/actions/summary", "발송 현황"),
+      getJson("/admin/campaigns?limit=20", "캠페인 이력"),
+    ])
+      .then(([overview, kpis, priority, actionsSummary, campaigns]) => setData({ overview, kpis, priorityCustomers: priority.items || [], actionsSummary, campaigns }))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [auth, refreshKey]);
+
+  if (loading) return html`<p class="section-intro">관리자 데이터를 불러오는 중...</p>`;
+  if (error) return html`<div class="detail-empty">${error}</div>`;
+  if (!data) return null;
+  if (activeView === "overview") return html`<${OverviewView} overview=${data.overview} priorityCustomers=${data.priorityCustomers} actionsSummary=${data.actionsSummary} onNavigate=${onNavigate} />`;
+  if (activeView === "analysis") return html`<${AnalysisView} overview=${data.overview} kpis=${data.kpis} />`;
+  if (activeView === "customers") return html`<${CustomerView} auth=${auth} draftCustomers=${draftCustomers} onAddToDraft=${onAddToDraft} onOpenCampaign=${() => onNavigate("campaigns")} />`;
+  if (activeView === "campaigns") return html`<${CampaignView} auth=${auth} overview=${data.overview} onCompleted=${() => setRefreshKey((value) => value + 1)} draftCustomers=${draftCustomers} onRemoveDraft=${onRemoveDraft} onClearDraft=${onClearDraft} />`;
+  if (activeView === "history") return html`<${HistoryView} actionsSummary=${data.actionsSummary} campaigns=${data.campaigns} />`;
+  return html`<${GovernanceView} overview=${data.overview} />`;
 }
 
 /* ============================== 로그인(관리자 전용) ============================== */
@@ -1406,6 +2088,7 @@ function LoginScreen({ onLogin }) {
 /* ============================== 루트 ============================== */
 
 const ADMIN_AUTH_STORAGE_KEY = "kkbox_admin_auth";
+const CAMPAIGN_DRAFT_STORAGE_KEY = "kkbox_admin_campaign_draft";
 
 // 새로고침해도 로그인이 풀리지 않도록, 로그인 정보(토큰)를 localStorage에 저장해뒀다가
 // 앱이 다시 켜질 때 그대로 복원한다. 로그아웃하면 지운다.
@@ -1418,8 +2101,41 @@ function loadStoredAdminAuth() {
   }
 }
 
+function loadStoredCampaignDraft() {
+  try {
+    const raw = localStorage.getItem(CAMPAIGN_DRAFT_STORAGE_KEY);
+    const items = raw ? JSON.parse(raw) : [];
+    return Array.isArray(items) ? items.slice(0, 500) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
 function App() {
   const [auth, setAuth] = useState(loadStoredAdminAuth); // null | { role: "admin", token, name }
+  const [activeView, setActiveView] = useState("overview");
+  const [draftCustomers, setDraftCustomers] = useState(loadStoredCampaignDraft);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CAMPAIGN_DRAFT_STORAGE_KEY, JSON.stringify(draftCustomers));
+    } catch (e) {}
+  }, [draftCustomers]);
+
+  function addToCampaignDraft(customer) {
+    setDraftCustomers((current) => {
+      if (current.some((item) => item.msno === customer.msno) || current.length >= 500) return current;
+      return [...current, customer];
+    });
+  }
+
+  function removeFromCampaignDraft(msno) {
+    setDraftCustomers((current) => current.filter((customer) => customer.msno !== msno));
+  }
+
+  function clearCampaignDraft() {
+    setDraftCustomers([]);
+  }
 
   function handleLogin(newAuth) {
     setAuth(newAuth);
@@ -1430,8 +2146,10 @@ function App() {
 
   function handleLogout() {
     setAuth(null);
+    setDraftCustomers([]);
     try {
       localStorage.removeItem(ADMIN_AUTH_STORAGE_KEY);
+      localStorage.removeItem(CAMPAIGN_DRAFT_STORAGE_KEY);
     } catch (e) {}
   }
 
@@ -1439,25 +2157,40 @@ function App() {
     return html`<${LoginScreen} onLogin=${handleLogin} />`;
   }
 
+  const currentPage = ADMIN_NAV_ITEMS.find((item) => item.key === activeView) || ADMIN_NAV_ITEMS[0];
+
   return html`
-    <div class="app-root">
-      <header class="top-header">
-        <div class="brand">
+    <div class="admin-shell">
+      <header class="admin-sidebar">
+        <div class="sidebar-brand">
           <span class="brand-mark">K</span>
           <div>
-            <div class="brand-title">KKBOX 이탈방지 관리자 콘솔</div>
-            <div class="brand-sub">SKN-2nd-2team · 관리자 · ${auth.name}</div>
+            <div class="sidebar-brand-title">KKBOX Admin</div>
+            <div class="sidebar-brand-sub">이탈방지 운영 콘솔</div>
           </div>
         </div>
-        <nav class="tab-nav">
-          <button class="logout-btn" onClick=${handleLogout}>로그아웃</button>
+        <div class="sidebar-label">운영 메뉴</div>
+        <nav class="sidebar-nav" aria-label="관리자 메뉴">
+          ${ADMIN_NAV_ITEMS.map((item) => html`
+            <button key=${item.key} type="button" class="sidebar-nav-btn ${activeView === item.key ? "sidebar-nav-active" : ""}" onClick=${() => setActiveView(item.key)}>
+              <span class="sidebar-nav-label">${item.label}</span>
+              <span class="sidebar-nav-hint">${item.subtitle}</span>
+            </button>
+          `)}
         </nav>
+        <div class="sidebar-meta">운영 시스템 정상<br />고객 데이터 연결됨</div>
       </header>
-      <main class="main-content"><${AdminTab} auth=${auth} /></main>
-      <footer class="page-footer">
-        모든 수치는 kkbox_serving DB(customer_churn_scores, model_stats 등)에서 실시간 조회한 값입니다. A/B 테스트 결과는 실제 실행 결과가 아닌 예시(mock)입니다.
-        고객모드 화면은 별도 파일(kkbox_customer.html)에서 확인하세요.
-      </footer>
+      <section class="admin-workspace">
+        <header class="admin-topbar">
+          <div><h1 class="page-title">${currentPage.label}</h1><div class="page-subtitle">${currentPage.subtitle}</div></div>
+          <div class="admin-user-row">
+            ${draftCustomers.length ? html`<button type="button" class="admin-draft-btn" onClick=${() => setActiveView("campaigns")}>캠페인 초안 ${draftCustomers.length}명</button>` : null}
+            <span>${auth.name} · 운영자</span><button class="logout-btn" onClick=${handleLogout}>로그아웃</button>
+          </div>
+        </header>
+        <main class="admin-page-content"><${AdminWorkspace} auth=${auth} activeView=${activeView} onNavigate=${setActiveView} draftCustomers=${draftCustomers} onAddToDraft=${addToCampaignDraft} onRemoveDraft=${removeFromCampaignDraft} onClearDraft=${clearCampaignDraft} /></main>
+        <footer class="page-footer">KKBOX Retention Operations · 관리자 전용</footer>
+      </section>
     </div>
   `;
 }
