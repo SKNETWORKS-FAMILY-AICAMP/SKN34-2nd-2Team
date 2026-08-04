@@ -84,13 +84,20 @@ def main():
     step("4) LTV 계산 (prepare_data.py 7단계와 동일 로직)")
     txn = pd.read_csv(
         PROCESSED_DIR / "features_transactions.csv",
-        usecols=["msno", "total_amount_paid", "txn_count", "last_payment_plan_days"],
+        usecols=[
+            "msno", "total_amount_paid", "txn_count", "last_payment_plan_days",
+            "last_plan_list_price", "last_is_auto_renew",
+        ],
     )
     txn["avg_revenue_per_txn"] = txn["total_amount_paid"] / txn["txn_count"].clip(lower=1)
     plan_days_for_norm = txn["last_payment_plan_days"].clip(lower=7)
     txn["avg_monthly_revenue"] = txn["avg_revenue_per_txn"] / (plan_days_for_norm / 30)
 
-    result = df.merge(txn[["msno", "avg_monthly_revenue"]], on="msno", how="inner")
+    # 구독권 결제 탭에 "현재 요금제"로 그대로 보여줄 실제 마지막 결제 내역 (raw transactions.csv 기반).
+    result = df.merge(
+        txn[["msno", "avg_monthly_revenue", "last_payment_plan_days", "last_plan_list_price", "last_is_auto_renew"]],
+        on="msno", how="inner",
+    )
     result["churn_proba_floored"] = result["churn_proba"].clip(lower=0.01)
     result["expected_lifetime_months"] = (1 / result["churn_proba_floored"]).clip(upper=60)
     result["ltv_approx"] = result["avg_monthly_revenue"] * result["expected_lifetime_months"]
@@ -122,9 +129,14 @@ def main():
         "msno", "churn_proba", "risk_tier", "ltv_tier", "segment",
         "avg_monthly_revenue", "expected_lifetime_months", "ltv_approx",
         "days_to_expire", "days_since_last_txn", "lifecycle_status",
+        "last_payment_plan_days", "last_plan_list_price", "last_is_auto_renew",
     ]
     final = result[final_cols].copy()
-    final["scored_at"] = pd.Timestamp.now().strftime("%Y-%m-%d")
+    # days_to_expire/days_since_last_txn은 03_transactions_features.ipynb의 CUTOFF_DATE(2017-01-31, 원본
+    # transactions.csv 컷오프)를 기준으로 계산된 값이다. 여기서 scored_at을 스크립트 "실행 시각"(pd.Timestamp.now())
+    # 으로 찍으면 서로 다른 두 시점이 섞여서(예: 오늘 날짜 + days_to_expire) 말이 안 되는 절대 날짜가 나온다.
+    # 반드시 같은 기준일을 써야 한다.
+    final["scored_at"] = "2017-01-31"
 
     out_path = OUT_DIR / "customer_churn_scores.csv"
     final.to_csv(out_path, index=False)
