@@ -1,5 +1,13 @@
 """
-customer_churn_scores에 lifecycle_status 컬럼을 추가하고 값을 채운다.
+[레거시/선택 실행] customer_churn_scores에 lifecycle_status 컬럼을 추가하고 값을 채운다.
+
+이 스크립트가 필요했던 건 build_scoring_table.py가 lifecycle_status를 계산하기 전
+시점의 데이터뿐이다. 지금은 build_scoring_table.py 5b단계가 이미 CSV에 lifecycle_status를
+계산해 넣고 schema.sql의 CREATE TABLE도 그 컬럼을 이미 선언하고 있어서, load_to_mysql.py로
+적재하면 이 스크립트 없이도 값이 정확히 채워진다 — 즉 build_scoring_table.py를 다시 돌려서
+DB를 새로 적재한 이후로는 이 스크립트를 돌려도(같은 로직·같은 임계값이라) 결과가 달라지지
+않는 중복 작업이다. build_scoring_table.py를 거치지 않고 옛날에 이미 적재된 DB에 컬럼만
+급하게 채워야 하는 상황이 아니라면 실행할 필요 없음 — 참고용으로만 남겨둠.
 
 모델을 다시 돌리거나 build_scoring_table.py를 재실행할 필요 없음 — 이미 있는
 days_to_expire 값만으로 "구독 생애주기 상태"를 분류하는 순수 후처리 작업이다.

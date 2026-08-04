@@ -543,9 +543,14 @@ def actions_summary(_: dict = Depends(require_staff)):
 
 @router.post("/customers/{msno}/actions")
 def send_customer_action(msno: str, body: ActionRequest, staff: dict = Depends(require_staff)):
-    """관리자가 특정 고객에게 리마인드/할인 오퍼를 "발송"한 것으로 기록.
-    실제 이메일/푸시 발송은 하지 않고, DB에 기록만 남긴다 — 그 msno로 고객 로그인하면
-    /me/actions에서 이 기록을 조회해 소비자 앱 알림함에 보여준다."""
+    """[관리자 화면(kkbox_admin.html) 미사용] 관리자가 특정 고객에게 리마인드/할인 오퍼를
+    "발송"한 것으로 기록. 실제 이메일/푸시 발송은 하지 않고, DB에 기록만 남긴다 — 그 msno로
+    고객 로그인하면 /me/actions에서 이 기록을 조회해 소비자 앱 알림함에 보여준다.
+
+    개별 고객 1명 대상 액션은 현재 화면에서 /admin/campaigns(POST)의
+    selection_mode="manual" + manual_msnos=[msno] 경로로 나가고 있어서, 이 엔드포인트는
+    화면 어디서도 호출되지 않는다. API 단독 테스트(Swagger)용으로만 남겨둠 — 필요 없으면
+    삭제해도 캠페인 플로우에는 영향 없음."""
     if body.action_type not in VALID_ACTION_TYPES:
         raise HTTPException(status_code=400, detail="action_type은 reminder 또는 discount_offer여야 합니다")
 
