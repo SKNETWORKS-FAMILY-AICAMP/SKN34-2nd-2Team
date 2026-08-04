@@ -104,6 +104,9 @@ class CustomerRisk(BaseModel):
     days_to_expire: Optional[int] = None
     days_since_last_txn: Optional[int] = None
     lifecycle_status: Optional[str] = None
+    last_payment_plan_days: Optional[int] = None
+    last_plan_list_price: Optional[float] = None
+    last_is_auto_renew: Optional[bool] = None
     scored_at: Optional[date] = None
 
 
@@ -126,8 +129,14 @@ class ActionRecord(BaseModel):
     id: int
     msno: str
     action_type: str
+    is_read: bool = False
+    benefit_key: Optional[str] = None
     sent_by: Optional[str] = None
     sent_at: datetime
+
+
+class BenefitClaimRequest(BaseModel):
+    benefit_key: Literal["concert_raffle", "annual_tier", "renewal_reward"]
 
 
 class ActionsSummaryResponse(BaseModel):
