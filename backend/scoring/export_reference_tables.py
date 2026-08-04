@@ -1,18 +1,14 @@
 """
 Phase 1b — 참조 테이블 5개를 schema.sql 컬럼 구조에 맞게 다시 저장한다.
 
-v2(누수 수정) 파이프라인이 만든 data/dashboard/*.csv를 그대로 재사용한다 — 다시 계산하지 않음.
-컬럼 이름/형태만 MySQL 테이블에 맞게 맞춘다.
+streamlit_app/prepare_data.py가 이미 계산해놓은 결과(streamlit_app/data/*.csv)를
+그대로 재사용한다 — 다시 계산하지 않음. 컬럼 이름/형태만 MySQL 테이블에 맞게 맞춘다.
 
-단, model_stats(모델 비교표)만 예외로 streamlit_app/data/model_comparison.csv를 그대로 쓴다 —
-이건 LightGBM/XGBoost/CatBoost/RandomForest/LogisticRegression "알고리즘 간" 비교표라 v1/v2
-파이프라인 교체와 무관하고, 실제로 다시 계산된 적이 없다(교체 대상 아님).
-
-다만 관리자 대시보드에서 "지금 서빙 중인 모델 성능"으로 오해되기 쉬웠던 LightGBM 행만은,
-저장 직전에 models/lightgbm_enhanced_v2_meta.json의 실제 v2 서빙 값(test_auc/test_f1/threshold)으로
-덮어쓴다. 나머지 4개 알고리즘 행은 그대로 구버전(누수 수정 전) 비교표 값이다 — "5개 알고리즘 동일 기준
-비교"라는 원래 목적은 이 한 줄만큼은 깨지는 셈이지만, 관리자 화면에 실제와 다른 AUC가 뜨는 것보다는
-낫다고 판단해 이렇게 처리한다.
+예외 1가지: model_comparison.csv의 LightGBM 행은 예전 알고리즘 비교 실험 때 나온
+값(test_auc=0.9915)이라, 실제로 지금 서빙 중인 모델(lightgbm_enhanced_v2)의 진짜
+성능과 다르다. 그래서 LightGBM 행만 lightgbm_enhanced_v2_meta.json의 실제 값으로
+덮어쓴다. 나머지 4개 알고리즘(XGBoost/CatBoost/RandomForest/LogisticRegression)은
+"어떤 알고리즘이 제일 나았는지" 비교용 레거시 값 그대로 둔다.
 
 실행: python backend/scoring/export_reference_tables.py
 """
@@ -22,8 +18,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-DASH_DATA = ROOT / "data" / "dashboard"
-LEGACY_DASH_DATA = ROOT / "streamlit_app" / "data"  # model_comparison.csv 전용 (교체 대상 아님)
+DASH_DATA = ROOT / "streamlit_app" / "data"
 MODELS_DIR = ROOT / "models"
 OUT_DIR = Path(__file__).resolve().parent / "output"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -41,7 +36,7 @@ DRIVER_KO = {
 def main():
     # 1) model_stats — LightGBM/XGBoost/... test 행만 (실서비스는 채택 모델만 보여주면 되지만,
     #    운영 대시보드 "모델 비교" 탭에서 5개 다 보여주는 중이므로 test split만 남긴다)
-    mc = pd.read_csv(LEGACY_DASH_DATA / "model_comparison.csv")
+    mc = pd.read_csv(DASH_DATA / "model_comparison.csv")
     model_stats = mc[mc["split"] == "test"][["model", "auc", "f1", "threshold"]].rename(
         columns={"model": "model_name"}
     )

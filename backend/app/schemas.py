@@ -56,6 +56,7 @@ class CustomerRisk(BaseModel):
     ltv_approx: Optional[float] = None
     days_to_expire: Optional[int] = None
     days_since_last_txn: Optional[int] = None
+    lifecycle_status: Optional[str] = None
     scored_at: Optional[date] = None
 
 
@@ -80,3 +81,10 @@ class ActionRecord(BaseModel):
     action_type: str
     sent_by: Optional[str] = None
     sent_at: datetime
+
+
+class ActionsSummaryResponse(BaseModel):
+    total: int
+    by_type: list[dict]
+    by_segment: list[dict]
+    recent: list[dict]

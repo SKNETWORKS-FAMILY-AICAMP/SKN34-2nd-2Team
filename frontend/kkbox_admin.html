@@ -638,6 +638,25 @@ function fmtSentAt(iso) {
   return d.toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
+// lifecycle_status(구독활성/갱신유예기간/장기만료/상태확인필요)를 days_to_expire와 함께
+// 사람이 읽기 좋은 문구 + 칩 색상으로 변환. days_to_expire 원본은 그대로 실데이터.
+function formatLifecycle(status, daysToExpire) {
+  if (status === "구독활성") {
+    return { text: `만료까지 D-${daysToExpire ?? "-"}`, cls: "chip-accent" };
+  }
+  if (status === "갱신유예기간") {
+    const d = daysToExpire != null ? Math.abs(daysToExpire) : "-";
+    return { text: `만료 후 ${d}일 · 갱신 유예기간`, cls: "chip-warning" };
+  }
+  if (status === "장기만료") {
+    return { text: "장기 만료 · Win-back 대상", cls: "chip-critical" };
+  }
+  if (status === "상태확인필요") {
+    return { text: "상태 확인 필요", cls: "" };
+  }
+  return { text: daysToExpire != null ? `만료 D-${daysToExpire}` : "-", cls: "" };
+}
+
 // retention_cohort 테이블은 (cohort_month, month_offset)별로 여러 코호트를 담고 있을 수 있어서,
 // 화면에는 가장 최신 cohort_month 하나만 골라 M0(가입월)~M.. 순서로 정렬해 꺾은선으로 보여준다.
 function buildRetentionPoints(rows) {
@@ -780,7 +799,7 @@ function CustomerDetail({ customer, auth }) {
       <div class="row gap8" style=${{ flexWrap: "wrap", marginBottom: "10px" }}>
         <span class="chip chip-accent">월평균 결제 ₩${customer.avg_monthly_revenue != null ? Math.round(customer.avg_monthly_revenue).toLocaleString() : "-"}</span>
         <span class="chip chip-accent">예상 LTV ₩${customer.ltv_approx != null ? Math.round(customer.ltv_approx).toLocaleString() : "-"}</span>
-        <span class="chip">만료 D-${customer.days_to_expire ?? "-"}</span>
+        <span class="chip ${formatLifecycle(customer.lifecycle_status, customer.days_to_expire).cls}">${formatLifecycle(customer.lifecycle_status, customer.days_to_expire).text}</span>
         <span class="chip">마지막 결제 ${customer.days_since_last_txn ?? "-"}일 전</span>
       </div>
       <div class="detail-sub-title">추천 액션</div>

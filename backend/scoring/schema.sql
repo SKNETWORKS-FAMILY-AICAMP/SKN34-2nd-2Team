@@ -19,9 +19,11 @@ CREATE TABLE IF NOT EXISTS customer_churn_scores (
   ltv_approx                DECIMAL(12,2),
   days_to_expire            INT,
   days_since_last_txn       INT,
+  lifecycle_status          VARCHAR(30),
   scored_at                 DATE NOT NULL,
   INDEX idx_risk (risk_tier),
-  INDEX idx_segment (segment)
+  INDEX idx_segment (segment),
+  INDEX idx_lifecycle (lifecycle_status)
 );
 
 CREATE TABLE IF NOT EXISTS staff_accounts (
