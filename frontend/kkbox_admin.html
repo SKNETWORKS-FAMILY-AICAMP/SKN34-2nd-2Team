@@ -618,7 +618,27 @@ const { useState, useMemo, useEffect } = React;
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
 const API_BASE = "http://localhost:8000";
 
-/* ============================== 대시보드 데이터는 전부 /admin/kpis, /admin/customers 실시간 조회로 대체됨 (AdminTab 참고) ============================== */
+/* ============================== 실제 데이터 (관리자 API에서 실시간 조회) ============================== */
+// 아래 mock 상수들은 전부 제거하고, AdminTab이 /admin/kpis + /admin/customers를 실시간으로
+// 불러와 화면을 채운다. (예전엔 여기 하드코딩된 값이 있었는데, 실DB 연동으로 교체함)
+
+const LTV_SEGMENT_META = [
+  { key: "고위험/고가치", label: "고위험 × 고가치", status: "critical" },
+  { key: "고위험/저가치", label: "고위험 × 저가치", status: "warning" },
+  { key: "저위험/고가치", label: "저위험 × 고가치", status: "good" },
+  { key: "저위험/저가치", label: "저위험 × 저가치", status: "muted" },
+];
+
+// retention_cohort 테이블은 (cohort_month, month_offset)별로 여러 코호트를 담고 있을 수 있어서,
+// 화면에는 가장 최신 cohort_month 하나만 골라 M0(가입월)~M.. 순서로 정렬해 꺾은선으로 보여준다.
+function buildRetentionPoints(rows) {
+  if (!rows || !rows.length) return [];
+  const latestCohort = rows.reduce((max, r) => (r.cohort_month > max ? r.cohort_month : max), rows[0].cohort_month);
+  return rows
+    .filter((r) => r.cohort_month === latestCohort)
+    .sort((a, b) => a.month_offset - b.month_offset)
+    .map((r) => ({ m: r.month_offset === 0 ? "가입월" : `M${r.month_offset}`, pct: Number(r.pct), observed: true }));
+}
 
 /* ============================== 차트 컴포넌트 (dataviz 팔레트 기반) ============================== */
 
@@ -661,6 +681,10 @@ function StatTile({ label, value, sub, status }) {
 }
 
 function RetentionLine({ points }) {
+  const pts = points || [];
+  if (!pts.length) {
+    return html`<p class="small-muted">리텐션 코호트 데이터가 아직 없어요.</p>`;
+  }
   const w = 560,
     h = 170,
     padL = 40,
@@ -669,7 +693,6 @@ function RetentionLine({ points }) {
     padB = 30;
   const innerW = w - padL - padR,
     innerH = h - padT - padB;
-  const pts = points && points.length ? points : [{ m: "-", pct: 0, observed: false }];
   const x = (i) => padL + (i / Math.max(1, pts.length - 1)) * innerW;
   const y = (pct) => padT + innerH - (pct / 100) * innerH;
   const path = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${x(i)} ${y(p.pct)}`).join(" ");
@@ -920,24 +943,21 @@ function ABTestMonitor() {
   `;
 }
 
-const LTV_SEGMENT_META = [
-  { seg: "고위험/고가치", key: "highRiskHighValue", label: "고위험 × 고가치", status: "critical" },
-  { seg: "고위험/저가치", key: "highRiskLowValue", label: "고위험 × 저가치", status: "warning" },
-  { seg: "저위험/고가치", key: "lowRiskHighValue", label: "저위험 × 고가치", status: "good" },
-  { seg: "저위험/저가치", key: "lowRiskLowValue", label: "저위험 × 저가치", status: "muted" },
-];
-
-const RETENTION_OFFSETS = [
-  { m: "가입월", offset: 0 },
-  { m: "M1", offset: 1 },
-  { m: "M6", offset: 6 },
-  { m: "M11", offset: 11 },
-];
+async function fetchCustomerTotal(auth, params) {
+  const qs = new URLSearchParams({ page_size: "1", ...params });
+  const res = await fetch(`${API_BASE}/admin/customers?${qs.toString()}`, {
+    headers: { Authorization: `Bearer ${auth.token}` },
+  });
+  if (!res.ok) throw new Error(`고객 집계 조회 실패 (${res.status})`);
+  const data = await res.json();
+  return data.total || 0;
+}
 
 function AdminTab({ auth }) {
   const [kpis, setKpis] = useState(null);
-  const [totalCustomers, setTotalCustomers] = useState(null);
-  const [segmentCounts, setSegmentCounts] = useState(null);
+  const [totalCustomers, setTotalCustomers] = useState(0);
+  const [highRiskTotal, setHighRiskTotal] = useState(0);
+  const [segmentCounts, setSegmentCounts] = useState({});
   const [ltvPriority, setLtvPriority] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -946,122 +966,70 @@ function AdminTab({ auth }) {
     if (!auth) return;
     setLoading(true);
     setError("");
-    const headers = { Authorization: `Bearer ${auth.token}` };
-
     Promise.all([
-      fetch(`${API_BASE}/admin/kpis`, { headers }).then((r) => {
+      fetch(`${API_BASE}/admin/kpis`, { headers: { Authorization: `Bearer ${auth.token}` } }).then((r) => {
         if (!r.ok) throw new Error(`KPI 조회 실패 (${r.status})`);
         return r.json();
       }),
-      fetch(`${API_BASE}/admin/customers?page_size=1`, { headers }).then((r) => {
-        if (!r.ok) throw new Error(`고객 수 조회 실패 (${r.status})`);
+      fetchCustomerTotal(auth, {}),
+      fetchCustomerTotal(auth, { risk_tier: "고위험" }),
+      Promise.all(LTV_SEGMENT_META.map((s) => fetchCustomerTotal(auth, { segment: s.key }))),
+      fetch(
+        `${API_BASE}/admin/customers?${new URLSearchParams({
+          segment: "고위험/고가치",
+          sort_by: "ltv_approx",
+          page_size: "5",
+        }).toString()}`,
+        { headers: { Authorization: `Bearer ${auth.token}` } }
+      ).then((r) => {
+        if (!r.ok) throw new Error(`우선순위 고객 조회 실패 (${r.status})`);
         return r.json();
       }),
-      Promise.all(
-        LTV_SEGMENT_META.map((s) =>
-          fetch(`${API_BASE}/admin/customers?${new URLSearchParams({ segment: s.seg, page_size: "1" })}`, { headers }).then(
-            (r) => (r.ok ? r.json() : { total: 0 })
-          )
-        )
-      ),
-      fetch(
-        `${API_BASE}/admin/customers?${new URLSearchParams({ segment: "고위험/고가치", sort_by: "ltv_approx", page_size: "5" })}`,
-        { headers }
-      ).then((r) => (r.ok ? r.json() : { items: [] })),
     ])
-      .then(([kpiData, totalData, segDataList, ltvData]) => {
+      .then(([kpiData, total, highRisk, segTotals, priorityData]) => {
         setKpis(kpiData);
-        setTotalCustomers(totalData.total || 0);
-        const counts = {};
-        LTV_SEGMENT_META.forEach((s, i) => {
-          counts[s.seg] = segDataList[i].total || 0;
-        });
-        setSegmentCounts(counts);
-        setLtvPriority(ltvData.items || []);
+        setTotalCustomers(total);
+        setHighRiskTotal(highRisk);
+        setSegmentCounts(
+          LTV_SEGMENT_META.reduce((acc, s, i) => ({ ...acc, [s.key]: segTotals[i] }), {})
+        );
+        setLtvPriority(priorityData.items || []);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [auth]);
 
-  if (loading) {
-    return html`<div class="detail-empty">대시보드 데이터를 불러오는 중...</div>`;
-  }
-  if (error) {
-    return html`<div class="detail-empty">${error}</div>`;
-  }
-  if (!kpis) return null;
+  if (loading) return html`<p class="section-intro">불러오는 중...</p>`;
+  if (error) return html`<div class="detail-empty">${error}</div>`;
 
-  const shapFeatures = (kpis.shap_importance || [])
-    .slice(0, 10)
-    .map((f) => ({ name: f.feature, ko: f.feature_ko || f.feature, v: f.mean_abs_shap }));
-
-  const funnel = (kpis.funnel_stats || []).map((f) => ({
-    step: f.stage,
-    count: f.cnt,
-    pctTotal: f.overall_pct,
-    pctPrior: f.stage_conversion_pct,
-  }));
-
-  const segmentDrivers = (kpis.segment_drivers || []).map((d) => ({
-    name: d.driver_feature,
-    ko: d.driver_ko || d.driver_feature,
-    count: d.cnt,
-    pct: d.pct,
-  }));
-  const driverSampleTotal = segmentDrivers.reduce((sum, d) => sum + (d.count || 0), 0);
-
-  const cohortSum = {};
-  const cohortCnt = {};
-  (kpis.retention_cohort || []).forEach((r) => {
-    cohortSum[r.month_offset] = (cohortSum[r.month_offset] || 0) + r.pct;
-    cohortCnt[r.month_offset] = (cohortCnt[r.month_offset] || 0) + 1;
-  });
-  const retentionPoints = RETENTION_OFFSETS.filter((p) => cohortCnt[p.offset]).map((p) => ({
-    m: p.m,
-    pct: cohortSum[p.offset] / cohortCnt[p.offset],
-    observed: true,
-  }));
-
-  const lightgbmRow = (kpis.model_stats || []).find((m) => m.model_name === "LightGBM") || {};
-
-  const ltvSegments = segmentCounts
-    ? LTV_SEGMENT_META.map((s) => ({ key: s.key, label: s.label, status: s.status, count: segmentCounts[s.seg] || 0 }))
-    : [];
-  const highRiskTotal = segmentCounts ? (segmentCounts["고위험/고가치"] || 0) + (segmentCounts["고위험/저가치"] || 0) : 0;
-  const highRiskPct = totalCustomers ? ((highRiskTotal / totalCustomers) * 100).toFixed(1) : "-";
-
-  const ltvPriorityRows = ltvPriority.map((c, i) => ({
-    rank: i + 1,
-    id: c.msno,
-    risk: c.churn_proba,
-    monthlyRevenue: c.avg_monthly_revenue,
-    ltv: c.ltv_approx,
-  }));
+  const lgbm = ((kpis && kpis.model_stats) || []).find((m) => m.model_name === "LightGBM") || {};
+  const shapTop10 = ((kpis && kpis.shap_importance) || []).slice(0, 10);
+  const retentionPoints = buildRetentionPoints(kpis && kpis.retention_cohort);
+  const highRiskPct = totalCustomers ? ((highRiskTotal / totalCustomers) * 100).toFixed(1) : "0.0";
 
   return html`
     <div>
-      <p class="section-intro">운영팀이 매일 보는 내부 대시보드입니다. 아래 수치는 모두 kkbox_serving DB(customer_churn_scores 등)에서 실시간으로 조회한 값입니다.</p>
+      <p class="section-intro">운영팀이 매일 보는 내부 대시보드입니다. customer_churn_scores 등 실DB 값을 실시간으로 조회합니다.</p>
 
       <div class="kpi-row">
-        <${StatTile} label="예측 대상 고객수" value=${totalCustomers != null ? totalCustomers.toLocaleString() : "-"} sub="customer_churn_scores 기준" />
-        <${StatTile}
-          label="LightGBM AUC"
-          value=${lightgbmRow.auc != null ? Number(lightgbmRow.auc).toFixed(4) : "-"}
-          sub="모델 비교표(model_stats) 기준 — 알고리즘 간 비교용"
-          status="good"
-        />
-        <${StatTile} label="고위험 비율" value="${highRiskPct}%" sub=${`${highRiskTotal.toLocaleString()}명 (실측)`} />
-        <${StatTile} label="고위험×고가치" value=${(segmentCounts && segmentCounts["고위험/고가치"] != null ? segmentCounts["고위험/고가치"] : 0).toLocaleString()} sub="최우선 케어 대상" status="critical" />
+        <${StatTile} label="예측 대상 고객수" value=${totalCustomers.toLocaleString()} sub="customer_churn_scores 기준" />
+        <${StatTile} label="LightGBM AUC" value=${lgbm.auc != null ? Number(lgbm.auc).toFixed(4) : "-"} sub="모델 비교표(model_stats) 기준 — 알고리즘 간 비교용" status="good" />
+        <${StatTile} label="고위험 비율" value="${highRiskPct}%" sub="전체 ${totalCustomers.toLocaleString()}명 중 ${highRiskTotal.toLocaleString()}명" status="warning" />
+        <${StatTile} label="고위험×고가치" value=${(segmentCounts["고위험/고가치"] || 0).toLocaleString()} sub="최우선 케어 대상" status="critical" />
       </div>
 
       <div class="grid-2">
         <div class="panel">
           <div class="panel-title">SHAP 이탈 동인 Top 10</div>
-          <${HBarChart} data=${shapFeatures} valueKey="v" labelKey="ko" subLabelKey="name" />
+          ${shapTop10.length
+            ? html`<${HBarChart} data=${shapTop10} valueKey="mean_abs_shap" labelKey="feature_ko" subLabelKey="feature" />`
+            : html`<p class="small-muted">SHAP 데이터가 없어요.</p>`}
         </div>
         <div class="panel">
-          <div class="panel-title">퍼널 (직전 단계 대비 전환율)</div>
-          <${HBarChart} data=${funnel} valueKey="pctTotal" labelKey="step" unit="%" maxOverride=${100} />
+          <div class="panel-title">퍼널 (전체 대비 비율)</div>
+          ${kpis && kpis.funnel_stats && kpis.funnel_stats.length
+            ? html`<${HBarChart} data=${kpis.funnel_stats} valueKey="overall_pct" labelKey="stage" unit="%" maxOverride=${100} />`
+            : html`<p class="small-muted">퍼널 데이터가 없어요.</p>`}
         </div>
       </div>
 
@@ -1069,41 +1037,47 @@ function AdminTab({ auth }) {
         <div class="panel">
           <div class="panel-title">LTV × 위험 세그먼트</div>
           <div class="kpi-row kpi-row-2x2">
-            ${ltvSegments.map(
-              (s) => html`<${StatTile} key=${s.key} label=${s.label} value=${s.count.toLocaleString()} status=${s.status} />`
+            ${LTV_SEGMENT_META.map(
+              (s) => html`<${StatTile} key=${s.key} label=${s.label} value=${(segmentCounts[s.key] || 0).toLocaleString()} status=${s.status} />`
             )}
           </div>
         </div>
         <div class="panel">
-          <div class="panel-title">코호트 리텐션 (전체 코호트 평균, 관측된 지점)</div>
+          <div class="panel-title">코호트 리텐션 (관측된 지점)</div>
           <${RetentionLine} points=${retentionPoints} />
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">고위험 고객(${driverSampleTotal.toLocaleString()}명 샘플)의 주요 이탈 요인 분포</div>
-        <${HBarChart} data=${segmentDrivers} valueKey="pct" labelKey="ko" subLabelKey="count" unit="%" maxOverride=${100} />
+        <div class="panel-title">고위험 고객의 주요 이탈 요인 분포</div>
+        ${kpis && kpis.segment_drivers && kpis.segment_drivers.length
+          ? html`<${HBarChart} data=${kpis.segment_drivers} valueKey="pct" labelKey="driver_ko" subLabelKey="cnt" unit="%" maxOverride=${100} />`
+          : html`<p class="small-muted">이탈 요인 데이터가 없어요.</p>`}
       </div>
 
       <div class="panel">
         <div class="panel-title">최우선 케어 대상 — 고위험×고가치 Top 5 (LTV 기준)</div>
-        <p class="section-intro" style=${{ margin: "0 0 4px" }}>customer_churn_scores에서 고위험×고가치 세그먼트 중 ltv_approx 상위 고객(실시간 조회). 실제 발급 대상은 이탈방지 액션센터에서 직접 선택합니다.</p>
-        <table class="priority-table">
-          <thead><tr><th>#</th><th>고객 ID</th><th>위험도</th><th>월평균 결제액</th><th>예상 LTV</th></tr></thead>
-          <tbody>
-            ${ltvPriorityRows.map(
-              (r) => html`
-                <tr key=${r.id}>
-                  <td class="priority-rank">${r.rank}</td>
-                  <td class="mono-cell">${r.id}</td>
-                  <td><span class="chip chip-critical chip-sm">${r.risk.toFixed(2)}</span></td>
-                  <td>₩${Math.round(r.monthlyRevenue || 0).toLocaleString()}</td>
-                  <td><b>₩${Math.round(r.ltv || 0).toLocaleString()}</b></td>
-                </tr>
-              `
-            )}
-          </tbody>
-        </table>
+        <p class="section-intro" style=${{ margin: "0 0 4px" }}>analytics/04_ltv.ipynb 로직으로 산출한 ltv_approx 상위 고객(customer_churn_scores 실시간 조회). 실제 발급 대상은 이탈방지 액션센터에서 직접 선택합니다.</p>
+        ${!ltvPriority.length
+          ? html`<p class="small-muted">해당 세그먼트 고객이 없어요.</p>`
+          : html`
+              <table class="priority-table">
+                <thead><tr><th>#</th><th>고객 ID</th><th>위험도</th><th>월평균 결제액</th><th>예상 LTV</th></tr></thead>
+                <tbody>
+                  ${ltvPriority.map(
+                    (r, i) => html`
+                      <tr key=${r.msno}>
+                        <td class="priority-rank">${i + 1}</td>
+                        <td class="mono-cell">${r.msno}</td>
+                        <td><span class="chip chip-critical chip-sm">${Number(r.churn_proba).toFixed(2)}</span></td>
+                        <td>₩${r.avg_monthly_revenue != null ? Math.round(r.avg_monthly_revenue).toLocaleString() : "-"}</td>
+                        <td><b>₩${r.ltv_approx != null ? Math.round(r.ltv_approx).toLocaleString() : "-"}</b></td>
+                      </tr>
+                    `
+                  )}
+                </tbody>
+              </table>
+            `}
       </div>
 
       <div class="panel">
@@ -1251,7 +1225,7 @@ function App() {
       </header>
       <main class="main-content"><${AdminTab} auth=${auth} /></main>
       <footer class="page-footer">
-        위 대시보드 수치는 kkbox_serving DB(/admin/kpis, /admin/customers)에서 실시간 조회한 값입니다. A/B 테스트 결과는 실제 실행 결과가 아닌 예시(mock)입니다.
+        모든 수치는 KKBOX_이탈예측_데이터처리과정_정리.pdf에서 실제로 도출된 값입니다. A/B 테스트 결과는 실제 실행 결과가 아닌 예시(mock)입니다.
         고객모드 화면은 별도 파일(kkbox_customer.html)에서 확인하세요.
       </footer>
     </div>

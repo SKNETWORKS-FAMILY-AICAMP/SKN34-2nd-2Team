@@ -12,7 +12,7 @@ router = APIRouter()
 
 VALID_ACTION_TYPES = {"reminder", "discount_offer"}
 
-
+# ORDER BY 절에 그대로 꽂을 컬럼이라, SQL 인젝션 방지를 위해 화이트리스트로만 허용.
 SORTABLE_COLUMNS = {"churn_proba", "ltv_approx"}
 
 
@@ -20,7 +20,7 @@ SORTABLE_COLUMNS = {"churn_proba", "ltv_approx"}
 def list_customers(
     risk_tier: Optional[str] = Query(None, description="고위험 | 저위험"),
     segment: Optional[str] = Query(None, description="예: 고위험/고가치"),
-    sort_by: str = Query("churn_proba", description="churn_proba | ltv_approx (둘 다 내림차순)"),
+    sort_by: str = Query("churn_proba", description="churn_proba | ltv_approx"),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=200),
     _: dict = Depends(require_staff),
@@ -33,7 +33,6 @@ def list_customers(
         conditions.append("segment = :segment")
         params["segment"] = segment
     where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-    # 화이트리스트 밖 값은 무시하고 기본 정렬(churn_proba)로 — f-string에 그대로 넣으므로 반드시 검증.
     sort_col = sort_by if sort_by in SORTABLE_COLUMNS else "churn_proba"
 
     engine = get_engine()
