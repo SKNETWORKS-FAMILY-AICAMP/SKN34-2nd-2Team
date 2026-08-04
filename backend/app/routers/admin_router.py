@@ -15,11 +15,18 @@ VALID_ACTION_TYPES = {"reminder", "discount_offer"}
 # ORDER BY 절에 그대로 꽂을 컬럼이라, SQL 인젝션 방지를 위해 화이트리스트로만 허용.
 SORTABLE_COLUMNS = {"churn_proba", "ltv_approx"}
 
+# lifecycle_status 화이트리스트 — days_to_expire 기준 구독 생애주기 상태.
+# 활성 Retention 대상 / 긴급 갱신 대상 / Win-back 대상이 서로 섞이지 않도록 필터링할 때 쓴다.
+VALID_LIFECYCLE_STATUSES = {"구독활성", "갱신유예기간", "장기만료", "상태확인필요"}
+
 
 @router.get("/customers", response_model=CustomerListResponse)
 def list_customers(
     risk_tier: Optional[str] = Query(None, description="고위험 | 저위험"),
     segment: Optional[str] = Query(None, description="예: 고위험/고가치"),
+    lifecycle_status: Optional[str] = Query(
+        None, description="구독활성(Retention) | 갱신유예기간(긴급갱신) | 장기만료(Win-back) | 상태확인필요"
+    ),
     sort_by: str = Query("churn_proba", description="churn_proba | ltv_approx"),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=200),
@@ -32,6 +39,9 @@ def list_customers(
     if segment:
         conditions.append("segment = :segment")
         params["segment"] = segment
+    if lifecycle_status and lifecycle_status in VALID_LIFECYCLE_STATUSES:
+        conditions.append("lifecycle_status = :lifecycle_status")
+        params["lifecycle_status"] = lifecycle_status
     where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
     sort_col = sort_by if sort_by in SORTABLE_COLUMNS else "churn_proba"
 
