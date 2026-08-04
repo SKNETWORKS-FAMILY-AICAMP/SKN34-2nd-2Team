@@ -1319,11 +1319,38 @@ function LoginScreen({ onLogin }) {
 
 /* ============================== 루트 ============================== */
 
+const ADMIN_AUTH_STORAGE_KEY = "kkbox_admin_auth";
+
+// 새로고침해도 로그인이 풀리지 않도록, 로그인 정보(토큰)를 localStorage에 저장해뒀다가
+// 앱이 다시 켜질 때 그대로 복원한다. 로그아웃하면 지운다.
+function loadStoredAdminAuth() {
+  try {
+    const raw = localStorage.getItem(ADMIN_AUTH_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 function App() {
-  const [auth, setAuth] = useState(null); // null | { role: "admin", token, name }
+  const [auth, setAuth] = useState(loadStoredAdminAuth); // null | { role: "admin", token, name }
+
+  function handleLogin(newAuth) {
+    setAuth(newAuth);
+    try {
+      localStorage.setItem(ADMIN_AUTH_STORAGE_KEY, JSON.stringify(newAuth));
+    } catch (e) {}
+  }
+
+  function handleLogout() {
+    setAuth(null);
+    try {
+      localStorage.removeItem(ADMIN_AUTH_STORAGE_KEY);
+    } catch (e) {}
+  }
 
   if (!auth) {
-    return html`<${LoginScreen} onLogin=${setAuth} />`;
+    return html`<${LoginScreen} onLogin=${handleLogin} />`;
   }
 
   return html`
@@ -1337,7 +1364,7 @@ function App() {
           </div>
         </div>
         <nav class="tab-nav">
-          <button class="logout-btn" onClick=${() => setAuth(null)}>로그아웃</button>
+          <button class="logout-btn" onClick=${handleLogout}>로그아웃</button>
         </nav>
       </header>
       <main class="main-content"><${AdminTab} auth=${auth} /></main>
