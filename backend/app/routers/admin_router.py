@@ -6,7 +6,7 @@ from sqlalchemy import text
 
 from app.auth import require_staff
 from db import get_engine
-from app.schemas import ActionRequest, CustomerListResponse, KpiResponse
+from app.schemas import ActionRequest, ActionsSummaryResponse, CustomerListResponse, KpiResponse
 
 router = APIRouter()
 
@@ -76,6 +76,40 @@ def kpis(_: dict = Depends(require_staff)):
         "funnel_stats": [dict(r) for r in funnel_stats],
         "segment_drivers": [dict(r) for r in segment_drivers],
         "retention_cohort": [dict(r) for r in retention_cohort],
+    }
+
+
+@router.get("/actions/summary", response_model=ActionsSummaryResponse)
+def actions_summary(_: dict = Depends(require_staff)):
+    """지금까지 실제로 발송한 리마인드/할인오퍼 현황(건수/세그먼트별 분포/최근 발송 내역).
+    "전환됐는지"는 추적할 시계열 데이터가 없어서(customer_churn_scores가 특정 시점 스냅샷이라)
+    여기서는 "실제로 몇 건, 누구에게, 언제 보냈는지"만 정직하게 집계한다 — 전환율은 계산하지 않는다."""
+    engine = get_engine()
+    with engine.connect() as conn:
+        total = conn.execute(text("SELECT COUNT(*) FROM customer_actions")).scalar()
+        by_type = conn.execute(
+            text("SELECT action_type, COUNT(*) AS cnt FROM customer_actions GROUP BY action_type")
+        ).mappings().all()
+        by_segment = conn.execute(
+            text(
+                "SELECT ccs.segment AS segment, COUNT(*) AS cnt "
+                "FROM customer_actions ca JOIN customer_churn_scores ccs ON ca.msno = ccs.msno "
+                "GROUP BY ccs.segment ORDER BY cnt DESC"
+            )
+        ).mappings().all()
+        recent = conn.execute(
+            text(
+                "SELECT ca.msno, ca.action_type, ca.sent_by, ca.sent_at, ccs.segment "
+                "FROM customer_actions ca JOIN customer_churn_scores ccs ON ca.msno = ccs.msno "
+                "ORDER BY ca.sent_at DESC LIMIT 10"
+            )
+        ).mappings().all()
+
+    return {
+        "total": total or 0,
+        "by_type": [dict(r) for r in by_type],
+        "by_segment": [dict(r) for r in by_segment],
+        "recent": [dict(r) for r in recent],
     }
 
 
