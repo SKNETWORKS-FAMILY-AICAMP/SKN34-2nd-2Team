@@ -616,7 +616,7 @@ const html = htm.bind(React.createElement);
 const { useState, useMemo, useEffect } = React;
 
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
-const API_BASE = "http://localhost:8000";
+const API_BASE = "http://192.168.0.23:8000";
 
 /* ============================== 실제 데이터 (관리자 API에서 실시간 조회) ============================== */
 // 아래 mock 상수들은 전부 제거하고, AdminTab이 /admin/kpis + /admin/customers를 실시간으로
@@ -628,6 +628,15 @@ const LTV_SEGMENT_META = [
   { key: "저위험/고가치", label: "저위험 × 고가치", status: "good" },
   { key: "저위험/저가치", label: "저위험 × 저가치", status: "muted" },
 ];
+
+const ACTION_TYPE_LABELS = { reminder: "리마인드", discount_offer: "할인 오퍼" };
+
+function fmtSentAt(iso) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
 
 // retention_cohort 테이블은 (cohort_month, month_offset)별로 여러 코호트를 담고 있을 수 있어서,
 // 화면에는 가장 최신 cohort_month 하나만 골라 M0(가입월)~M.. 순서로 정렬해 꺾은선으로 보여준다.
@@ -959,6 +968,7 @@ function AdminTab({ auth }) {
   const [highRiskTotal, setHighRiskTotal] = useState(0);
   const [segmentCounts, setSegmentCounts] = useState({});
   const [ltvPriority, setLtvPriority] = useState([]);
+  const [actionsSummary, setActionsSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -985,8 +995,12 @@ function AdminTab({ auth }) {
         if (!r.ok) throw new Error(`우선순위 고객 조회 실패 (${r.status})`);
         return r.json();
       }),
+      fetch(`${API_BASE}/admin/actions/summary`, { headers: { Authorization: `Bearer ${auth.token}` } }).then((r) => {
+        if (!r.ok) throw new Error(`액션 발송 현황 조회 실패 (${r.status})`);
+        return r.json();
+      }),
     ])
-      .then(([kpiData, total, highRisk, segTotals, priorityData]) => {
+      .then(([kpiData, total, highRisk, segTotals, priorityData, actionsSummaryData]) => {
         setKpis(kpiData);
         setTotalCustomers(total);
         setHighRiskTotal(highRisk);
@@ -994,6 +1008,7 @@ function AdminTab({ auth }) {
           LTV_SEGMENT_META.reduce((acc, s, i) => ({ ...acc, [s.key]: segTotals[i] }), {})
         );
         setLtvPriority(priorityData.items || []);
+        setActionsSummary(actionsSummaryData);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -1083,6 +1098,64 @@ function AdminTab({ auth }) {
       <div class="panel">
         <div class="panel-title">이탈방지 액션센터</div>
         <${ActionCenter} auth=${auth} />
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">액션 발송 현황</div>
+        <p class="section-intro" style=${{ margin: "0 0 10px" }}>
+          지금까지 실제로 발송한 리마인드/할인 오퍼 건수를 customer_actions 테이블에서 집계한 값입니다.
+          발송 후 전환(재구독 등) 여부를 추적할 시계열 데이터가 아직 없어서, 전환율 같은 효과 지표는 표시하지 않고
+          "몇 건을, 누구에게, 언제 보냈는지"만 정직하게 보여드려요.
+        </p>
+        ${!actionsSummary || !actionsSummary.total
+          ? html`<p class="small-muted">아직 발송된 액션이 없어요. 위 액션센터에서 리마인드/할인 오퍼를 보내면 여기에 집계돼요.</p>`
+          : html`
+              <div class="kpi-row" style=${{ marginBottom: "14px" }}>
+                <${StatTile} label="총 발송 건수" value=${actionsSummary.total.toLocaleString()} sub="customer_actions 전체" />
+                ${(actionsSummary.by_type || []).map(
+                  (t) => html`
+                    <${StatTile}
+                      key=${t.action_type}
+                      label=${ACTION_TYPE_LABELS[t.action_type] || t.action_type}
+                      value=${Number(t.cnt).toLocaleString()}
+                      sub="발송 건수"
+                    />
+                  `
+                )}
+              </div>
+
+              <div class="grid-2">
+                <div>
+                  <div class="detail-sub-title">세그먼트별 발송 분포</div>
+                  ${actionsSummary.by_segment && actionsSummary.by_segment.length
+                    ? html`<${HBarChart} data=${actionsSummary.by_segment} valueKey="cnt" labelKey="segment" unit="건" />`
+                    : html`<p class="small-muted">세그먼트별 집계가 없어요.</p>`}
+                </div>
+                <div>
+                  <div class="detail-sub-title">최근 발송 내역</div>
+                  ${actionsSummary.recent && actionsSummary.recent.length
+                    ? html`
+                        <table class="priority-table">
+                          <thead><tr><th>고객 ID</th><th>유형</th><th>세그먼트</th><th>발송자</th><th>발송일시</th></tr></thead>
+                          <tbody>
+                            ${actionsSummary.recent.map(
+                              (r, i) => html`
+                                <tr key=${i}>
+                                  <td class="mono-cell">${r.msno}</td>
+                                  <td><span class="chip chip-sm">${ACTION_TYPE_LABELS[r.action_type] || r.action_type}</span></td>
+                                  <td>${r.segment || "-"}</td>
+                                  <td>${r.sent_by || "-"}</td>
+                                  <td>${fmtSentAt(r.sent_at)}</td>
+                                </tr>
+                              `
+                            )}
+                          </tbody>
+                        </table>
+                      `
+                    : html`<p class="small-muted">최근 발송 내역이 없어요.</p>`}
+                </div>
+              </div>
+            `}
       </div>
 
       <div class="panel">
