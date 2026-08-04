@@ -197,6 +197,7 @@ def _campaign_response(row) -> dict:
 
 @router.get("/customers", response_model=CustomerListResponse)
 def list_customers(
+    msno: Optional[str] = Query(None, description="고객 ID 부분/전체 검색 — 있으면 다른 필터보다 우선"),
     risk_tier: Optional[str] = Query(None, description="고위험 | 저위험"),
     segment: Optional[str] = Query(None, description="예: 고위험/고가치"),
     lifecycle_status: Optional[str] = Query(
@@ -208,15 +209,21 @@ def list_customers(
     _: dict = Depends(require_staff),
 ):
     conditions, params = [], {}
-    if risk_tier:
-        conditions.append("risk_tier = :risk_tier")
-        params["risk_tier"] = risk_tier
-    if segment:
-        conditions.append("segment = :segment")
-        params["segment"] = segment
-    if lifecycle_status and lifecycle_status in VALID_LIFECYCLE_STATUSES:
-        conditions.append("lifecycle_status = :lifecycle_status")
-        params["lifecycle_status"] = lifecycle_status
+    if msno and msno.strip():
+        # 발표/시연 중 특정 고객 ID를 바로 찾아야 할 때를 위한 검색 — 다른 필터(위험도/세그먼트/생애주기)와
+        # 조합하면 오히려 "존재하는데 필터에 안 걸려서 안 보임"으로 헷갈릴 수 있어, msno가 있으면 그것만 적용한다.
+        conditions.append("msno LIKE :msno_pattern")
+        params["msno_pattern"] = f"%{msno.strip()}%"
+    else:
+        if risk_tier:
+            conditions.append("risk_tier = :risk_tier")
+            params["risk_tier"] = risk_tier
+        if segment:
+            conditions.append("segment = :segment")
+            params["segment"] = segment
+        if lifecycle_status and lifecycle_status in VALID_LIFECYCLE_STATUSES:
+            conditions.append("lifecycle_status = :lifecycle_status")
+            params["lifecycle_status"] = lifecycle_status
     where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
     sort_col = sort_by if sort_by in SORTABLE_COLUMNS else "churn_proba"
 

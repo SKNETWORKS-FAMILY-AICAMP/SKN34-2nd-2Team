@@ -184,6 +184,18 @@ body {
 
 /* action center */
 .action-center { display: flex; flex-direction: column; }
+.ac-msno-search {
+  display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--series-1); border-radius: 8px;
+  padding: 9px 12px; margin-bottom: 14px; background: #fff;
+}
+.ac-msno-search-icon { font-size: 13px; flex: 0 0 auto; }
+.ac-msno-search-input { flex: 1; border: none; outline: none; font-size: 12.5px; font-family: inherit; color: var(--text-primary); }
+.ac-msno-search-input::placeholder { color: var(--muted-ink); }
+.ac-msno-search-clear {
+  flex: 0 0 auto; border: none; background: var(--page-plane); color: var(--text-secondary); border-radius: 50%;
+  width: 20px; height: 20px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.ac-filters-disabled { opacity: 0.45; pointer-events: none; }
 .ac-filters { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 14px; flex-wrap: wrap; }
 .filter-block { display: flex; flex-direction: column; gap: 4px; }
 .filter-label { font-size: 10px; color: var(--muted-ink); font-weight: 700; }
@@ -1354,14 +1366,30 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
 
+  // 발표/시연 중 특정 고객 ID(msno)를 바로 찾기 위한 검색 — 입력 중엔 350ms 디바운스로 조회.
+  // 검색어가 있으면 아래 위험도/세그먼트/생애주기 필터는 무시하고 전체 고객 중에서 msno로만 찾는다.
+  const [msnoInput, setMsnoInput] = useState("");
+  const [msnoSearch, setMsnoSearch] = useState("");
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setMsnoSearch(msnoInput.trim());
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [msnoInput]);
+
   useEffect(() => {
     if (!auth) return;
     setLoading(true);
     setError("");
     const params = new URLSearchParams({ page_size: String(AC_PAGE_SIZE), page: String(page) });
-    if (lifecycleFilter !== "all") params.set("lifecycle_status", lifecycleFilter);
-    if (riskFilter !== "all") params.set("risk_tier", riskFilter);
-    if (segmentFilter !== "all") params.set("segment", segmentFilter);
+    if (msnoSearch) {
+      params.set("msno", msnoSearch);
+    } else {
+      if (lifecycleFilter !== "all") params.set("lifecycle_status", lifecycleFilter);
+      if (riskFilter !== "all") params.set("risk_tier", riskFilter);
+      if (segmentFilter !== "all") params.set("segment", segmentFilter);
+    }
     fetch(`${API_BASE}/admin/customers?${params.toString()}`, {
       headers: { Authorization: `Bearer ${auth.token}` },
     })
@@ -1377,7 +1405,7 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [auth, lifecycleFilter, riskFilter, segmentFilter, page]);
+  }, [auth, lifecycleFilter, riskFilter, segmentFilter, page, msnoSearch]);
 
   const totalPages = Math.max(1, Math.ceil(total / AC_PAGE_SIZE));
   const rangeStart = total === 0 ? 0 : (page - 1) * AC_PAGE_SIZE + 1;
@@ -1390,9 +1418,21 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
 
   return html`
     <div class="action-center">
-      <div class="ac-lifecycle-tabs">
+      <div class="ac-msno-search">
+        <span class="ac-msno-search-icon">🔍</span>
+        <input
+          class="ac-msno-search-input"
+          type="text"
+          placeholder="고객 ID(msno)로 바로 찾기 — 발표/시연용 ID를 붙여넣으면 즉시 조회됩니다"
+          value=${msnoInput}
+          onInput=${(e) => setMsnoInput(e.target.value)}
+        />
+        ${msnoInput ? html`<button type="button" class="ac-msno-search-clear" onClick=${() => setMsnoInput("")}>✕</button>` : null}
+      </div>
+      <div class="ac-lifecycle-tabs ${msnoSearch ? "ac-filters-disabled" : ""}">
         <button
           type="button"
+          disabled=${!!msnoSearch}
           class="lifecycle-tab ${lifecycleFilter === "all" ? "lifecycle-tab-active" : ""}"
           onClick=${() => changeFilter(setLifecycleFilter, "all")}
         >전체</button>
@@ -1401,16 +1441,17 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
             <button
               key=${l.key}
               type="button"
+              disabled=${!!msnoSearch}
               class="lifecycle-tab ${lifecycleFilter === l.key ? "lifecycle-tab-active" : ""}"
               onClick=${() => changeFilter(setLifecycleFilter, l.key)}
             >${l.label}</button>
           `
         )}
       </div>
-      <div class="ac-filters">
+      <div class="ac-filters ${msnoSearch ? "ac-filters-disabled" : ""}">
         <div class="filter-block">
           <div class="filter-label">위험도</div>
-          <select class="select" value=${riskFilter} onChange=${(e) => changeFilter(setRiskFilter, e.target.value)}>
+          <select class="select" disabled=${!!msnoSearch} value=${riskFilter} onChange=${(e) => changeFilter(setRiskFilter, e.target.value)}>
             <option value="all">전체</option>
             <option value="고위험">고위험</option>
             <option value="저위험">저위험</option>
@@ -1418,7 +1459,7 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
         </div>
         <div class="filter-block">
           <div class="filter-label">월매출 세그먼트</div>
-          <select class="select" value=${segmentFilter} onChange=${(e) => changeFilter(setSegmentFilter, e.target.value)}>
+          <select class="select" disabled=${!!msnoSearch} value=${segmentFilter} onChange=${(e) => changeFilter(setSegmentFilter, e.target.value)}>
             <option value="all">전체</option>
             <option value="고위험/고가치">고위험/고월매출</option>
             <option value="고위험/저가치">고위험/저월매출</option>
@@ -1426,7 +1467,11 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
             <option value="저위험/저가치">저위험/저월매출</option>
           </select>
         </div>
-        <div class="filter-count">전체 <b>${total.toLocaleString()}</b>명 중 ${rangeStart.toLocaleString()}–${rangeEnd.toLocaleString()}명 표시 (위험도 순)</div>
+        <div class="filter-count">
+          ${msnoSearch
+            ? html`"<b>${msnoSearch}</b>" 검색 결과 <b>${total.toLocaleString()}</b>명`
+            : html`전체 <b>${total.toLocaleString()}</b>명 중 ${rangeStart.toLocaleString()}–${rangeEnd.toLocaleString()}명 표시 (위험도 순)`}
+        </div>
       </div>
       <div class="ac-body">
         <div class="ac-list-col">
@@ -1435,6 +1480,8 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
               ? html`<div class="detail-empty">불러오는 중...</div>`
               : error
               ? html`<div class="detail-empty">${error}</div>`
+              : msnoSearch && customers.length === 0
+              ? html`<div class="detail-empty">"${msnoSearch}"와 일치하는 고객 ID를 찾지 못했어요.</div>`
               : html`
                   <table class="ac-table">
                     <thead>
