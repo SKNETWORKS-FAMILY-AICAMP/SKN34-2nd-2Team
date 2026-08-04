@@ -113,3 +113,56 @@ def top_chart(limit: int = Query(100, ge=1, le=200)):
     ]
     _cache_set(cache_key, result, CHART_TTL)
     return result
+
+
+@router.get("/new-releases")
+def new_releases(limit: int = Query(24, ge=1, le=100)):
+    """"최신음악" 그리드용 — marketingtools.apple.com에는 신곡 전용 카테고리(new-music/new-releases 등)가
+    없어서(404 확인함), 대신 공식 대한민국 차트(최대 200곡)를 실제 releaseDate 기준 내림차순 정렬해서
+    최근 발매된 곡 상위 N개만 추려낸다. 순위가 아니라 발매일 기준이라는 점만 다르고, 나머지(미리듣기 보강,
+    캐시)는 /chart와 동일한 로직."""
+    cache_key = f"new-releases:{limit}"
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return cached
+    try:
+        # Apple 쪽이 limit=200에서는 500을 내려서(실사용 가능한 최대는 100), /chart와 동일하게 100으로 고정.
+        res = requests.get(f"{APPLE_CHART_URL}/100/songs.json", timeout=TIMEOUT)
+        res.raise_for_status()
+        data = res.json()
+    except requests.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"신곡 조회 실패: {e}")
+
+    entries = ((data.get("feed") or {}).get("results")) or []
+    if not entries:
+        raise HTTPException(status_code=502, detail="신곡 데이터가 비어있습니다")
+
+    entries = sorted(entries, key=lambda e: e.get("releaseDate") or "", reverse=True)[:limit]
+
+    ids = [str(e["id"]) for e in entries if e.get("id")]
+    preview_map = {}
+    if ids:
+        try:
+            lookup_res = requests.get(
+                ITUNES_LOOKUP_URL, params={"id": ",".join(ids), "country": "KR"}, timeout=TIMEOUT
+            )
+            if lookup_res.ok:
+                for r in lookup_res.json().get("results", []):
+                    if r.get("trackId"):
+                        preview_map[str(r["trackId"])] = r.get("previewUrl")
+        except requests.RequestException:
+            pass
+
+    result = [
+        {
+            "rank": i + 1,
+            "title": e.get("name"),
+            "artist": e.get("artistName"),
+            "artwork": e.get("artworkUrl100"),
+            "previewUrl": preview_map.get(str(e.get("id"))),
+            "releaseDate": e.get("releaseDate"),
+        }
+        for i, e in enumerate(entries)
+    ]
+    _cache_set(cache_key, result, CHART_TTL)
+    return result
