@@ -425,6 +425,10 @@ button { font-family: inherit; }
 .cx-payment-method:hover { border-color: var(--mg); }
 .cx-payment-method-active { border-color: var(--mg); color: var(--text); background: rgba(0,213,200,0.1); }
 .cx-payment-icon { font-size: 20px; }
+.cx-payment-badge {
+  font-size: 10.5px; font-weight: 800; padding: 4px 10px; border-radius: 999px; letter-spacing: -0.2px;
+  font-style: italic; line-height: 1.6;
+}
 .cx-checkout-summary {
   margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08);
   display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: var(--text-soft);
@@ -1083,8 +1087,15 @@ const MUSIC_CHART_URL = `${API_BASE}/music/chart`;
 const MUSIC_NEW_RELEASES_URL = `${API_BASE}/music/new-releases`;
 
 // 무드별로 실제로 존재하는 곡을 검색해서 채운다 (제목/아티스트로 검색 -> 1위 매칭 결과 사용)
-const COMEBACK_QUERIES = ["아이유 밤편지", "폴킴 모든 날 모든 순간", "잔나비 주저하는 연인들을 위해", "볼빨간사춘기 우주를 줄게"];
-const LOYAL_QUERIES = ["뉴진스 Super Shy", "아이브 Love Dive", "블랙핑크 Pink Venom", "방탄소년단 Dynamite"];
+// 컴백(오랜만에 돌아온 회원) 대상 — 예전에 즐겨 듣던 아티스트 기준으로 실제로 존재하는 곡을 채운다.
+const COMEBACK_QUERIES = [
+  "Official HIGE DANDism Pretender",
+  "Official HIGE DANDism TATTOO",
+  "Official HIGE DANDism 宿命",
+  "Official HIGE DANDism 115万キロのフィルム",
+];
+// 로열(자주 듣는/구독 유지 중) 회원 대상 — 지금 실제로 Top100에서 인기 있는 곡(여자/남자 아이돌 섞어서)으로 채운다.
+const LOYAL_QUERIES = ["fromis_9 Glow ME", "RESCENE LOVE ATTACK", "ATEEZ BAD", "CORTIS Red Red"];
 
 function normalizeTrack(t) {
   if (!t) return null;
@@ -1365,7 +1376,6 @@ function RecommendTab({ risk, tracks, tracksLoading, onPlay }) {
               <span class="cx-remind-eyebrow">LISTEN AGAIN</span>
               <div class="cx-remind-title">다시 만날 음악, ${heading}</div>
               <p class="cx-remind-sub">${reason}</p>
-              <span class="cx-remind-tag">🔔 리마인드 발송 · 컴백 추천</span>
               ${tracksLoading && !tracks.length
                 ? html`<p class="cx-muted" style=${{ color: "rgba(243,247,246,0.5)" }}>실제 음원 정보를 불러오는 중...</p>`
                 : !tracks.length
@@ -1609,12 +1619,13 @@ const BILLING_STATUS_CLASS = {
   장기만료: "cx-billing-status-expired",
 };
 
-// 결제 수단 선택 UI용 목록 — 실제 PG 연동은 없는 데모 결제라 아이콘은 이모지로 대체.
+// 결제 수단 선택 UI용 목록 — 실제 PG 연동/로고 이미지는 없는 데모 결제라, 카카오페이/토스페이/
+// 네이버페이는 실제 브랜드 컬러 배지(텍스트 워드마크)로 대체하고, 그 외(카드/휴대폰)만 이모지를 쓴다.
 const PAYMENT_METHODS = [
   { key: "card", icon: "💳", label: "신용/체크카드" },
-  { key: "kakaopay", icon: "🟡", label: "카카오페이" },
-  { key: "tosspay", icon: "🔵", label: "토스페이" },
-  { key: "naverpay", icon: "🟢", label: "네이버페이" },
+  { key: "kakaopay", label: "카카오페이", badge: { bg: "#FEE500", color: "#3A1E1E", text: "kakaopay" } },
+  { key: "tosspay", label: "토스페이", badge: { bg: "#0064FF", color: "#FFFFFF", text: "toss pay" } },
+  { key: "naverpay", label: "네이버페이", badge: { bg: "#03C75A", color: "#FFFFFF", text: "N Pay" } },
   { key: "phone", icon: "📱", label: "휴대폰 결제" },
 ];
 
@@ -1646,6 +1657,11 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
     risk.last_payment_plan_days != null && risk.last_plan_list_price != null
       ? `${risk.last_payment_plan_days}-${Math.round(risk.last_plan_list_price)}`
       : null;
+  // last_payment_plan_days/last_plan_list_price는 "마지막으로 결제했던 요금제"일 뿐, 구독이
+  // 지금도 살아있다는 뜻은 아니다 — 장기만료(구독 끊김) 고객은 예전에 결제했던 요금제 행에
+  // "이용중" 태그를 붙이면 안 되므로, lifecycle_status가 실제 구독 중(활성/갱신유예기간)일
+  // 때만 "이용중"으로 표시한다.
+  const hasActiveSubscription = risk.lifecycle_status === "구독활성" || risk.lifecycle_status === "갱신유예기간";
 
   // 요금제를 선택하면 결제 팝업이 뜨고, 팝업을 닫으면 "선택됨" 상태도 같이 풀린다.
   function selectTier(tierKey) {
@@ -1743,7 +1759,7 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
                 <div class="cx-plan-group-rows">
                   ${group.tiers.map((tier) => {
                     const tierKey = `${tier.planDays}-${tier.listPrice}`;
-                    const isCurrent = tierKey === currentTierKey;
+                    const isCurrent = tierKey === currentTierKey && hasActiveSubscription;
                     const winbackPrice = winbackDiscountPct > 0 ? tier.paidPrice * (1 - winbackDiscountPct / 100) : null;
                     return html`
                       <div class="cx-plan-row ${isCurrent ? "cx-plan-row-current" : ""}" key=${tierKey}>
@@ -1815,7 +1831,9 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
                         class="cx-payment-method ${selectedPayment === pm.key ? "cx-payment-method-active" : ""}"
                         onClick=${() => setSelectedPayment(pm.key)}
                       >
-                        <span class="cx-payment-icon">${pm.icon}</span>
+                        ${pm.badge
+                          ? html`<span class="cx-payment-badge" style=${{ background: pm.badge.bg, color: pm.badge.color }}>${pm.badge.text}</span>`
+                          : html`<span class="cx-payment-icon">${pm.icon}</span>`}
                         <span>${pm.label}</span>
                       </button>
                     `
