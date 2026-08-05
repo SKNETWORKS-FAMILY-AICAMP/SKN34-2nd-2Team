@@ -9,3 +9,8 @@
 # 버전은 지금 venv에 이미 깔려있는 걸 그대로 쓰시면 되고, 나중에 정확히 고정하고
 # 싶으면 `pip show torch` 결과 알려주세요.
 torch
+
+# --- 생존분석 (analytics/09_survival_analysis.ipynb, KaplanMeierFitter/CoxPHFitter) ---
+# requirements.txt/requirements-extra.txt 어디에도 없어서 새 환경에서는 노트북 1번 셀부터
+# ModuleNotFoundError가 남. 노트북에서 실제로 print(lifelines.__version__)한 값(0.30.3)으로 고정.
+lifelines==0.30.3

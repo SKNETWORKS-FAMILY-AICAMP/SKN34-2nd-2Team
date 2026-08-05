@@ -27,7 +27,10 @@ OUT_DIR = Path(__file__).resolve().parent / "data"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 CUTOFF_DATE = pd.Timestamp("2017-02-28")
-RISK_THRESHOLD = json.loads((MODELS_DIR / "best_params.json").read_text())["threshold"]
+# best_params.json의 threshold(0.35498)는 파생피처 추가 이전 베이스라인 LightGBM 값이라
+# 실제 서빙 모델(enhanced v2, backend/scoring/build_scoring_table.py가 쓰는 것)과 어긋난다.
+# 대시보드도 서빙과 같은 v2 meta의 threshold(0.2708)를 써야 한다.
+RISK_THRESHOLD = json.loads((MODELS_DIR / "lightgbm_enhanced_v2_meta.json").read_text())["threshold"]
 
 
 def save_json(name, obj):
