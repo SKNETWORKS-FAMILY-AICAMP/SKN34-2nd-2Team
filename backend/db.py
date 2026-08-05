@@ -7,7 +7,7 @@ practice-answer/mysql_pipeline/db.py와 같은 패턴(.env 로드 + 커넥션 �
   MYSQL_HOST=127.0.0.1
   MYSQL_PORT=3306
   MYSQL_USER=root
-  MYSQL_PASSWORD=1234
+  MYSQL_PASSWORD=''
   MYSQL_SERVING_DB=kkbox_serving
 """
 import os
