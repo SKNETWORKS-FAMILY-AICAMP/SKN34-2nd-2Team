@@ -1,0 +1,227 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">KKBOX 고객 이탈 예측 및 리텐션 운영 시스템 아키텍처</title>
+  <desc id="desc">KKBOX 원본 데이터에서 전처리, 모델링, MySQL, FastAPI를 거쳐 관리자 캠페인과 고객 알림으로 연결되는 구조</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F8FAFD"/>
+      <stop offset="1" stop-color="#EEF3F9"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#172033"/>
+      <stop offset="1" stop-color="#263A5E"/>
+    </linearGradient>
+    <linearGradient id="admin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF7A45"/>
+      <stop offset="1" stop-color="#F0552B"/>
+    </linearGradient>
+    <linearGradient id="customer" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14C9BE"/>
+      <stop offset="1" stop-color="#079F98"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#25344F" flood-opacity="0.14"/>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#25344F" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#377DDA"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#F26A35"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#10A77A"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#7A5AC8"/>
+    </marker>
+    <style>
+      text { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif; }
+      .title { font-size: 38px; font-weight: 800; fill: #162033; }
+      .subtitle { font-size: 18px; font-weight: 500; fill: #64748B; }
+      .stage { font-size: 17px; font-weight: 800; letter-spacing: 1px; }
+      .card-title { font-size: 21px; font-weight: 800; fill: #182236; }
+      .card-sub { font-size: 15px; font-weight: 500; fill: #66758C; }
+      .small-title { font-size: 17px; font-weight: 800; fill: #182236; }
+      .small-sub { font-size: 13px; font-weight: 500; fill: #6C7A90; }
+      .flow-label { font-size: 14px; font-weight: 700; }
+      .white { fill: #FFFFFF; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1460" cy="80" r="160" fill="#DCE8F8" opacity="0.42"/>
+  <circle cx="110" cy="830" r="200" fill="#E1F5EF" opacity="0.5"/>
+
+  <text x="70" y="72" class="title">KKBOX 시스템 아키텍처</text>
+  <text x="70" y="108" class="subtitle">고객 행동 데이터 → 이탈 예측 → 운영 캠페인 → 고객 알림·혜택 연결</text>
+
+  <!-- stage labels -->
+  <g>
+    <rect x="70" y="145" width="245" height="38" rx="19" fill="#E7F0FC"/>
+    <text x="192" y="170" text-anchor="middle" class="stage" fill="#2B6FC2">① DATA</text>
+    <rect x="365" y="145" width="285" height="38" rx="19" fill="#FFF0E8"/>
+    <text x="507" y="170" text-anchor="middle" class="stage" fill="#D95827">② FEATURE PIPELINE</text>
+    <rect x="700" y="145" width="285" height="38" rx="19" fill="#FFF4D9"/>
+    <text x="842" y="170" text-anchor="middle" class="stage" fill="#A36A00">③ MODEL · ANALYTICS</text>
+    <rect x="1035" y="145" width="235" height="38" rx="19" fill="#E7F7F1"/>
+    <text x="1152" y="170" text-anchor="middle" class="stage" fill="#16825F">④ SERVING</text>
+    <rect x="1320" y="145" width="210" height="38" rx="19" fill="#F1EBFF"/>
+    <text x="1425" y="170" text-anchor="middle" class="stage" fill="#6945B0">⑤ SERVICE</text>
+  </g>
+
+  <!-- data card -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="220" width="245" height="430" rx="26" fill="#FFFFFF"/>
+  </g>
+  <g transform="translate(110 270)">
+    <rect x="0" y="22" width="84" height="106" rx="11" fill="#DDEBFB" stroke="#377DDA" stroke-width="3"/>
+    <path d="M58 22 L84 48 L58 48 Z" fill="#A9C9F2"/>
+    <rect x="13" y="64" width="58" height="28" rx="6" fill="#377DDA"/>
+    <text x="42" y="84" text-anchor="middle" font-size="16" font-weight="800" fill="#FFFFFF">CSV</text>
+    <rect x="75" y="0" width="84" height="106" rx="11" fill="#E7F7F1" stroke="#10A77A" stroke-width="3"/>
+    <path d="M133 0 L159 26 L133 26 Z" fill="#AEE2D2"/>
+    <rect x="88" y="42" width="58" height="28" rx="6" fill="#10A77A"/>
+    <text x="117" y="62" text-anchor="middle" font-size="14" font-weight="800" fill="#FFFFFF">LOG</text>
+  </g>
+  <text x="192" y="435" text-anchor="middle" class="card-title">KKBOX Raw Data</text>
+  <text x="192" y="470" text-anchor="middle" class="card-sub">train · members</text>
+  <text x="192" y="496" text-anchor="middle" class="card-sub">transactions · user_logs</text>
+  <line x1="100" y1="530" x2="285" y2="530" stroke="#E4EAF2"/>
+  <g transform="translate(105 555)">
+    <circle cx="14" cy="12" r="12" fill="#E7F0FC"/>
+    <path d="M8 12 L13 17 L21 7" fill="none" stroke="#377DDA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="38" y="18" class="small-sub">992,931명 라벨 코호트</text>
+    <circle cx="14" cy="49" r="12" fill="#E7F0FC"/>
+    <path d="M8 49 L13 54 L21 44" fill="none" stroke="#377DDA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="38" y="55" class="small-sub">약 30GB 청취 로그</text>
+  </g>
+
+  <!-- preprocessing -->
+  <g filter="url(#shadow)">
+    <rect x="365" y="220" width="285" height="430" rx="26" fill="#FFFFFF"/>
+  </g>
+  <g transform="translate(433 260)">
+    <rect x="0" y="0" width="150" height="105" rx="14" fill="url(#hero)"/>
+    <rect x="13" y="13" width="124" height="72" rx="6" fill="#EAF1FA"/>
+    <path d="M-22 112 H172 L150 136 H0 Z" fill="#8898AD"/>
+    <circle cx="75" cy="49" r="19" fill="#377DDA" opacity="0.16"/>
+    <path d="M52 49 H98 M75 26 V72" stroke="#377DDA" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <text x="507" y="430" text-anchor="middle" class="card-title">전처리·피처 엔지니어링</text>
+  <text x="507" y="462" text-anchor="middle" class="card-sub">미래 정보 누출 차단</text>
+  <g transform="translate(400 492)">
+    <rect width="215" height="42" rx="10" fill="#F5F8FC"/>
+    <circle cx="22" cy="21" r="10" fill="#377DDA"/>
+    <text x="45" y="26" class="small-title">2017-01-31 시점 통제</text>
+    <rect y="53" width="215" height="42" rx="10" fill="#F5F8FC"/>
+    <circle cx="22" cy="74" r="10" fill="#F26A35"/>
+    <text x="45" y="79" class="small-title">회원·결제·로그 집계</text>
+    <rect y="106" width="215" height="42" rx="10" fill="#F5F8FC"/>
+    <circle cx="22" cy="127" r="10" fill="#10A77A"/>
+    <text x="45" y="132" class="small-title">57개 최종 입력 피처</text>
+  </g>
+
+  <!-- model and analytics -->
+  <g filter="url(#softShadow)">
+    <rect x="700" y="220" width="285" height="195" rx="24" fill="#FFFFFF"/>
+    <rect x="700" y="435" width="285" height="215" rx="24" fill="#FFFFFF"/>
+  </g>
+  <g transform="translate(735 250)">
+    <circle cx="46" cy="46" r="46" fill="#FFF0E8"/>
+    <path d="M18 64 L37 44 L52 55 L76 27" fill="none" stroke="#F26A35" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M69 27 H78 V36" fill="none" stroke="#F26A35" stroke-width="7" stroke-linecap="round"/>
+    <text x="108" y="35" class="card-title">LightGBM</text>
+    <text x="108" y="63" class="card-sub">Enhanced v2</text>
+    <text x="108" y="86" class="small-sub">PR-AUC 0.5834</text>
+  </g>
+  <rect x="735" y="360" width="215" height="34" rx="17" fill="#FFF4D9"/>
+  <text x="842" y="382" text-anchor="middle" font-size="14" font-weight="800" fill="#9A6600">이탈확률 · 위험도 스코어링</text>
+
+  <text x="735" y="478" class="card-title">Business Analytics</text>
+  <text x="735" y="506" class="card-sub">예측 결과를 운영 기준으로 변환</text>
+  <g transform="translate(735 532)">
+    <rect width="96" height="42" rx="10" fill="#F1EBFF"/>
+    <text x="48" y="26" text-anchor="middle" class="small-title" fill="#6945B0">SHAP</text>
+    <rect x="112" width="96" height="42" rx="10" fill="#E7F7F1"/>
+    <text x="160" y="26" text-anchor="middle" class="small-title" fill="#16825F">LTV</text>
+    <rect y="54" width="96" height="42" rx="10" fill="#E7F0FC"/>
+    <text x="48" y="80" text-anchor="middle" class="small-title" fill="#2B6FC2">퍼널</text>
+    <rect x="112" y="54" width="96" height="42" rx="10" fill="#FFF0E8"/>
+    <text x="160" y="80" text-anchor="middle" class="small-title" fill="#D95827">생명주기</text>
+  </g>
+
+  <!-- serving -->
+  <g filter="url(#softShadow)">
+    <rect x="1035" y="220" width="235" height="195" rx="24" fill="#FFFFFF"/>
+    <rect x="1035" y="435" width="235" height="215" rx="24" fill="#FFFFFF"/>
+  </g>
+  <g transform="translate(1083 250)">
+    <ellipse cx="70" cy="18" rx="66" ry="18" fill="#22B987"/>
+    <path d="M4 18 V94 C4 104 34 112 70 112 C106 112 136 104 136 94 V18" fill="#DFF5EC" stroke="#22B987" stroke-width="3"/>
+    <ellipse cx="70" cy="94" rx="66" ry="18" fill="#C8EEDF" stroke="#22B987" stroke-width="3"/>
+    <ellipse cx="70" cy="55" rx="66" ry="18" fill="none" stroke="#22B987" stroke-width="3"/>
+  </g>
+  <text x="1152" y="388" text-anchor="middle" class="card-title">MySQL</text>
+  <text x="1152" y="410" text-anchor="middle" class="small-sub">kkbox_serving</text>
+
+  <g transform="translate(1072 470)">
+    <rect width="160" height="70" rx="18" fill="#079B8B"/>
+    <path d="M24 35 L42 17 H111 L136 35 L111 53 H42 Z" fill="#FFFFFF" opacity="0.96"/>
+    <text x="80" y="41" text-anchor="middle" font-size="21" font-weight="900" fill="#079B8B">FastAPI</text>
+  </g>
+  <text x="1152" y="572" text-anchor="middle" class="card-title">Service Backend</text>
+  <text x="1152" y="604" text-anchor="middle" class="card-sub">JWT 인증 · REST API</text>
+  <text x="1152" y="630" text-anchor="middle" class="card-sub">예측·캠페인·고객 행동</text>
+
+  <!-- service interfaces -->
+  <g filter="url(#softShadow)">
+    <rect x="1320" y="220" width="210" height="195" rx="24" fill="#FFFFFF"/>
+    <rect x="1320" y="435" width="210" height="215" rx="24" fill="#FFFFFF"/>
+  </g>
+  <rect x="1344" y="245" width="162" height="88" rx="13" fill="url(#admin)"/>
+  <circle cx="1374" cy="272" r="15" fill="#FFFFFF" opacity="0.9"/>
+  <rect x="1398" y="260" width="79" height="9" rx="4" fill="#FFFFFF" opacity="0.95"/>
+  <rect x="1360" y="299" width="130" height="12" rx="6" fill="#FFFFFF" opacity="0.65"/>
+  <text x="1425" y="366" text-anchor="middle" class="card-title">관리자 페이지</text>
+  <text x="1425" y="394" text-anchor="middle" class="small-sub">분석 · 고객 탐색 · 캠페인</text>
+
+  <rect x="1344" y="462" width="162" height="104" rx="13" fill="url(#customer)"/>
+  <circle cx="1380" cy="500" r="18" fill="#FFFFFF" opacity="0.95"/>
+  <text x="1380" y="507" text-anchor="middle" font-size="20" font-weight="900" fill="#079F98">K</text>
+  <rect x="1410" y="483" width="72" height="10" rx="5" fill="#FFFFFF" opacity="0.95"/>
+  <rect x="1360" y="530" width="130" height="13" rx="6" fill="#FFFFFF" opacity="0.65"/>
+  <text x="1425" y="604" text-anchor="middle" class="card-title">고객 페이지</text>
+  <text x="1425" y="632" text-anchor="middle" class="small-sub">알림 · 혜택 · 구독 갱신</text>
+
+  <!-- main arrows -->
+  <path d="M315 420 C335 420 342 420 365 420" fill="none" stroke="#377DDA" stroke-width="5" marker-end="url(#arrowBlue)"/>
+  <path d="M650 420 C670 420 678 320 700 320" fill="none" stroke="#F26A35" stroke-width="5" marker-end="url(#arrowOrange)"/>
+  <path d="M650 455 C675 455 675 542 700 542" fill="none" stroke="#7A5AC8" stroke-width="5" marker-end="url(#arrowPurple)"/>
+  <path d="M985 320 C1008 320 1010 320 1035 320" fill="none" stroke="#10A77A" stroke-width="5" marker-end="url(#arrowGreen)"/>
+  <path d="M985 542 C1010 542 1007 340 1035 340" fill="none" stroke="#10A77A" stroke-width="4" marker-end="url(#arrowGreen)"/>
+  <path d="M1152 435 V415" fill="none" stroke="#10A77A" stroke-width="4" marker-end="url(#arrowGreen)"/>
+  <path d="M1270 510 C1295 510 1295 320 1320 320" fill="none" stroke="#F26A35" stroke-width="5" marker-end="url(#arrowOrange)"/>
+  <path d="M1270 555 C1295 555 1295 545 1320 545" fill="none" stroke="#7A5AC8" stroke-width="5" marker-end="url(#arrowPurple)"/>
+
+  <!-- operation loop -->
+  <path d="M1425 415 V700 C1425 755 1220 760 1152 650" fill="none" stroke="#F26A35" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrowOrange)"/>
+  <rect x="1210" y="718" width="250" height="42" rx="21" fill="#FFF0E8" stroke="#F5B093"/>
+  <text x="1335" y="745" text-anchor="middle" class="flow-label" fill="#C84B1E">캠페인 실행 · 발송 이력 저장</text>
+
+  <path d="M1152 650 C1152 810 1355 810 1425 650" fill="none" stroke="#10A77A" stroke-width="4" stroke-dasharray="10 8" marker-end="url(#arrowGreen)"/>
+  <rect x="1130" y="800" width="270" height="42" rx="21" fill="#E7F7F1" stroke="#83D3B7"/>
+  <text x="1265" y="827" text-anchor="middle" class="flow-label" fill="#137454">customer_actions · 알림·혜택</text>
+
+  <!-- footer legend -->
+  <g transform="translate(70 820)">
+    <rect width="760" height="48" rx="24" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="32" cy="24" r="8" fill="#377DDA"/><text x="50" y="30" class="small-sub">데이터</text>
+    <circle cx="145" cy="24" r="8" fill="#F26A35"/><text x="163" y="30" class="small-sub">모델·캠페인</text>
+    <circle cx="300" cy="24" r="8" fill="#10A77A"/><text x="318" y="30" class="small-sub">DB·API</text>
+    <circle cx="420" cy="24" r="8" fill="#7A5AC8"/><text x="438" y="30" class="small-sub">분석·고객 경험</text>
+    <text x="595" y="30" class="small-sub">End-to-End Retention Service</text>
+  </g>
+</svg>
+

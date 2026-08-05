@@ -2,6 +2,28 @@
 
 > 과거 고객 행동으로 구독 이탈 위험을 예측하고, 고객 선별부터 캠페인 실행과 고객 알림까지 연결한 End-to-End 데이터 프로젝트
 
+## 목차
+
+1. [팀 소개](#팀-소개)
+2. [사용 기술](#tech-stack)
+3. [WBS](#wbs)
+4. [요구사항 명세](#requirements)
+5. [핵심 결과](#핵심-결과)
+6. [문제 정의](#문제-정의)
+7. [시스템 구조](#시스템-구조)
+8. [데이터와 예측 시점](#데이터와-예측-시점)
+9. [데이터 처리 흐름](#데이터-처리-흐름)
+10. [모델과 성능](#모델과-성능)
+11. [세그먼트와 캠페인](#세그먼트와-캠페인)
+12. [서비스 기능](#서비스-기능)
+13. [서비스 구현 및 배포](#서비스-구현-및-배포)
+14. [DB 구조](#db-구조)
+15. [서비스 시연](#service-demo)
+16. [분석·모델링 시각화 자료](#analysis-reports)
+17. [실행 방법](#실행-방법)
+18. [한계와 향후 개선](#한계와-향후-개선)
+19. [관련 문서](#문서)
+
 ## 팀명: 팀 노민환
 
 <p align="center">
@@ -15,6 +37,8 @@
 | 프로필 | <img src="docs/images/team/team-member-1.png" alt="임형준" width="140"> | <img src="docs/images/team/team-member-3.png" alt="문성호" width="140"> | <img src="docs/images/team/team-member-4.png" alt="송승재" width="140"> | <img src="docs/images/team/team-member-2.png" alt="노민환" width="140"> |
 | 담당 | ML·DL 모델링<br>고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화<br>관리자 캠페인 | 시점 누출 개선<br>EDA·전처리<br>ML·DL 모델링<br>분석 파이프라인<br>Analytics 고도화  | ML·DL 모델링<br>생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출<br>Analytics 고도화 | 프로젝트 초기 구성 |
 | GitHub | [![HyeongJjun](https://img.shields.io/badge/GitHub-HyeongJjun-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/HyeongJjun) | [![MoonSungHo-D](https://img.shields.io/badge/GitHub-MoonSungHo--D-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MoonSungHo-D) | [![Genus-Jae](https://img.shields.io/badge/GitHub-Genus--Jae-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Genus-Jae) | [![minhwan123](https://img.shields.io/badge/GitHub-minhwan123-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/minhwan123) |
+
+<a id="tech-stack"></a>
 
 ## ⚒️ 사용 기술
 
@@ -31,6 +55,8 @@
 
 <br>
 
+<a id="wbs"></a>
+
 ## 🗓️ WBS (Work Breakdown Structure)
 
 | 진행 단계 | 작업 내용 | 담당 | 상태 |
@@ -43,6 +69,8 @@
 | 6. DB·백엔드 | MySQL 스키마·테이블 구성<br>FastAPI 인증·고객·관리자·음악 API 구현 | 임형준 | ✅ |
 | 7. 서비스 구현 | 고객·관리자 페이지 구현<br>고객 탐색·캠페인 실행·고객 알림 연결 | 임형준 | ✅ |
 | 8. 통합 검증·문서화 | 모델·DB·API·화면 통합 테스트<br>README·ERD·트러블슈팅 정리 | 전원 | ✅ |
+
+<a id="requirements"></a>
 
 ## 📋 요구사항 명세
 
@@ -87,22 +115,11 @@ KKBOX 데이터의 이탈률은 6.39%입니다. 모든 고객을 잔존으로 �
 
 ## 시스템 구조
 
-```mermaid
-flowchart LR
-    A["KKBOX Raw CSV<br/>members · transactions · user_logs · train"]
-    B["전처리 및 피처 엔지니어링<br/>2017-01-31 기준"]
-    C["LightGBM Enhanced v2<br/>57 Features"]
-    D["MySQL Serving DB<br/>예측 · 세그먼트 · LTV · 캠페인"]
-    E["FastAPI"]
-    F["관리자 페이지<br/>분석 · 고객 탐색 · 캠페인 · 이력"]
-    G["고객 페이지<br/>알림 · 혜택 · 구독"]
+<p align="center">
+  <img src="docs/images/system-architecture.svg" alt="KKBOX 시스템 아키텍처" width="100%">
+</p>
 
-    A --> B --> C --> D --> E
-    E --> F
-    E --> G
-    F -->|"캠페인 실행"| D
-    D -->|"customer_actions"| G
-```
+> 원본 데이터에서 이탈 스코어링까지의 배치 파이프라인과, 관리자가 실행한 캠페인이 FastAPI·MySQL을 거쳐 고객 알림과 혜택으로 연결되는 운영 흐름을 함께 표현했습니다.
 
 ## 데이터와 예측 시점
 
@@ -229,6 +246,8 @@ EDA
 
 자세한 내용은 [DB ERD 및 실행 가이드](./DB_ERD_가이드.md)를 참고하세요.
 
+<a id="service-demo"></a>
+
 ## 🖥️ 서비스 시연
 
 <table>
@@ -255,6 +274,17 @@ EDA
 </table>
 
 관리자 고객 탐색·캠페인 실행부터 고객 알림·혜택 확인까지의 전체 흐름은 [서비스 시연 상세 문서](./docs/DEMO.md)에서 확인할 수 있습니다.
+
+<a id="analysis-reports"></a>
+
+## 📊 분석·모델링 시각화 자료
+
+전처리 검증, 주요 그래프 해석, 모델 비교와 최종 모델 선정 근거는 아래 PDF에서 확인할 수 있습니다.
+
+| 자료 | 포함 내용 | 보기 |
+|---|---|:---:|
+| 데이터 전처리 과정 | 관측 시점 설정, 원본 데이터 정제, 피처 생성·검증 및 시각화 해석 | [PDF 열기](./docs/reports/data-preprocessing.pdf) |
+| 모델링 비교 결과 | ML·DL 모델 비교, 성능 지표, 최종 LightGBM Enhanced v2 선정 근거 | [PDF 열기](./docs/reports/modeling-comparison.pdf) |
 
 ## 실행 방법
 
@@ -344,6 +374,8 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 ## 문서
 
 - [서비스 시연 화면](./docs/DEMO.md)
+- [데이터 전처리 과정 PDF](./docs/reports/data-preprocessing.pdf)
+- [모델링 비교 결과 PDF](./docs/reports/modeling-comparison.pdf)
 - [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
 - [트러블슈팅](./TROUBLESHOOTING.md)
