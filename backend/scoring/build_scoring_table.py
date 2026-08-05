@@ -1,9 +1,8 @@
 """
 Phase 1 — 전체 고객 스코어링 테이블 생성 (v2 모델 버전)
 
-기존 lightgbm_final.txt(구 모델, model_table_final.csv 기반) 대신, 실제 서빙 성능이
-검증된(test_auc=0.9036) lightgbm_enhanced_v2.txt + model_table_enhanced_v2.csv 조합으로
-전체 인구를 다시 스코어링한다.
+검증된 LightGBM Enhanced v2 모델과 `model_table_enhanced_v2.csv`를 사용해
+전체 고객을 스코어링한다.
 
 피처는 lightgbm_enhanced_v2_meta.json의 feature_cols(57개)를 그대로 사용해서,
 학습 때와 정확히 동일한 피처 집합/순서를 보장한다 (컬럼이 하나라도 빠지면 조용히

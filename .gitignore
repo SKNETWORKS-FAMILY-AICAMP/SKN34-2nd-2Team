@@ -2,6 +2,7 @@
 myvenv/
 venv/
 ENV/
+My_venv/
 
 # 환경변수(비밀키) 파일 제외
 .env
@@ -26,3 +27,6 @@ deep_learning/
 
 # 스코어링 결과 대용량 CSV 제외 (GitHub 100MB 제한)
 backend/scoring/output/
+
+# 로컬 임시 파일
+tmp/
