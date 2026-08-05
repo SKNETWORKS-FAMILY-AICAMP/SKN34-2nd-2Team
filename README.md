@@ -299,7 +299,7 @@ data/raw/ (원본 5개 CSV, members/transactions/user_logs/train)
 
 ## 부록: 알려진 이슈 / 향후 개선 아이디어
 
-- `models/model_comparison.csv` 파일의 수치(예: LightGBM test AUC 0.9915)가 이 파일을 생성하는 `modeling/03_model_comparison.ipynb` 노트북 자신이 실제로 출력한 값(LightGBM test AUC 0.9011)과 다릅니다. 원인은 아직 특정하지 못했으며, 이 README/PPT/트러블슈팅 문서에서는 노트북이 직접 출력한(내부적으로 앞뒤가 맞는) 값을 사용했습니다. 발표 전 노트북을 재실행해 파일을 갱신하는 것을 권장합니다. 자세한 내용은 [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md)의 A-9 참고.
+- `models/model_comparison.csv` 파일의 수치(예: LightGBM test AUC 0.9915)가 이 파일을 생성하는 `modeling/03_model_comparison.ipynb` 노트북 자신이 실제로 출력한 값(LightGBM test AUC 0.9011)과 다릅니다. 원인은 아직 특정하지 못했으며, 이 README/PPT/트러블슈팅 문서에서는 노트북이 직접 출력한(내부적으로 앞뒤가 맞는) 값을 사용했습니다. 발표 전 노트북을 재실행해 파일을 갱신하는 것을 권장합니다. 자세한 내용은 [`TROUBLESHOOTING.md`](./TROUBLESHOOTING.md)의 A-10 참고.
 - `streamlit_app/data/ltv_summary.json`의 `risk_threshold`(0.35498, 구 베이스라인 LightGBM 기준)와 실제 서빙 백엔드 `build_scoring_table.py`가 쓰는 threshold(0.2708, LightGBM enhanced v2 기준)가 서로 다릅니다. 대시보드가 모델 v1→v2 전환 이전에 만들어진 산출물을 그대로 쓰고 있을 가능성이 있어, 발표 전 두 수치 중 어느 것을 기준으로 세그먼트 인원수를 안내할지 팀 내 확인이 필요합니다.
 - `analytics/09_survival_analysis.ipynb`에서 사용한 생존분석 패키지가 `requirements.txt`/`requirements-extra.txt`에 명시되어 있지 않아, 재현 환경에서 별도 설치가 필요합니다.
 - 고객 로그인에 간단한 고객ID/고정 비밀번호를 추가하는 아이디어를 검토했으나, 원본 데이터에 애초에 로그인 자격증명이 없었고 `customer_churn_scores` 테이블이 파이프라인 재실행마다 전체 TRUNCATE·재적재되는 구조라 복잡도만 커진다고 판단해 도입하지 않기로 결정했습니다.
