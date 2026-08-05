@@ -195,6 +195,18 @@ body {
 .filter-count { font-size: 11.5px; color: var(--text-secondary); margin-left: auto; }
 .filter-count b { color: var(--series-2); font-size: 13px; }
 
+.ac-search-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.ac-msno-search { min-width: 240px; }
+.ac-msno-input-wrap { position: relative; display: flex; align-items: center; }
+.ac-msno-input-wrap .text-input { padding-right: 28px; }
+.ac-msno-clear {
+  position: absolute; right: 6px; border: none; background: transparent; color: var(--muted-ink);
+  font-size: 15px; line-height: 1; cursor: pointer; padding: 2px 4px;
+}
+.ac-msno-clear:hover { color: var(--text-primary); }
+.ac-msno-note { color: var(--series-2); font-weight: 600; }
+.ac-filters-disabled { opacity: 0.45; pointer-events: none; }
+
 .ac-lifecycle-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
 .lifecycle-tab {
   border: 1px solid var(--border-hairline); background: #fff; color: var(--text-secondary);
@@ -1348,6 +1360,8 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
   const [lifecycleFilter, setLifecycleFilter] = useState("구독활성");
   const [riskFilter, setRiskFilter] = useState("all");
   const [segmentFilter, setSegmentFilter] = useState("all");
+  const [msnoInput, setMsnoInput] = useState("");
+  const [msnoFilter, setMsnoFilter] = useState("");
   const [page, setPage] = useState(1);
   const [customers, setCustomers] = useState([]);
   const [total, setTotal] = useState(0);
@@ -1355,14 +1369,28 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
 
+  // msno 입력은 타이핑마다 바로 조회하지 않고 300ms 디바운스 후 실제 필터로 반영한다.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setMsnoFilter(msnoInput.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [msnoInput]);
+
   useEffect(() => {
     if (!auth) return;
     setLoading(true);
     setError("");
     const params = new URLSearchParams({ page_size: String(AC_PAGE_SIZE), page: String(page) });
-    if (lifecycleFilter !== "all") params.set("lifecycle_status", lifecycleFilter);
-    if (riskFilter !== "all") params.set("risk_tier", riskFilter);
-    if (segmentFilter !== "all") params.set("segment", segmentFilter);
+    if (msnoFilter) {
+      // 백엔드도 msno가 있으면 다른 필터를 무시하고 msno만 적용한다 — 프론트도 동일하게 맞춘다.
+      params.set("msno", msnoFilter);
+    } else {
+      if (lifecycleFilter !== "all") params.set("lifecycle_status", lifecycleFilter);
+      if (riskFilter !== "all") params.set("risk_tier", riskFilter);
+      if (segmentFilter !== "all") params.set("segment", segmentFilter);
+    }
     fetch(`${API_BASE}/admin/customers?${params.toString()}`, {
       headers: { Authorization: `Bearer ${auth.token}` },
     })
@@ -1378,7 +1406,7 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [auth, lifecycleFilter, riskFilter, segmentFilter, page]);
+  }, [auth, msnoFilter, lifecycleFilter, riskFilter, segmentFilter, page]);
 
   const totalPages = Math.max(1, Math.ceil(total / AC_PAGE_SIZE));
   const rangeStart = total === 0 ? 0 : (page - 1) * AC_PAGE_SIZE + 1;
@@ -1389,11 +1417,34 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
     setPage(1); // 필터 바꾸면 1페이지부터 다시
   }
 
+  const msnoActive = !!msnoFilter;
+
   return html`
     <div class="action-center">
-      <div class="ac-lifecycle-tabs">
+      <div class="ac-search-row">
+        <div class="filter-block ac-msno-search">
+          <div class="filter-label">고객 ID (msno) 검색</div>
+          <div class="ac-msno-input-wrap">
+            <input
+              class="text-input"
+              type="text"
+              placeholder="msno 일부 또는 전체 입력"
+              value=${msnoInput}
+              onInput=${(e) => setMsnoInput(e.target.value)}
+            />
+            ${msnoInput
+              ? html`<button type="button" class="ac-msno-clear" title="검색 지우기" onClick=${() => setMsnoInput("")}>×</button>`
+              : null}
+          </div>
+        </div>
+        ${msnoActive
+          ? html`<div class="small-muted ac-msno-note">msno 검색 중에는 아래 위험도·세그먼트·생명주기 필터가 무시됩니다.</div>`
+          : null}
+      </div>
+      <div class="ac-lifecycle-tabs ${msnoActive ? "ac-filters-disabled" : ""}">
         <button
           type="button"
+          disabled=${msnoActive}
           class="lifecycle-tab ${lifecycleFilter === "all" ? "lifecycle-tab-active" : ""}"
           onClick=${() => changeFilter(setLifecycleFilter, "all")}
         >전체</button>
@@ -1402,16 +1453,17 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
             <button
               key=${l.key}
               type="button"
+              disabled=${msnoActive}
               class="lifecycle-tab ${lifecycleFilter === l.key ? "lifecycle-tab-active" : ""}"
               onClick=${() => changeFilter(setLifecycleFilter, l.key)}
             >${l.label}</button>
           `
         )}
       </div>
-      <div class="ac-filters">
+      <div class="ac-filters ${msnoActive ? "ac-filters-disabled" : ""}">
         <div class="filter-block">
           <div class="filter-label">위험도</div>
-          <select class="select" value=${riskFilter} onChange=${(e) => changeFilter(setRiskFilter, e.target.value)}>
+          <select class="select" disabled=${msnoActive} value=${riskFilter} onChange=${(e) => changeFilter(setRiskFilter, e.target.value)}>
             <option value="all">전체</option>
             <option value="고위험">고위험</option>
             <option value="저위험">저위험</option>
@@ -1419,7 +1471,7 @@ function ActionCenter({ auth, draftCustomers, onAddToDraft, onOpenCampaign }) {
         </div>
         <div class="filter-block">
           <div class="filter-label">월매출 세그먼트</div>
-          <select class="select" value=${segmentFilter} onChange=${(e) => changeFilter(setSegmentFilter, e.target.value)}>
+          <select class="select" disabled=${msnoActive} value=${segmentFilter} onChange=${(e) => changeFilter(setSegmentFilter, e.target.value)}>
             <option value="all">전체</option>
             <option value="고위험/고가치">고위험/고월매출</option>
             <option value="고위험/저가치">고위험/저월매출</option>
