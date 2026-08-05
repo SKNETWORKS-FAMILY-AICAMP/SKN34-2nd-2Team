@@ -4,35 +4,73 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KKBOX 이탈방지 고객모드 데모 (React)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Archivo:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 body { margin:0; }
+/* ---------- kkbox-retention-kr(마누스) 무드로 전체 톤 이식 ----------
+   블랙 #080B0C -> 딥틸 #082D30, 시그니처 청록 #00D5C8, 은은한 오프화이트 #F3F7F6.
+   저위험/고위험 상관없이 전체 화면에 동일한 다크 에디토리얼 톤을 적용한다. */
 .viz-root {
-  --mg: #0e9c86;              /* KKBOX 톤의 틸/청록 포인트 컬러 (스포티파이 그린 대신 브랜드 차별화) */
-  --mg-dark: #0a7862;
-  --mg-tint: rgba(14,156,134,0.10);
-  --bg: #f6f7f6;              /* 메인 콘텐츠 배경 — 밝은 라이트 테마 */
-  --bg-side: #ffffff;         /* 사이드바 배경 */
-  --surface: #ffffff;         /* 카드 */
-  --surface-hover: #eef1f0;
-  --surface-2: #ffffff;       /* 톱바/플레이어바 */
-  --text: #161f1c;
-  --text-soft: #5c6663;
-  --text-mute: #8d9592;
-  --line: rgba(22,32,29,0.09);
-  --danger: #d9463f;
-  --danger-tint: rgba(217,70,63,0.09);
-  --gold: #a97a0e;
-  --gold-tint: rgba(169,122,14,0.12);
-  --indigo: #6656c9;
-  --shadow-sm: 0 2px 8px rgba(22,32,29,0.06);
-  --shadow-md: 0 10px 26px rgba(22,32,29,0.10);
-  --shadow-lg: 0 20px 48px rgba(22,32,29,0.12);
+  --mg: #00d5c8;              /* 리마인드 틸 — KKBOX 시그니처 액센트 */
+  --mg-dark: #00b3a8;
+  --mg-tint: rgba(0,213,200,0.12);
+  --bg: #080b0c;              /* 메인 콘텐츠 배경 — 블랙 */
+  --bg-side: #05080a;         /* 사이드바 배경 — 블랙보다 살짝 더 어둡게 */
+  --surface: #10171a;         /* 카드 — 딥틸에 가까운 어두운 패널 */
+  --surface-hover: #172023;
+  --surface-2: #0a1113;       /* 톱바/플레이어바 */
+  --text: #f3f7f6;
+  --text-soft: rgba(243,247,246,0.62);
+  --text-mute: rgba(243,247,246,0.38);
+  --line: rgba(255,255,255,0.12);
+  --danger: #ff6a4d;
+  --danger-tint: rgba(255,106,77,0.12);
+  --gold: #e3b341;
+  --gold-tint: rgba(227,179,65,0.12);
+  --indigo: #8b7ce8;
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.35);
+  --shadow-md: 0 14px 32px rgba(0,0,0,0.45);
+  --shadow-lg: 0 24px 56px rgba(0,0,0,0.55);
 }
+
+/* ---------- 라이트 모드 — 헤더의 ☀️/🌙 토글로 전환 ----------
+   포인트 컬러(--mg)·위험/골드/인디고는 브랜드 일관성을 위해 그대로 두고,
+   배경/카드/텍스트/구분선만 밝은 톤으로 뒤집는다. 히어로 배너는 브랜드 무드라 다크로 고정. */
+.cx-theme-light {
+  --bg: #f4f6f6;
+  --bg-side: #ffffff;
+  --surface: #ffffff;
+  --surface-hover: #eef2f2;
+  --surface-2: #ffffff;
+  --text: #121a1c;
+  --text-soft: rgba(18,26,28,0.64);
+  --text-mute: rgba(18,26,28,0.42);
+  --line: rgba(18,26,28,0.10);
+  --shadow-sm: 0 2px 8px rgba(18,26,28,0.06);
+  --shadow-md: 0 10px 26px rgba(18,26,28,0.10);
+  --shadow-lg: 0 20px 48px rgba(18,26,28,0.12);
+}
+.cx-theme-light .cx-login-wrap { background: radial-gradient(120% 100% at 85% 100%, #dff5f3 0%, #f4f6f6 55%, #ffffff 100%); }
+.cx-theme-light .cx-topheader { background: rgba(255,255,255,0.6); }
+.cx-theme-light .cx-topheader.cx-topheader-scrolled { background: rgba(255,255,255,0.92); box-shadow: 0 14px 40px rgba(18,26,28,0.1); }
+.cx-theme-light .cx-topheader-nav button { color: rgba(18,26,28,0.68); }
+.cx-theme-light .cx-topheader-nav button:hover, .cx-theme-light .cx-topheader-nav button.cx-nav-active { color: #121a1c; }
+.cx-theme-light .cx-topheader-logo-sub { color: rgba(18,26,28,0.4); }
+.cx-theme-light .cx-topheader-logo-div { background: rgba(18,26,28,0.22); }
+.cx-theme-light .cx-header-icon-btn { color: rgba(18,26,28,0.72); }
+.cx-theme-light .cx-header-icon-btn:hover { color: #121a1c; }
+.cx-theme-light .cx-search-modal-overlay { background: rgba(18,26,28,0.32); }
+.cx-theme-light .cx-search-modal { background: rgba(255,255,255,0.98); }
+.cx-theme-light .cx-progress-track { background: rgba(18,26,28,0.12); }
+.cx-theme-light .cx-play-fab-mid { background: #121a1c; color: #f4f6f6; }
+.cx-theme-light .cx-play-fab-mid:hover { background: var(--mg); color: #061011; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
+  font-family: 'Noto Sans KR', system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -44,7 +82,7 @@ button { font-family: inherit; }
 /* ---------- 로그인 ---------- */
 .cx-login-wrap {
   min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(165deg, #eef6f4 0%, #f6f7f6 55%, #ffffff 100%);
+  background: radial-gradient(120% 100% at 85% 100%, #082d30 0%, #080b0c 60%, #05080a 100%);
   padding: 20px;
 }
 .cx-login-card {
@@ -72,14 +110,6 @@ button { font-family: inherit; }
 }
 .cx-submit:hover:not(:disabled) { background: var(--mg-dark); transform: scale(1.02); }
 .cx-submit:disabled { opacity: 0.5; cursor: default; }
-.cx-sample-grid { display: flex; flex-direction: column; gap: 8px; margin: 2px 0 18px; }
-.cx-sample-btn {
-  text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 10px;
-  padding: 11px 13px; font-size: 12px; cursor: pointer; color: var(--text);
-}
-.cx-sample-btn:hover { border-color: var(--mg); background: var(--mg-tint); }
-.cx-sample-btn b { display: block; font-size: 10.5px; color: var(--mg-dark); margin-bottom: 3px; }
-.cx-sample-code { font-family: 'DejaVu Sans Mono', monospace; font-size: 9.5px; color: var(--text-mute); word-break: break-all; }
 .cx-error {
   background: var(--danger-tint); border: 1px solid rgba(255,91,91,0.4); color: #ff8a8a; font-size: 11.5px;
   border-radius: 9px; padding: 10px 12px; margin-bottom: 12px;
@@ -87,68 +117,7 @@ button { font-family: inherit; }
 .cx-login-footnote { font-size: 10.5px; color: var(--text-mute); text-align: center; margin-top: 20px; line-height: 1.6; }
 .cx-login-footnote a, .cx-login-footnote b { color: var(--text-soft); }
 
-/* ---------- 앱 셸 (온라인/데스크톱 기본, 좁은 화면에서는 모바일 앱처럼 변신) ---------- */
-.cx-app {
-  min-height: 100vh; display: grid;
-  grid-template-columns: 240px 1fr;
-  grid-template-rows: 64px 1fr;
-  grid-template-areas: "side top" "side main";
-  background: var(--bg);
-}
-
-/* 좌측 내비게이션 — 전체 높이를 차지하는 진짜 사이드바 */
-.cx-nav {
-  grid-area: side; grid-row: 1 / span 2; background: var(--bg-side); padding: 20px 12px;
-  display: flex; flex-direction: column; gap: 2px; position: sticky; top: 0; height: 100vh; align-self: start;
-  border-right: 1px solid var(--line);
-}
-.cx-nav-logo { display: flex; align-items: center; gap: 10px; padding: 6px 12px 22px; }
-.cx-nav-logo .cx-logo-mark { width: 30px; height: 30px; font-size: 14px; }
-.cx-nav-logo-word { font-weight: 800; font-size: 15px; letter-spacing: -0.2px; }
-.cx-navbtn {
-  border: none; background: none; padding: 11px 13px; display: flex; flex-direction: row; align-items: center;
-  gap: 14px; cursor: pointer; color: var(--text-soft); font-size: 13.5px; font-weight: 700; border-radius: 9px; text-align: left;
-  transition: color .1s ease, background .12s ease;
-}
-.cx-navbtn:hover { color: var(--text); background: var(--surface-hover); }
-.cx-navbtn .cx-navicon { font-size: 18px; width: 20px; text-align: center; }
-.cx-navbtn.cx-nav-active { color: var(--mg-dark); background: var(--mg-tint); }
-.cx-nav-spacer { flex: 1; }
-.cx-nav-foot { padding: 10px 13px; border-top: 1px solid var(--line); margin-top: 8px; }
-.cx-nav-seg { font-size: 10px; color: var(--text-mute); margin-bottom: 6px; }
-.cx-nav-seg b { color: var(--mg-dark); }
-
-/* 상단 바 — 실제 검색(재생목록/아티스트) + 프로필 칩 */
-.cx-topbar {
-  grid-area: top; position: sticky; top: 0; z-index: 30;
-  background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 24px; gap: 16px;
-}
-.cx-search-wrap { position: relative; flex: 1; max-width: 420px; }
-.cx-search-input-row {
-  display: flex; align-items: center; gap: 9px; background: var(--surface-hover); border: 1.5px solid transparent;
-  border-radius: 999px; padding: 9px 16px; transition: border-color .12s ease, background .12s ease;
-}
-.cx-search-input-row.cx-search-focus { border-color: var(--mg); background: var(--surface); }
-.cx-search-icon { font-size: 13px; color: var(--text-mute); flex: 0 0 auto; }
-.cx-search-input {
-  border: none; background: none; outline: none; font-size: 12.5px; color: var(--text); flex: 1; min-width: 0;
-  font-family: inherit;
-}
-.cx-search-input::placeholder { color: var(--text-mute); }
-.cx-search-spinner {
-  width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--mg);
-  animation: cx-spin .7s linear infinite; flex: 0 0 auto;
-}
-@keyframes cx-spin { to { transform: rotate(360deg); } }
-.cx-search-clear { border: none; background: none; color: var(--text-mute); cursor: pointer; font-size: 14px; padding: 0 2px; flex: 0 0 auto; line-height: 1; }
-.cx-search-clear:hover { color: var(--text); }
-.cx-search-dropdown {
-  position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--surface);
-  border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-lg);
-  max-height: 360px; overflow-y: auto; z-index: 40; padding: 6px;
-}
+/* ---------- 검색 결과 행 (헤더 검색 모달 안에서 재사용) ---------- */
 .cx-search-row { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 9px; cursor: pointer; }
 .cx-search-row:hover { background: var(--surface-hover); }
 .cx-search-row-disabled { opacity: 0.45; cursor: default; }
@@ -160,14 +129,14 @@ button { font-family: inherit; }
 .cx-search-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-search-play { font-size: 11px; color: var(--mg-dark); flex: 0 0 auto; }
 .cx-search-note { padding: 14px 10px; font-size: 11.5px; color: var(--text-mute); text-align: center; }
-.cx-topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
 .cx-icon-btn {
   position: relative; border: 1px solid var(--line); background: var(--surface); color: var(--text); width: 34px; height: 34px;
   border-radius: 50%; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 .cx-icon-btn:hover { background: var(--surface-hover); }
 .cx-icon-badge {
-  position: absolute; top: -3px; right: -3px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 800;
+  position: absolute; top: -3px; right: -3px; background: var(--mg); color: #061011; font-size: 9px; font-weight: 800;
   min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px;
 }
 .cx-profile-chip {
@@ -178,50 +147,72 @@ button { font-family: inherit; }
 .cx-profile-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--indigo); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
 .cx-profile-chip span { font-size: 12px; font-weight: 700; }
 
-.cx-content { grid-area: main; padding: 44px 32px 110px; overflow-y: auto; }
-.cx-content-inner { max-width: 1100px; }
-.cx-section-title { font-weight: 800; font-size: 22px; margin: 6px 0 18px; letter-spacing: -0.4px; color: var(--text); }
+.cx-content { padding: 0 32px 30px; }
+.cx-content-inner { max-width: 1100px; margin: 0 auto; }
+.cx-scroll-section { padding: 52px 0 56px; border-top: 1px solid var(--line); }
+.cx-scroll-section:first-of-type { border-top: none; padding-top: 8px; }
+/* 진짜 탭 패널 — 헤더 메뉴 클릭 시 이 위치로 스크롤하고, 안쪽 내용만 통째로 바뀐다 */
+.cx-tabpanel { scroll-margin-top: 88px; min-height: 40vh; }
+.cx-eyebrow { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--mg); margin-bottom: 8px; }
+/* 마누스 원본의 display-type — 큰 헤드라인 전용 서체(Archivo). 한글 본문엔 안 쓰고 대형 타이틀에만. */
+.cx-display { font-family: 'Archivo', 'Noto Sans KR', 'Arial Black', sans-serif; font-weight: 800; letter-spacing: -0.045em; }
+.cx-section-title { font-weight: 800; font-size: 26px; margin: 0 0 18px; letter-spacing: -0.03em; color: var(--text); }
 .cx-muted { font-size: 12px; color: var(--text-mute); line-height: 1.6; }
 
-/* 하단 미니 플레이어 바 (데스크톱 전용 장식) */
+/* 하단 미니 플레이어 바 */
 .cx-playerbar {
-  position: fixed; left: 240px; right: 0; bottom: 0; height: 78px; z-index: 25;
+  position: fixed; left: 0; right: 0; bottom: 0; height: 78px; z-index: 40;
   background: var(--surface-2); border-top: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  display: grid; grid-template-columns: minmax(0,1fr) minmax(0,480px) minmax(0,1fr);
+  align-items: center; column-gap: 20px; padding: 0 20px;
 }
-.cx-playerbar-track { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; max-width: 320px; }
+.cx-playerbar-track { display: flex; align-items: center; gap: 12px; min-width: 0; max-width: 320px; justify-self: start; }
 .cx-playerbar-cover { width: 48px; height: 48px; border-radius: 6px; flex: 0 0 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-mute); background-color: var(--surface-hover); background-size: cover; background-position: center; }
 .cx-playerbar-meta { min-width: 0; }
-.cx-playerbar-title { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-playerbar-title { font-size: 12.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-playerbar-artist { font-size: 10.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cx-playerbar-mid { flex: 1.4; display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: 480px; }
-.cx-playerbar-controls { display: flex; align-items: center; gap: 18px; }
+.cx-playerbar-mid { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; justify-self: center; }
+.cx-playerbar-controls { display: flex; align-items: center; justify-content: center; gap: 18px; }
 .cx-playerbar-controls span { color: var(--text-soft); font-size: 15px; cursor: pointer; }
-.cx-play-fab-mid {
-  width: 30px; height: 30px; border-radius: 50%; background: var(--text); color: #fff; display: flex; align-items: center;
-  justify-content: center; font-size: 12px; cursor: pointer;
+.cx-player-toggle-active { color: var(--mg) !important; }
+.cx-player-repeat-btn { position: relative; display: inline-flex; }
+.cx-player-repeat-one {
+  position: absolute; top: -5px; right: -7px; font-size: 8px; font-weight: 800; background: var(--mg);
+  color: #061011; border-radius: 6px; padding: 0 3px; line-height: 1.4;
 }
+.cx-play-fab-mid {
+  width: 30px; height: 30px; border-radius: 50%; background: #f3f7f6; color: #061011; display: flex; align-items: center;
+  justify-content: center; font-size: 12px; cursor: pointer; transition: background .12s ease;
+}
+.cx-play-fab-mid:hover { background: var(--mg); }
 .cx-playerbar-progress { width: 100%; display: flex; align-items: center; gap: 8px; }
 .cx-playerbar-progress span { font-size: 9.5px; color: var(--text-mute); }
-.cx-progress-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(22,32,29,0.10); position: relative; overflow: hidden; }
-.cx-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--text); border-radius: 2px; }
-.cx-playerbar-vol { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px; color: var(--text-soft); font-size: 14px; }
-.cx-vol-track { width: 80px; height: 3px; border-radius: 2px; background: rgba(22,32,29,0.10); position: relative; }
-.cx-vol-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 65%; background: var(--text-soft); border-radius: 2px; }
+.cx-progress-track { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.14); position: relative; overflow: hidden; }
+.cx-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--mg); border-radius: 2px; }
+.cx-playerbar-vol { display: flex; align-items: center; gap: 8px; justify-self: end; color: var(--text-soft); font-size: 14px; }
+.cx-vol-range {
+  -webkit-appearance: none; appearance: none; width: 80px; height: 3px; border-radius: 2px; cursor: pointer; outline: none;
+}
+.cx-vol-range::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: #fff; cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+}
+.cx-vol-range::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: #fff; border: none; cursor: pointer; }
+.cx-vol-range::-moz-range-track { background: transparent; }
+.cx-queue-btn { background: none; border: none; color: var(--text-soft); font-size: 15px; cursor: pointer; display: flex; align-items: center; }
+.cx-queue-btn:hover, .cx-queue-btn.cx-queue-btn-active { color: var(--mg); }
+.cx-queue-panel {
+  position: fixed; right: 20px; bottom: 94px; width: 300px; max-height: 340px; overflow-y: auto; z-index: 45;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); padding: 6px;
+}
+.cx-queue-panel-title { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-mute); padding: 10px 10px 8px; }
+.cx-queue-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+.cx-queue-row:hover { background: var(--surface-hover); }
+.cx-queue-row-active .cx-search-title { color: var(--mg); }
 
 @media (max-width: 860px) {
-  .cx-app { grid-template-columns: 1fr; grid-template-rows: 60px 1fr; grid-template-areas: "top" "main"; }
-  .cx-nav {
-    grid-row: auto; position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: auto; z-index: 30;
-    background: var(--bg-side); border-top: 1px solid var(--line); flex-direction: row; padding: 4px 0; gap: 0;
-  }
-  .cx-nav-logo, .cx-nav-spacer, .cx-nav-foot { display: none; }
-  .cx-navbtn { flex: 1; flex-direction: column; gap: 3px; padding: 7px 0 9px; border-radius: 0; color: var(--text-mute); font-size: 10px; }
-  .cx-navbtn.cx-nav-active { color: var(--mg-dark); background: none; }
-  .cx-search-wrap { display: none; }
-  .cx-content { padding: 28px 16px 90px; }
+  .cx-content { padding: 0 16px 30px; }
   .cx-content-inner { max-width: 100%; }
-  .cx-playerbar { display: none; }
 }
 
 /* ---------- 홈: 히어로 배너 ---------- */
@@ -234,7 +225,7 @@ button { font-family: inherit; }
   background: linear-gradient(135deg, #e06a3f 0%, #a52e3a 100%);
 }
 .cx-hero-badge { font-size: 10.5px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 12px; border-radius: 10px; display: inline-block; letter-spacing: 0.2px; }
-.cx-hero-title { font-size: 26px; font-weight: 900; margin: 14px 0 6px; line-height: 1.3; letter-spacing: -0.4px; max-width: 640px; padding-left: 0.5em; text-indent: -0.5em; }
+.cx-hero-title { font-size: 26px; font-weight: 900; margin: 14px 0 6px; line-height: 1.3; letter-spacing: -0.4px; max-width: 640px; }
 .cx-hero-sub { font-size: 12.5px; opacity: 0.9; line-height: 1.6; }
 .cx-hero-cta { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
 .cx-btn {
@@ -245,15 +236,24 @@ button { font-family: inherit; }
 .cx-btn-white { background: #fff; color: #000; }
 .cx-btn-ghost-white { background: rgba(0,0,0,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.55); }
 
-.cx-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-.cx-stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 14px; text-align: center; transition: background .15s ease, transform .15s ease; }
-.cx-stat-tile:hover { background: var(--surface-hover); transform: translateY(-1px); }
-.cx-stat-emoji {
-  width: 34px; height: 34px; margin: 0 auto; border-radius: 50%; background: var(--mg-tint);
-  display: flex; align-items: center; justify-content: center; font-size: 15px;
+.cx-home-search-trigger {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 14px 18px; margin-bottom: 22px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-mute); font-size: 13px; font-weight: 600;
+  cursor: pointer; text-align: left; border-radius: 8px; transition: border-color .15s ease, color .15s ease;
 }
-.cx-stat-value { font-weight: 800; font-size: 14px; margin-top: 10px; color: var(--text); }
-.cx-stat-label { font-size: 10px; color: var(--text-mute); margin-top: 3px; }
+.cx-home-search-trigger:hover { border-color: var(--mg); color: var(--text); }
+.cx-home-search-trigger span:first-child { color: var(--mg); font-size: 15px; }
+
+/* 마누스 retentionSignals 패턴 — 카드 타일 대신 얇은 줄 구분 리스트, 값은 우측 정렬 강조 */
+.cx-stat-row { border-top: 1px solid var(--line); margin-bottom: 28px; }
+.cx-stat-tile {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px;
+  padding: 15px 2px; border-bottom: 1px solid var(--line); transition: background .15s ease;
+}
+.cx-stat-tile:hover { background: rgba(255,255,255,0.03); }
+.cx-stat-emoji { display: inline-block; margin-right: 8px; font-size: 14px; }
+.cx-stat-value { font-weight: 800; font-size: 19px; letter-spacing: -0.02em; color: var(--mg); text-align: right; }
+.cx-stat-label { font-size: 11px; font-weight: 600; color: var(--text-soft); }
 
 .cx-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-bottom: 20px; }
 .cx-card-title { font-weight: 800; font-size: 15px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--text); }
@@ -264,6 +264,40 @@ button { font-family: inherit; }
 .cx-badge-vip { font-size: 9.5px; font-weight: 800; background: var(--gold-tint); color: var(--gold); padding: 3px 9px; border-radius: 8px; }
 .cx-tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
 .cx-tag { font-size: 10.5px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--text-soft); }
+
+/* ---------- 리마인드 컴백 플레이리스트 (kkbox-retention-kr 무드 이식) ----------
+   고위험(리마인드 발송 대상) 회원에게만 노출되는, 짙은 블랙-딥틸 에디토리얼 패널.
+   실제 곡 데이터/재생 로직은 그대로(onPlay), 이 부분만 다른 시각적 톤을 준다. */
+.cx-remind-panel {
+  position: relative; overflow: hidden; border-radius: 18px; padding: 34px 30px 30px; margin-bottom: 20px;
+  background: linear-gradient(150deg, #080b0c 0%, #0d2426 55%, #082d30 100%);
+  color: #f3f7f6; box-shadow: 0 20px 48px rgba(0,0,0,0.35);
+}
+.cx-remind-eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #00d5c8; }
+.cx-remind-title { font-size: 24px; font-weight: 900; letter-spacing: -0.3px; margin: 10px 0 8px; color: #f3f7f6; }
+.cx-remind-sub { font-size: 12.5px; line-height: 1.6; color: rgba(243,247,246,0.62); max-width: 520px; margin-bottom: 20px; }
+.cx-remind-tag {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: #00d5c8;
+  border: 1px solid rgba(0,213,200,0.45); border-radius: 999px; padding: 4px 12px; margin-bottom: 22px;
+}
+.cx-remind-tracklist { border-top: 1px solid rgba(255,255,255,0.12); }
+.cx-remind-track {
+  display: flex; align-items: center; gap: 14px; padding: 14px 2px; border-bottom: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer; transition: background .12s ease;
+}
+.cx-remind-track:hover { background: rgba(255,255,255,0.04); }
+.cx-remind-track-cover {
+  width: 46px; height: 46px; border-radius: 6px; flex: 0 0 46px; background-size: cover; background-position: center;
+  background-color: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.cx-remind-track-meta { min-width: 0; flex: 1; }
+.cx-remind-track-title { font-size: 13px; font-weight: 700; color: #f3f7f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-remind-track-artist { font-size: 11px; color: rgba(243,247,246,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.cx-remind-track-play {
+  flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(0,213,200,0.5); color: #00d5c8;
+  display: flex; align-items: center; justify-content: center; font-size: 11px;
+}
+.cx-remind-note { margin-top: 18px; font-size: 10.5px; line-height: 1.7; color: rgba(243,247,246,0.35); }
 
 /* 앨범 커버 카드 그리드 — 스포티파이 스타일: 호버 시 확대되는 플로팅 재생 버튼 */
 .cx-track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
@@ -286,6 +320,72 @@ button { font-family: inherit; }
 .cx-track-card-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cx-track-card-artist { font-size: 11px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* ---------- 구독권 결제 ---------- */
+/* 장기 이탈 후 복귀(win-back) 대상 전용 재구독 유도 카드 — 요금제 카드 위에만 조건부로 노출 */
+.cx-winback-card {
+  border-radius: 16px; padding: 22px 24px; margin-bottom: 16px; color: #fff;
+  background: linear-gradient(135deg, #e3b341 0%, #a06a1c 100%); box-shadow: var(--shadow-md);
+}
+.cx-winback-badge { font-size: 10.5px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 12px; border-radius: 10px; display: inline-block; }
+.cx-winback-title { font-size: 17px; font-weight: 900; margin: 12px 0 4px; letter-spacing: -0.2px; line-height: 1.4; }
+.cx-winback-desc { font-size: 12px; opacity: 0.92; line-height: 1.5; }
+.cx-winback-code { margin-top: 14px; }
+.cx-winback-cta {
+  margin-top: 14px; border: none; border-radius: 999px; padding: 10px 18px; font-size: 12px; font-weight: 800;
+  background: rgba(0,0,0,0.2); color: #fff; cursor: pointer; border: 1px solid rgba(255,255,255,0.5);
+}
+.cx-winback-cta:hover { background: rgba(0,0,0,0.32); }
+.cx-billing-plan-card {
+  border-radius: 16px; padding: 24px 26px; background: linear-gradient(135deg, #16201f 0%, #0c1413 100%);
+  border: 1px solid var(--line); margin-bottom: 20px;
+}
+.cx-billing-plan-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.cx-billing-plan-badge { font-size: 10.5px; font-weight: 800; padding: 5px 11px; border-radius: 10px; }
+.cx-billing-status-active { background: rgba(0,213,200,0.14); color: var(--mg); }
+.cx-billing-status-grace { background: var(--gold-tint); color: var(--gold); }
+.cx-billing-status-expired { background: var(--danger-tint); color: var(--danger); }
+.cx-billing-status-unknown { background: rgba(255,255,255,0.12); color: rgba(243,247,246,0.62); }
+.cx-billing-plan-price { font-size: 24px; font-weight: 900; color: #f3f7f6; letter-spacing: -0.02em; }
+.cx-billing-plan-price span { font-size: 12px; font-weight: 700; color: rgba(243,247,246,0.42); margin-left: 2px; }
+.cx-billing-plan-desc { font-size: 12px; color: rgba(243,247,246,0.62); margin-top: 8px; }
+.cx-billing-plan-actions { margin-top: 16px; display: flex; align-items: center; gap: 10px; }
+.cx-billing-current-plan { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11.5px; color: rgba(243,247,246,0.62); flex-wrap: wrap; }
+.cx-billing-current-plan b { color: #f3f7f6; }
+.cx-billing-autorenew-on { color: var(--mg); font-weight: 700; }
+.cx-billing-autorenew-off { color: rgba(243,247,246,0.42); font-weight: 700; }
+/* 요금제 목록 — 실제 KKBox 결제 데이터(payment_plan_days × plan_list_price) 그룹별 리스트 */
+.cx-plan-groups { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.cx-plan-group { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.cx-plan-group-tag {
+  flex: 0 0 108px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  padding: 14px 8px; text-align: center; color: #fff; font-weight: 800; font-size: 12.5px; line-height: 1.3; white-space: pre-line;
+}
+.cx-plan-group-hot { display: inline-block; font-size: 9px; font-weight: 900; background: rgba(255,255,255,0.25); padding: 2px 7px; border-radius: 6px; }
+.cx-plan-tag-mint { background: linear-gradient(160deg, #00d5c8, #0a6d5c); }
+.cx-plan-tag-blue { background: linear-gradient(160deg, #4a8fe7, #2955a3); }
+.cx-plan-tag-violet { background: linear-gradient(160deg, #8b6fe0, #4a3a99); }
+.cx-plan-tag-gold { background: linear-gradient(160deg, #e3b341, #a97c1c); }
+.cx-plan-group-rows { flex: 1; display: flex; flex-direction: column; }
+.cx-plan-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.cx-plan-row:last-child { border-bottom: none; }
+.cx-plan-row-current { background: rgba(0,213,200,0.07); }
+.cx-plan-row-name { flex: 1; min-width: 0; }
+.cx-plan-row-title { font-size: 12.5px; font-weight: 700; color: var(--text); }
+.cx-plan-row-sub { font-size: 10.5px; color: var(--text-mute); margin-top: 2px; }
+.cx-plan-row-price { text-align: right; flex: 0 0 auto; }
+.cx-plan-row-list-price { font-size: 10.5px; color: var(--text-mute); text-decoration: line-through; }
+.cx-plan-row-paid-price { font-size: 15px; font-weight: 900; color: var(--text); }
+.cx-plan-row-winback-tag {
+  display: block; font-size: 9px; font-weight: 900; color: var(--gold); background: var(--gold-tint);
+  padding: 2px 7px; border-radius: 6px; margin-bottom: 3px; white-space: nowrap;
+}
+.cx-plan-row-btn {
+  flex: 0 0 auto; border: 1px solid var(--mg); background: none; color: var(--mg); font-size: 11px; font-weight: 800;
+  padding: 8px 13px; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: background .15s ease, color .15s ease;
+}
+.cx-plan-row-btn:hover { background: var(--mg); color: #061011; }
+.cx-plan-row-current-tag { font-size: 10.5px; font-weight: 800; color: var(--mg); white-space: nowrap; }
+
 /* ---------- 혜택(쿠폰) ---------- */
 .cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0a6d5c 100%); box-shadow: var(--shadow-md); }
 .cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f61d6 0%, #322a7a 100%); box-shadow: var(--shadow-md); }
@@ -299,16 +399,64 @@ button { font-family: inherit; }
 }
 .cx-coupon-expire { font-size: 10.5px; margin-top: 12px; opacity: 0.85; }
 
-/* ---------- 알림 ---------- */
-.cx-notif-row { display: flex; gap: 13px; padding: 14px 0; border-bottom: 1px solid var(--line); }
-.cx-notif-row:last-child { border-bottom: none; }
-.cx-notif-icon {
-  width: 40px; height: 40px; border-radius: 50%; background: var(--surface-hover); flex: 0 0 40px;
-  display: flex; align-items: center; justify-content: center; font-size: 17px;
+/* ---------- 전략 혜택 카드(콘서트 추첨/연차 혜택/갱신 리워드) ---------- */
+.cx-benefit-section { margin-top: 30px; }
+.cx-benefit-section-title { font-size: 13.5px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+.cx-benefit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.cx-benefit-card {
+  border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--surface);
+  display: flex; flex-direction: column; gap: 8px;
 }
-.cx-notif-title { font-size: 13px; font-weight: 700; color: var(--text); }
-.cx-notif-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
-.cx-notif-time { font-size: 10.5px; color: var(--text-mute); margin-top: 5px; }
+.cx-benefit-card-locked { opacity: 0.5; }
+.cx-benefit-icon { font-size: 20px; }
+.cx-benefit-card-title { font-size: 13.5px; font-weight: 800; color: var(--text); }
+.cx-benefit-card-desc { font-size: 11.5px; color: var(--text-soft); line-height: 1.6; flex: 1; }
+.cx-benefit-card-note { font-size: 10.5px; color: var(--text-mute); }
+.cx-benefit-tier-track { height: 5px; border-radius: 3px; background: var(--line); position: relative; overflow: hidden; margin: 4px 0; }
+.cx-benefit-tier-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--mg); border-radius: 3px; }
+.cx-benefit-tier-labels { display: flex; justify-content: space-between; font-size: 9.5px; color: var(--text-mute); }
+.cx-benefit-tier-list { display: flex; flex-direction: column; gap: 5px; margin: 6px 0 2px; }
+.cx-benefit-tier-row { display: flex; justify-content: space-between; gap: 10px; font-size: 10.5px; padding: 6px 9px; border-radius: 7px; background: var(--surface-hover); color: var(--text-soft); }
+.cx-benefit-tier-row span:first-child { flex: 0 0 auto; font-weight: 700; white-space: nowrap; }
+.cx-benefit-tier-row span:last-child { text-align: right; }
+.cx-benefit-tier-row-current { background: rgba(0,213,200,0.16); color: var(--text); font-weight: 700; }
+.cx-benefit-tier-row-done { opacity: 0.55; }
+.cx-benefit-tier-row-locked { opacity: 0.75; }
+.cx-benefit-claim-btn {
+  margin-top: 4px; border: 1px solid var(--mg); background: none; color: var(--mg); font-size: 11.5px; font-weight: 800;
+  padding: 9px 14px; border-radius: 8px; cursor: pointer; transition: background .15s ease, color .15s ease;
+}
+.cx-benefit-claim-btn:hover { background: var(--mg); color: #061011; }
+.cx-benefit-claim-btn:disabled { border-color: var(--line); color: var(--text-mute); cursor: default; background: none; }
+.cx-benefit-claimed { font-size: 11px; font-weight: 800; color: var(--mg); }
+
+/* ---------- 알림 패널 (헤더 종 아이콘 → 우측 슬라이드 패널, 페이스북/인스타 알림함 참고) ---------- */
+.cx-notif-panel-overlay {
+  position: fixed; inset: 0; z-index: 95; background: rgba(3,5,6,0.55); backdrop-filter: blur(2px);
+}
+.cx-notif-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 92vw); z-index: 96;
+  background: var(--bg-side); border-left: 1px solid var(--line); box-shadow: -20px 0 60px rgba(0,0,0,0.4);
+  padding: 28px 26px; overflow-y: auto; animation: cx-notif-panel-in .2s ease;
+}
+@keyframes cx-notif-panel-in { from { transform: translateX(28px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.cx-notif-panel-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.cx-notif-panel-title { font-size: 24px; font-weight: 900; letter-spacing: -0.3px; color: var(--text); margin: 10px 0 6px; }
+.cx-notif-panel-close {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--mg); background: none;
+  color: var(--mg); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.cx-notif-panel-close:hover { background: var(--mg-tint); }
+.cx-notif-panel-list { margin-top: 18px; }
+.cx-notif-panel-row { display: flex; gap: 10px; padding: 16px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.cx-notif-panel-row:last-child { border-bottom: none; }
+.cx-notif-panel-row:hover .cx-notif-panel-row-title { color: var(--mg); }
+.cx-notif-panel-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--mg); margin-top: 6px; }
+.cx-notif-panel-dot-read { background: var(--text-mute); opacity: 0.5; }
+.cx-notif-panel-body { min-width: 0; }
+.cx-notif-panel-row-title { font-size: 14px; font-weight: 800; color: var(--text); transition: color .12s ease; }
+.cx-notif-panel-row-desc { font-size: 12px; color: var(--text-soft); margin-top: 4px; line-height: 1.5; }
+.cx-notif-panel-row-time { font-size: 10.5px; color: var(--text-mute); margin-top: 8px; }
 .cx-empty { text-align: center; color: var(--text-mute); font-size: 12.5px; padding: 50px 10px; }
 
 /* ---------- 차트 ---------- */
@@ -331,6 +479,99 @@ button { font-family: inherit; }
 .cx-chart-play-disabled { background: var(--surface-hover); color: var(--text-mute); }
 
 .cx-footnote { font-size: 10.5px; color: var(--text-mute); text-align: center; padding: 20px 4px 4px; line-height: 1.7; }
+
+/* ============================== kkbox-retention-kr(마누스) 구조 이식 ==============================
+   좌측 사이드바 탭 대신, 상단 고정 헤더 + 스크롤 앵커 방식(음악 둘러보기/맞춤 혜택/인기 차트/구독권 결제)
+   + 화면 전체를 덮는 대형 히어로로 레이아웃 자체를 원본 참고 화면과 같은 구조로 바꾼다. */
+.cx-shell { min-height: 100vh; background: var(--bg); }
+.cx-main { padding-top: 72px; padding-bottom: 90px; }
+
+.cx-topheader {
+  position: fixed; inset-inline: 0; top: 0; z-index: 50; height: 72px;
+  display: flex; align-items: center; border-bottom: 1px solid transparent;
+  background: rgba(6,9,10,0.5); transition: background-color .3s ease, border-color .3s ease, backdrop-filter .3s ease;
+}
+.cx-topheader.cx-topheader-scrolled {
+  background: rgba(6,9,10,0.9); border-bottom-color: var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+}
+.cx-topheader-inner {
+  width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center;
+  justify-content: space-between; gap: 20px;
+}
+.cx-topheader-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; background: none; border: none; padding: 0; }
+.cx-topheader-logo .cx-logo-mark { width: 34px; height: 34px; font-size: 15px; }
+.cx-topheader-logo-word { font-weight: 800; font-size: 18px; letter-spacing: -0.04em; color: var(--mg); }
+.cx-topheader-logo-div { width: 1px; height: 12px; background: rgba(255,255,255,0.22); }
+.cx-topheader-logo-sub { font-size: 8.5px; font-weight: 800; letter-spacing: 0.18em; color: rgba(255,255,255,0.38); }
+.cx-topheader-nav { display: none; align-items: center; gap: 28px; }
+@media (min-width: 1024px) { .cx-topheader-nav { display: flex; } }
+.cx-topheader-nav button {
+  display: flex; align-items: center; gap: 4px; border: none; background: none; cursor: pointer;
+  font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.72); padding: 0;
+}
+.cx-topheader-nav button:hover, .cx-topheader-nav button.cx-nav-active { color: #fff; }
+.cx-topheader-actions { display: flex; align-items: center; gap: 4px; }
+.cx-header-icon-btn {
+  position: relative; display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 8px; border: none;
+  background: none; color: rgba(255,255,255,0.78); cursor: pointer; font-size: 12px; font-weight: 700;
+}
+.cx-header-icon-btn:hover { color: #fff; }
+.cx-header-icon-btn.cx-header-search { color: var(--mg); }
+.cx-header-icon-badge {
+  position: absolute; top: 2px; right: 0; background: var(--mg); color: #061011; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px;
+}
+.cx-header-cta {
+  margin-left: 6px; display: none; align-items: center; height: 38px; padding: 0 16px; border: 1px solid rgba(0,213,200,0.45);
+  color: var(--mg); font-size: 11.5px; font-weight: 800; background: none; cursor: pointer; white-space: nowrap;
+}
+.cx-header-cta:hover { background: var(--mg); color: #061011; }
+@media (min-width: 640px) { .cx-header-cta { display: inline-flex; } }
+
+/* 대형 히어로 — 원본 "LISTEN, AND BE HEARD" 구도 */
+.cx-hero2 {
+  position: relative; overflow: hidden; min-height: 86vh; display: flex; align-items: center;
+  background: radial-gradient(120% 90% at 82% 78%, #0d2b2d 0%, #080b0c 55%, #05080a 100%);
+  padding: 120px 20px 70px;
+}
+.cx-hero2-inner { position: relative; width: 100%; max-width: 1440px; margin: 0 auto; }
+.cx-hero2-eyebrow { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mg); margin-bottom: 22px; }
+.cx-hero2-title {
+  font-weight: 900; letter-spacing: -0.045em; line-height: 0.94; color: #f3f7f6; margin: 0;
+  font-size: clamp(2.6rem, 8vw, 6.2rem); max-width: 1100px;
+}
+.cx-hero2-sub { margin-top: 26px; max-width: 640px; font-size: 13px; font-weight: 500; line-height: 1.7; color: rgba(255,255,255,0.72); }
+.cx-hero2-cta { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
+.cx-hero2-vertical {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: none; align-items: center; gap: 10px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: rgba(255,255,255,0.4); writing-mode: vertical-rl;
+}
+@media (min-width: 768px) { .cx-hero2-vertical { display: flex; } }
+.cx-hero2-vertical span.cx-vline { display: inline-block; width: 1px; height: 48px; background: rgba(255,255,255,0.28); writing-mode: horizontal-tb; }
+
+/* 검색 모달 — 원본은 다이얼로그, 여기서는 오버레이 패널로 동일한 톤 이식 */
+.cx-search-modal-overlay {
+  position: fixed; inset: 0; z-index: 90; background: rgba(3,5,6,0.7); backdrop-filter: blur(4px);
+  display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px;
+}
+.cx-search-modal {
+  width: 100%; max-width: 560px; background: rgba(9,19,21,0.98); border: 1px solid var(--line);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5); max-height: 70vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.cx-search-modal-row { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding: 16px 18px; }
+.cx-search-modal-row input {
+  flex: 1; min-width: 0; background: none; border: none; outline: none; color: var(--text); font-size: 14px;
+}
+.cx-search-modal-row input::placeholder { color: var(--text-mute); }
+.cx-search-modal-close { border: none; background: none; color: var(--text-mute); cursor: pointer; font-size: 13px; }
+.cx-search-modal-close:hover { color: var(--text); }
+.cx-search-modal-results { overflow-y: auto; padding: 8px; }
+
+@media (max-width: 640px) {
+  .cx-main { padding-top: 64px; }
+  .cx-hero2 { min-height: 70vh; padding: 100px 18px 56px; }
+}
 </style>
 </head>
 <body>
@@ -650,20 +891,94 @@ const { useState, useMemo, useEffect, useRef } = React;
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
 const API_BASE = window.location.origin;
 
-// 데모용 msno 목록입니다. 실제 kkbox_serving.customer_churn_scores 에 있는 msno 값으로 교체해주세요.
-// (예: SELECT msno FROM customer_churn_scores ORDER BY RAND() LIMIT 8; 등으로 뽑아서 여기 채워넣으면 됩니다)
-const SAMPLE_MSNO = [
-  { msno: "SAMPLE_MSNO_1", label: "예시 고객 1" },
-  { msno: "SAMPLE_MSNO_2", label: "예시 고객 2" },
-];
-
 // 세그먼트(위험도×LTV, 실데이터 필드 조합)별 쿠폰 자동 매칭 — analytics/04_ltv.ipynb 세그먼트 기준
+// discountPct: 실제 요금제 가격에 적용할 수 있는 "정률 할인"이 있는 쿠폰만 채워둠(구독권 결제 탭
+// 요금제 목록에서 실제 할인가를 계산하는 데 사용). 정액 크레딧/적립형 쿠폰은 요금제 가격 자체를
+// 깎는 게 아니라서 비워둔다.
 const COUPON_RULES = {
-  "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", alt: false },
+  "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", alt: false, discountPct: 20 },
   "고위험/저가치": { badge: "복귀 유도 오퍼", title: "무료 청취 크레딧 5,000원", desc: "가볍게 다시 시작할 수 있는 소액 혜택", code: "COMEBACK5K", alt: true },
   "저위험/고가치": { badge: "감사 오퍼", title: "다음 달 자동 5% 적립", desc: "이탈 위험은 낮지만 고가치 고객 유지용", code: "THANKS5PT", alt: true },
   "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", alt: true },
 };
+// 위 COUPON_RULES 중 "고위험" 두 세그먼트(VIP 리텐션 오퍼 / 복귀 유도 오퍼)가 곧
+// "이탈 고객을 위한 컴백(win-back) 전략" — 생존분석상 이탈 위험이 가장 높은 고위험군에게
+// LTV 등급별로 차등화된 리텐션 오퍼를 자동 매칭한다.
+
+// "기존 고객 구독 유지 전략" (생존분석·퍼널 분석 기반 제안서) — 아래 3개 혜택은 실제 risk 데이터로
+// 대상 여부를 판정해서 보여주고, 응모/수령 버튼을 누르면 실제로 서버(customer_actions)에 기록된다.
+// ① 콘서트 티켓 추첨: RMST 기준 자동갱신 유지 고객의 실제 기대 잔존기간이 기존 모델 상한의 2.5배 —
+//    장기 결제 유지 고객("숨은 VIP")을 위한 정기 이벤트. 저위험·고가치 고객 대상.
+// ② 연 단위 유지 혜택: Cox 모형상 자동갱신 유지가 이탈 위험을 79% 낮추는 압도적 요인(HR 0.21) —
+//    유지 연차가 늘어날수록 혜택이 커지는 구조로 이 보호 효과를 제도적으로 강화.
+// ③ 갱신 즉시 리워드: 퍼널상 "반복 이용 → 자동갱신" 전환율이 23%인 병목 구간 — 갱신 시점에
+//    즉시 보상을 줘서 전환 장벽을 낮춘다. 구독활성 상태로 만료가 임박했거나 갱신유예기간인 고객 대상.
+const ANNUAL_TIERS = [
+  { key: "annual_tier", label: "1년차", minMonths: 0, reward: "마일리지 5% 적립" },
+  { key: "annual_tier", label: "2년차", minMonths: 12, reward: "마일리지 8% 적립 + 생일 기프티콘" },
+  { key: "annual_tier", label: "3년차", minMonths: 24, reward: "10% 추가 할인 + 제휴 가맹점 프리미엄 쿠폰" },
+  { key: "annual_tier", label: "4년차 이상", minMonths: 36, reward: "15% 할인 + 여행 제휴 할인 패키지" },
+];
+
+function getAnnualTier(expectedLifetimeMonths) {
+  const months = expectedLifetimeMonths ?? 0;
+  let idx = 0;
+  ANNUAL_TIERS.forEach((t, i) => {
+    if (months >= t.minMonths) idx = i;
+  });
+  return { tier: ANNUAL_TIERS[idx], tierIndex: idx, next: ANNUAL_TIERS[idx + 1] || null, months };
+}
+
+function isConcertRaffleEligible(risk) {
+  return !!risk && risk.risk_tier === "저위험" && risk.ltv_tier === "고가치";
+}
+
+function isRenewalRewardEligible(risk) {
+  if (!risk) return false;
+  if (risk.lifecycle_status === "갱신유예기간") return true;
+  if (risk.lifecycle_status === "구독활성" && risk.days_to_expire != null && risk.days_to_expire >= 0 && risk.days_to_expire <= 7) return true;
+  return false;
+}
+
+// 실제 원본 결제 데이터(data/processed/features_transactions.csv, last_payment_plan_days ×
+// last_plan_list_price 조합)에서 가입자 수 기준 상위 요금제만 뽑은 카탈로그 — 가격은 대만달러(NTD) 정가 그대로.
+// listPrice/paidPrice/subscribers/autoRenewRate 전부 data/processed/features_transactions.csv
+// (last_payment_plan_days × last_plan_list_price 그룹별 실제 집계)에서 뽑은 값 — 가상 데이터 아님.
+// paidPrice는 그 그룹 고객들의 실제 last_actual_amount_paid 평균(정가 대비 실제 할인폭 그대로 반영).
+const PLAN_GROUPS = [
+  {
+    label: "체험형",
+    tagClass: "cx-plan-tag-mint",
+    tiers: [
+      { planDays: 7, name: "7일 무료 체험", sub: "결제 전 체험 플랜", listPrice: 0, paidPrice: 0, subscribers: 456957, autoRenewRate: 0 },
+    ],
+  },
+  {
+    label: "월정액\n스탠다드",
+    tagClass: "cx-plan-tag-blue",
+    tiers: [
+      { planDays: 30, name: "30일 스탠다드", sub: "정가 그대로 결제", listPrice: 99, paidPrice: 99, subscribers: 419479, autoRenewRate: 1.0 },
+      { planDays: 30, name: "30일 라이트", sub: "정가 그대로 결제", listPrice: 100, paidPrice: 100, subscribers: 14815, autoRenewRate: 0.965 },
+    ],
+  },
+  {
+    label: "월정액\n프리미엄",
+    tagClass: "cx-plan-tag-violet",
+    hot: true,
+    tiers: [
+      { planDays: 30, name: "30일 프리미엄", sub: "실 가입자 최다 요금제", listPrice: 149, paidPrice: 115.77, subscribers: 989060, autoRenewRate: 0.813 },
+      { planDays: 30, name: "30일 스페셜", sub: "", listPrice: 180, paidPrice: 179.88, subscribers: 133232, autoRenewRate: 0.436 },
+    ],
+  },
+  {
+    label: "장기 결제형",
+    tagClass: "cx-plan-tag-gold",
+    tiers: [
+      { planDays: 195, name: "195일 반기 요금제", sub: "6개월 단위 결제", listPrice: 894, paidPrice: 894, subscribers: 45519, autoRenewRate: 0 },
+      { planDays: 410, name: "410일 연간 요금제", sub: "일 단가 최저", listPrice: 1788, paidPrice: 1788, subscribers: 62813, autoRenewRate: 0 },
+    ],
+  },
+];
 
 // 우리 스키마(customer_churn_scores)에는 실제 청취 로그/장르 선호 데이터가 없기 때문에,
 // "어떤 무드(컴백형 vs 취향형)를 보여줄지"만 로그인한 고객의 실제 risk_tier·days_since_last_txn 값으로 정하고,
@@ -673,6 +988,7 @@ const COUPON_RULES = {
 // 호출해서 넘겨준다 — 브라우저는 항상 같은 오리진(localhost:8000)만 호출하므로 CORS 문제가 없다.
 const MUSIC_SEARCH_URL = `${API_BASE}/music/search`;
 const MUSIC_CHART_URL = `${API_BASE}/music/chart`;
+const MUSIC_NEW_RELEASES_URL = `${API_BASE}/music/new-releases`;
 
 // 무드별로 실제로 존재하는 곡을 검색해서 채운다 (제목/아티스트로 검색 -> 1위 매칭 결과 사용)
 const COMEBACK_QUERIES = ["아이유 밤편지", "폴킴 모든 날 모든 순간", "잔나비 주저하는 연인들을 위해", "볼빨간사춘기 우주를 줄게"];
@@ -712,6 +1028,15 @@ async function fetchTopChart(limit = 100) {
   return data;
 }
 
+// "최신음악" 그리드 — /music/new-releases가 실제 발매일(releaseDate) 기준으로 정렬해서 내려준다.
+async function fetchNewReleases(limit = 24) {
+  const res = await fetch(`${MUSIC_NEW_RELEASES_URL}?limit=${limit}`);
+  if (!res.ok) throw new Error(`최신음악 조회 실패 (${res.status})`);
+  const data = await res.json();
+  if (!Array.isArray(data) || !data.length) throw new Error("최신음악 데이터 없음");
+  return data;
+}
+
 async function fetchFallbackChart(limit = 50) {
   const res = await fetch(`${MUSIC_SEARCH_URL}?term=${encodeURIComponent("kpop")}&limit=${limit}`);
   if (!res.ok) throw new Error(`검색 대체 조회 실패 (${res.status})`);
@@ -730,6 +1055,21 @@ function formatTime(sec) {
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+// 알림 패널 전용 — 절대 시각 대신 "방금 전/12분 전/어제" 같은 상대 시간으로 표시.
+function formatRelativeTime(dateStr) {
+  const then = new Date(dateStr).getTime();
+  if (!isFinite(then)) return "";
+  const diffMin = Math.floor((Date.now() - then) / 60000);
+  if (diffMin < 1) return "방금 전";
+  if (diffMin < 60) return `${diffMin}분 전`;
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) return `${diffHour}시간 전`;
+  const diffDay = Math.floor(diffHour / 24);
+  if (diffDay === 1) return "어제";
+  if (diffDay < 7) return `${diffDay}일 전`;
+  return new Date(dateStr).toLocaleDateString();
 }
 
 // lifecycle_status(구독활성/갱신유예기간/장기만료/상태확인필요) 기준으로 D-day 문구를 통일.
@@ -766,7 +1106,11 @@ async function apiFetch(path, { method = "GET", token, body } = {}) {
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || `요청 실패 (${res.status})`);
+  if (!res.ok) {
+    const err = new Error(data.detail || `요청 실패 (${res.status})`);
+    err.status = res.status;
+    throw err;
+  }
   return data;
 }
 
@@ -791,38 +1135,27 @@ function LoginScreen({ onLogin }) {
     }
   }
 
+  // 로그인 화면은 이후 앱 내 다크/라이트 설정과 무관하게 항상 라이트 톤으로 고정.
   return html`
-    <div class="cx-login-wrap">
-      <div class="cx-login-card">
-        <div class="cx-logo-row">
-          <span class="cx-logo-mark">K</span>
-          <span class="cx-logo-word">KKBOX Music</span>
-        </div>
-        <div class="cx-logo-sub">가입된 고객 ID(msno)로 로그인하면, 내 이용 현황과 맞춤 추천을 확인할 수 있어요.</div>
-
-        <form onSubmit=${handleLogin}>
-          <label class="cx-field-label">고객 ID (msno)</label>
-          <input class="cx-input" type="text" required value=${msno}
-            onInput=${(e) => setMsno(e.target.value)} placeholder="msno를 입력하세요" />
-
-          <div class="cx-sample-grid">
-            ${SAMPLE_MSNO.map(
-              (s) => html`
-                <button type="button" key=${s.msno} class="cx-sample-btn" onClick=${() => setMsno(s.msno)}>
-                  <b>${s.label}</b>
-                  <span class="cx-sample-code">${s.msno}</span>
-                </button>
-              `
-            )}
+    <div class="cx-theme-light">
+      <div class="cx-login-wrap">
+        <div class="cx-login-card">
+          <div class="cx-logo-row">
+            <span class="cx-logo-mark">K</span>
+            <span class="cx-logo-word">KKBOX Music</span>
           </div>
+          <form onSubmit=${handleLogin}>
+            <label class="cx-field-label">고객 ID (msno)</label>
+            <input class="cx-input" type="text" required value=${msno}
+              onInput=${(e) => setMsno(e.target.value)} placeholder="msno를 입력하세요" />
 
-          ${error ? html`<div class="cx-error">${error}</div>` : null}
-          <button class="cx-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
-        </form>
+            ${error ? html`<div class="cx-error">${error}</div>` : null}
+            <button class="cx-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
+          </form>
 
-        <div class="cx-login-footnote">
-          실제 kkbox_serving.customer_churn_scores 테이블에 있는 msno만 로그인됩니다.<br/>
-          관리자이신가요? kkbox_admin.html 파일을 열어주세요.
+          <div class="cx-login-footnote">
+            관리자이신가요? kkbox_admin.html 파일을 열어주세요.
+          </div>
         </div>
       </div>
     </div>
@@ -856,44 +1189,44 @@ function personaCopy(risk) {
   };
 }
 
-function HomeTab({ risk, loading, error, goTab, tracks, tracksLoading, onPlay }) {
+function HomeTab({ risk, loading, error, goTab, tracks, tracksLoading, onPlay, onOpenSearch, newReleases, newReleasesLoading }) {
   if (loading) return html`<p class="cx-muted">불러오는 중...</p>`;
   if (error) return html`<div class="cx-empty">${error}</div>`;
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
 
-  const p = personaCopy(risk);
+  const homeNewReleases = (newReleases || []).slice(0, 14);
+
   return html`
     <div>
-      <div class=${p.heroClass}>
-        <span class="cx-hero-badge">${p.badge}</span>
-        <div class="cx-hero-title">${p.title}</div>
-        <div class="cx-hero-sub">${p.sub}</div>
-        <div class="cx-hero-cta">
-          <button class="cx-btn cx-btn-white" onClick=${() => goTab(risk.risk_tier === "고위험" ? "benefits" : "recommend")}>${p.cta}</button>
-          <button class="cx-btn cx-btn-ghost-white" onClick=${() => goTab("notif")}>알림 확인</button>
-        </div>
-      </div>
+      <button type="button" class="cx-home-search-trigger" onClick=${onOpenSearch}>
+        <span>🔍</span>
+        <span>곡, 아티스트, 재생목록 검색하기</span>
+      </button>
 
-      <div class="cx-stat-row">
-        <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">💳</div>
-          <div class="cx-stat-value">₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue).toLocaleString() : "-"}</div>
-          <div class="cx-stat-label">월 평균 결제</div>
-        </div>
-        <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">📅</div>
-          <div class="cx-stat-value">${formatDday(risk.lifecycle_status, risk.days_to_expire).compact}</div>
-          <div class="cx-stat-label">구독 상태</div>
-        </div>
-        <div class="cx-stat-tile">
-          <div class="cx-stat-emoji">🕘</div>
-          <div class="cx-stat-value">${risk.days_since_last_txn ?? "-"}일 전</div>
-          <div class="cx-stat-label">마지막 결제</div>
-        </div>
+      <div class="cx-card">
+        <div class="cx-card-title">🆕 최신 음악 <button class="cx-link-btn" onClick=${() => goTab("newmusic")}>전체보기 →</button></div>
+        ${newReleasesLoading && !homeNewReleases.length
+          ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
+          : html`
+              <div class="cx-track-grid cx-track-grid-sm">
+                ${homeNewReleases.map(
+                  (t) => html`
+                    <div class="cx-track-card" key=${`${t.title}-${t.artist}`} onClick=${() => t.previewUrl && onPlay(t, homeNewReleases)}>
+                      <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                        ${!t.artwork ? "🎵" : null}
+                        <div class="cx-play-fab">▶</div>
+                      </div>
+                      <div class="cx-track-card-title">${t.title}</div>
+                      <div class="cx-track-card-artist">${t.artist}</div>
+                    </div>
+                  `
+                )}
+              </div>
+            `}
       </div>
 
       <div class="cx-card">
-        <div class="cx-card-title">이번 주 추천 미리보기 <button class="cx-link-btn" onClick=${() => goTab("recommend")}>전체보기 →</button></div>
+        <div class="cx-card-title">이번 주 추천 미리보기 <button class="cx-link-btn" onClick=${() => goTab("discover")}>전체보기 →</button></div>
         <p class="cx-muted" style=${{ marginBottom: "12px" }}>회원님의 최근 이용 패턴에 맞춰 준비한 플레이리스트가 있어요. 커버를 누르면 30초 미리듣기가 재생돼요.</p>
         ${tracksLoading && !tracks.length
           ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
@@ -930,42 +1263,80 @@ function RecommendTab({ risk, tracks, tracksLoading, onPlay }) {
 
   return html`
     <div>
-      <div class="cx-section-title">🎧 취향 기반 추천</div>
+      <span class="cx-eyebrow">FOR YOUR RETURN</span>
+      <div class="cx-section-title cx-display">🎧 취향 기반 추천</div>
       <div class="cx-tag-row">
         <span class="cx-tag">${highRisk ? "컴백 추천" : "위클리 추천"}</span>
         ${risk.ltv_tier === "고가치" ? html`<span class="cx-badge-vip">VIP PICK</span>` : null}
       </div>
 
-      <div class="cx-card">
-        <div class="cx-card-title">${heading}</div>
-        <p class="cx-muted" style=${{ marginBottom: "14px" }}>${reason}</p>
-        ${tracksLoading && !tracks.length
-          ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
-          : !tracks.length
-          ? html`<p class="cx-muted">지금은 추천 음원을 불러올 수 없어요. 잠시 후 다시 시도해주세요.</p>`
-          : html`
-              <div class="cx-track-grid">
-                ${tracks.map(
-                  (t) => html`
-                    <div class="cx-track-card" key=${t.title} onClick=${() => onPlay(t, tracks)}>
-                      <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
-                        ${!t.artwork ? "🎵" : null}
-                        <div class="cx-play-fab">▶</div>
-                      </div>
-                      <div class="cx-track-card-title">${t.title}</div>
-                      <div class="cx-track-card-artist">${t.artist}</div>
+      ${highRisk
+        ? html`
+            <div class="cx-remind-panel">
+              <span class="cx-remind-eyebrow">LISTEN AGAIN</span>
+              <div class="cx-remind-title">다시 만날 음악, ${heading}</div>
+              <p class="cx-remind-sub">${reason}</p>
+              <span class="cx-remind-tag">🔔 리마인드 발송 · 컴백 추천</span>
+              ${tracksLoading && !tracks.length
+                ? html`<p class="cx-muted" style=${{ color: "rgba(243,247,246,0.5)" }}>실제 음원 정보를 불러오는 중...</p>`
+                : !tracks.length
+                ? html`<p class="cx-muted" style=${{ color: "rgba(243,247,246,0.5)" }}>지금은 추천 음원을 불러올 수 없어요. 잠시 후 다시 시도해주세요.</p>`
+                : html`
+                    <div class="cx-remind-tracklist">
+                      ${tracks.map(
+                        (t) => html`
+                          <div class="cx-remind-track" key=${t.title} onClick=${() => onPlay(t, tracks)}>
+                            <div class="cx-remind-track-cover" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                              ${!t.artwork ? "🎵" : null}
+                            </div>
+                            <div class="cx-remind-track-meta">
+                              <div class="cx-remind-track-title">${t.title}</div>
+                              <div class="cx-remind-track-artist">${t.artist}</div>
+                            </div>
+                            <span class="cx-remind-track-play">▶</span>
+                          </div>
+                        `
+                      )}
                     </div>
-                  `
-                )}
-              </div>
-            `}
-      </div>
+                  `}
+              <p class="cx-remind-note">
+                ※ Apple Music(iTunes) 공개 API에서 실시간으로 가져온 실제 음원입니다(30초 미리듣기 재생).
+                어떤 무드를 보여드릴지는 회원님의 실제 risk_tier·최근 결제 이력을 기준으로 결정돼요.
+              </p>
+            </div>
+          `
+        : html`
+            <div class="cx-card">
+              <div class="cx-card-title">${heading}</div>
+              <p class="cx-muted" style=${{ marginBottom: "14px" }}>${reason}</p>
+              ${tracksLoading && !tracks.length
+                ? html`<p class="cx-muted">실제 음원 정보를 불러오는 중...</p>`
+                : !tracks.length
+                ? html`<p class="cx-muted">지금은 추천 음원을 불러올 수 없어요. 잠시 후 다시 시도해주세요.</p>`
+                : html`
+                    <div class="cx-track-grid">
+                      ${tracks.map(
+                        (t) => html`
+                          <div class="cx-track-card" key=${t.title} onClick=${() => onPlay(t, tracks)}>
+                            <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                              ${!t.artwork ? "🎵" : null}
+                              <div class="cx-play-fab">▶</div>
+                            </div>
+                            <div class="cx-track-card-title">${t.title}</div>
+                            <div class="cx-track-card-artist">${t.artist}</div>
+                          </div>
+                        `
+                      )}
+                    </div>
+                  `}
+            </div>
 
-      <p class="cx-muted">
-        ※ 위 트랙/앨범 정보는 Apple Music(iTunes) 공개 API에서 실시간으로 가져온 실제 음원입니다(30초 미리듣기 재생).
-        다만 회원님의 실제 청취 기록 기반 추천은 아니며, 어떤 무드(컴백형 vs 취향형)를 보여줄지와 문구는
-        회원님의 실제 이용 데이터(최근 결제·활동 이력 등)를 기준으로 결정됩니다.
-      </p>
+            <p class="cx-muted">
+              ※ 위 트랙/앨범 정보는 Apple Music(iTunes) 공개 API에서 실시간으로 가져온 실제 음원입니다(30초 미리듣기 재생).
+              다만 회원님의 실제 청취 기록 기반 추천은 아니며, 어떤 무드(컴백형 vs 취향형)를 보여줄지와 문구는
+              회원님의 실제 이용 데이터(최근 결제·활동 이력 등)를 기준으로 결정됩니다.
+            </p>
+          `}
     </div>
   `;
 }
@@ -975,7 +1346,8 @@ function RecommendTab({ risk, tracks, tracksLoading, onPlay }) {
 function ChartTab({ chart, loading, error, onPlay }) {
   return html`
     <div>
-      <div class="cx-section-title">🔥 실시간 인기 차트</div>
+      <span class="cx-eyebrow">KKBOX CHART</span>
+      <div class="cx-section-title cx-display">🔥 실시간 인기 차트</div>
       <p class="cx-muted" style=${{ marginBottom: "16px" }}>
         Apple Music 공식 대한민국 인기곡 차트를 실시간으로 가져와요. 곡을 누르면 30초 미리듣기가 재생됩니다.
       </p>
@@ -1010,87 +1382,363 @@ function ChartTab({ chart, loading, error, onPlay }) {
   `;
 }
 
-/* ============================== 혜택(쿠폰) ============================== */
-
-function BenefitsTab({ risk }) {
-  if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
-  const c = COUPON_RULES[risk.segment] || COUPON_RULES["저위험/저가치"];
+function NewReleasesTab({ tracks, loading, error, onPlay }) {
   return html`
     <div>
-      <div class="cx-section-title">🎁 나를 위한 혜택</div>
+      <span class="cx-eyebrow">FRESH DROPS</span>
+      <div class="cx-section-title cx-display">🆕 최신 음악</div>
+      <p class="cx-muted" style=${{ marginBottom: "16px" }}>
+        Apple Music 공식 대한민국 차트에서 실제 발매일 기준으로 가장 최근 나온 곡들만 모았어요. 커버를 누르면 30초 미리듣기가 재생돼요.
+      </p>
+      ${loading
+        ? html`<p class="cx-muted">최신 음악을 불러오는 중...</p>`
+        : error
+        ? html`<div class="cx-empty">${error}</div>`
+        : !tracks.length
+        ? html`<div class="cx-empty">지금은 최신 음악을 불러올 수 없어요.</div>`
+        : html`
+            <div class="cx-track-grid">
+              ${tracks.map(
+                (t) => html`
+                  <div class="cx-track-card" key=${`${t.title}-${t.artist}`} onClick=${() => t.previewUrl && onPlay(t, tracks)}>
+                    <div class="cx-track-cover-lg" style=${{ backgroundImage: t.artwork ? `url(${t.artwork})` : undefined }}>
+                      ${!t.artwork ? "🎵" : null}
+                      <div class="cx-play-fab">▶</div>
+                    </div>
+                    <div class="cx-track-card-title">${t.title}</div>
+                    <div class="cx-track-card-artist">${t.artist}</div>
+                  </div>
+                `
+              )}
+            </div>
+          `}
+    </div>
+  `;
+}
+
+/* ============================== 혜택(쿠폰) ============================== */
+
+function BenefitsTab({ risk, actions, onClaimBenefit, claimingKey }) {
+  if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
+  const c = COUPON_RULES[risk.segment] || COUPON_RULES["저위험/저가치"];
+  const isWinback = risk.risk_tier === "고위험";
+  const claimedKeys = new Set((actions || []).filter((a) => a.benefit_key).map((a) => a.benefit_key));
+
+  const concertEligible = isConcertRaffleEligible(risk);
+  const { tier, tierIndex, next, months } = getAnnualTier(risk.expected_lifetime_months);
+  const tierPct = next ? Math.min(100, Math.round(((months - tier.minMonths) / (next.minMonths - tier.minMonths)) * 100)) : 100;
+  const renewalEligible = isRenewalRewardEligible(risk);
+
+  function ClaimButton({ benefitKey, label }) {
+    const claimed = claimedKeys.has(benefitKey);
+    if (claimed) return html`<span class="cx-benefit-claimed">✓ 이미 받으셨어요</span>`;
+    return html`
+      <button
+        type="button"
+        class="cx-benefit-claim-btn"
+        disabled=${claimingKey === benefitKey}
+        onClick=${() => onClaimBenefit && onClaimBenefit(benefitKey)}
+      >
+        ${claimingKey === benefitKey ? "처리 중..." : label}
+      </button>
+    `;
+  }
+
+  return html`
+    <div>
+      <span class="cx-eyebrow">BENEFITS FOR YOU</span>
+      <div class="cx-section-title cx-display">🎁 나를 위한 혜택</div>
       <div class="cx-coupon ${c.alt ? "cx-coupon-alt" : ""}">
-        <span class="cx-coupon-badge">${c.badge}</span>
+        <span class="cx-coupon-badge">${c.badge}${isWinback ? " · 컴백 오퍼" : ""}</span>
         <div class="cx-coupon-title">${c.title}</div>
-        <div class="cx-coupon-desc">${c.desc}</div>
         <div class="cx-coupon-code">
           <span>${c.code}</span>
           <button class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }}>복사</button>
         </div>
         <div class="cx-coupon-expire">⏱ 구독 ${formatDday(risk.lifecycle_status, risk.days_to_expire).text} · 회원님 전용 자동 발급 혜택</div>
       </div>
-      <p class="cx-muted" style=${{ marginTop: "12px" }}>
-        혜택은 고정이 아니라 회원님의 이용 패턴에 맞춰 자동으로 매칭돼요. 다음 방문 때 다른 혜택이 보일 수도 있어요.
-      </p>
+
+      <div class="cx-benefit-section">
+        <div class="cx-benefit-grid">
+          <div class="cx-benefit-card ${concertEligible ? "" : "cx-benefit-card-locked"}">
+            <span class="cx-benefit-icon">🎫</span>
+            <div class="cx-benefit-card-title">콘서트 티켓 추첨 이벤트</div>
+            <div class="cx-benefit-card-desc">장기 결제 유지 고객만을 위한 최신 콘서트 티켓 정기 추첨이에요.</div>
+            ${concertEligible
+              ? html`<${ClaimButton} benefitKey="concert_raffle" label="응모하기" />`
+              : html`<div class="cx-benefit-card-note">꾸준히 구독을 유지해주신 고객님께 드리는 혜택이에요.</div>`}
+          </div>
+
+          <div class="cx-benefit-card">
+            <span class="cx-benefit-icon">📈</span>
+            <div class="cx-benefit-card-title">연 단위 구독 유지 혜택</div>
+            <div class="cx-benefit-card-desc">현재 <b>${tier.label}</b> 등급 · ${tier.reward}</div>
+            <div class="cx-benefit-tier-track"><div class="cx-benefit-tier-fill" style=${{ width: `${tierPct}%` }}></div></div>
+            <div class="cx-benefit-tier-labels"><span>${tier.label}</span><span>${next ? next.label : "최고 등급"}</span></div>
+            <div class="cx-benefit-tier-list">
+              ${ANNUAL_TIERS.map(
+                (t, i) => html`
+                  <div class="cx-benefit-tier-row ${i === tierIndex ? "cx-benefit-tier-row-current" : i < tierIndex ? "cx-benefit-tier-row-done" : "cx-benefit-tier-row-locked"}" key=${t.label}>
+                    <span>${i < tierIndex ? "✓" : i === tierIndex ? "●" : "○"} ${t.label}</span>
+                    <span>${t.reward}</span>
+                  </div>
+                `
+              )}
+            </div>
+            <${ClaimButton} benefitKey="annual_tier" label="이번 등급 혜택 받기" />
+          </div>
+
+          <div class="cx-benefit-card ${renewalEligible ? "" : "cx-benefit-card-locked"}">
+            <span class="cx-benefit-icon">⚡</span>
+            <div class="cx-benefit-card-title">갱신 즉시 리워드</div>
+            <div class="cx-benefit-card-desc">갱신 임박 시점에 실제로 갱신을 완료하면 즉시 소액 리워드(스타벅스 기프티콘)를 드려요.</div>
+            ${renewalEligible
+              ? html`<${ClaimButton} benefitKey="renewal_reward" label="갱신하고 리워드 받기" />`
+              : html`<div class="cx-benefit-card-note">갱신이 임박했거나 갱신유예기간인 고객 대상 혜택이에요.</div>`}
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
 
-/* ============================== 알림 ============================== */
+/* ============================== 구독권 결제 ============================== */
 
-function NotifTab({ actions, loading, error }) {
-  const LABELS = {
-    reminder: { emoji: "🔔", label: "만료 임박 리마인드", desc: "관리자가 갱신 리마인드를 보냈어요" },
-    discount_offer: { emoji: "🎁", label: "할인 오퍼", desc: "관리자가 할인 오퍼를 보냈어요" },
-  };
+const BILLING_STATUS_CLASS = {
+  구독활성: "cx-billing-status-active",
+  갱신유예기간: "cx-billing-status-grace",
+  장기만료: "cx-billing-status-expired",
+};
+
+function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
+  if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
+
+  // scored_at은 파이프라인 실행일(pd.Timestamp.now())이라 days_to_expire/days_since_last_txn(원본 데이터 기준)과
+  // 시간 기준이 달라서, 이 둘을 더해 절대 달력 날짜를 만들면 안 된다 — 항상 상대적(D-day, "N일 전")으로만 표시.
+  const dday = formatDday(risk.lifecycle_status, risk.days_to_expire);
+  const statusClass = BILLING_STATUS_CLASS[risk.lifecycle_status] || "cx-billing-status-unknown";
+
+  const renewalEligible = isRenewalRewardEligible(risk);
+  const renewalClaimed = (actions || []).some((a) => a.benefit_key === "renewal_reward");
+
+  // "장기 이탈 후 복귀(win-back)" 대상 — lifecycle_status가 장기만료인 고객 전용 재구독 유도 카드.
+  // 새 쿠폰을 만들지 않고, 맞춤 혜택 탭의 고위험 세그먼트 쿠폰(COUPON_RULES)을 그대로 재사용한다.
+  const isWinbackTarget = risk.lifecycle_status === "장기만료";
+  const winbackCoupon = COUPON_RULES[risk.segment] || COUPON_RULES["고위험/저가치"];
+  // win-back 쿠폰에 정률 할인이 있는 세그먼트(현재는 고위험/고가치 VIP20FREE)만 요금제 목록 가격에도
+  // 실제로 반영한다 — 정액 크레딧/적립형 쿠폰(discountPct 없음)은 요금제 가격 자체를 바꾸지 않는다.
+  const winbackDiscountPct = isWinbackTarget ? winbackCoupon.discountPct || 0 : 0;
+
+  const [selectedTierKey, setSelectedTierKey] = useState(null);
+  const currentTierKey =
+    risk.last_payment_plan_days != null && risk.last_plan_list_price != null
+      ? `${risk.last_payment_plan_days}-${Math.round(risk.last_plan_list_price)}`
+      : null;
+
   return html`
     <div>
-      <div class="cx-section-title">🔔 알림함</div>
-      ${loading
-        ? html`<p class="cx-muted">불러오는 중...</p>`
-        : error
-        ? html`<div class="cx-empty">${error}</div>`
-        : actions.length === 0
-        ? html`<div class="cx-empty">아직 받은 알림이 없어요.<br/>관리자 콘솔(kkbox_admin.html) → 이탈방지 액션센터에서 리마인드/할인 오퍼를 보내보세요.</div>`
-        : html`
-            <div class="cx-card" style=${{ padding: "4px 16px" }}>
-              ${actions.map((a) => {
-                const meta = LABELS[a.action_type] || { emoji: "📩", label: a.action_type, desc: "" };
-                return html`
-                  <div class="cx-notif-row" key=${a.id}>
-                    <div class="cx-notif-icon">${meta.emoji}</div>
-                    <div>
-                      <div class="cx-notif-title">${meta.label}</div>
-                      <div class="cx-notif-desc">${meta.desc}</div>
-                      <div class="cx-notif-time">${new Date(a.sent_at).toLocaleString()}</div>
-                    </div>
-                  </div>
-                `;
-              })}
+      <span class="cx-eyebrow">SUBSCRIPTION & BILLING</span>
+      <div class="cx-section-title cx-display">💳 구독권 결제</div>
+
+      ${isWinbackTarget
+        ? html`
+            <div class="cx-winback-card">
+              <span class="cx-winback-badge">🎧 다시 만나서 반가워요</span>
+              <div class="cx-winback-title">지금 재구독하면 ${winbackCoupon.title}</div>
+              <div class="cx-winback-desc">회원님 세그먼트 전용 혜택이 아직 남아있어요. 코드를 적용하고 구독을 다시 시작해보세요.</div>
+              <div class="cx-coupon-code cx-winback-code">
+                <span>${winbackCoupon.code}</span>
+                <button type="button" class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }}>복사</button>
+              </div>
+              <button type="button" class="cx-winback-cta" onClick=${() => goTab && goTab("benefits")}>혜택 자세히 보기 →</button>
             </div>
-          `}
-      <p class="cx-muted" style=${{ marginTop: "12px" }}>실제 로그인한 msno 기준으로 DB에서 바로 조회한 실데이터입니다.</p>
+          `
+        : null}
+
+      <div class="cx-billing-plan-card">
+        <div class="cx-billing-plan-top">
+          <span class="cx-billing-plan-badge ${statusClass}">${risk.lifecycle_status || "상태확인필요"}</span>
+          <div class="cx-billing-plan-price">
+            ₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue).toLocaleString() : "-"}<span>/월</span>
+          </div>
+        </div>
+        <div class="cx-billing-plan-desc">구독 ${dday.text}</div>
+        <div class="cx-billing-current-plan">
+          <span>현재 결제 중인 요금제</span>
+          <b>${risk.last_payment_plan_days != null ? `${risk.last_payment_plan_days}일 · ₩${Math.round(risk.last_plan_list_price).toLocaleString()}` : "정보 없음"}</b>
+          ${risk.last_is_auto_renew != null
+            ? html`<span class="${risk.last_is_auto_renew ? "cx-billing-autorenew-on" : "cx-billing-autorenew-off"}">${risk.last_is_auto_renew ? "자동갱신 ON" : "자동갱신 OFF"}</span>`
+            : null}
+        </div>
+        ${renewalEligible
+          ? html`
+              <div class="cx-billing-plan-actions">
+                ${renewalClaimed
+                  ? html`<span class="cx-benefit-claimed">✓ 갱신 리워드 수령 완료</span>`
+                  : html`
+                      <button
+                        type="button"
+                        class="cx-benefit-claim-btn"
+                        disabled=${claimingKey === "renewal_reward"}
+                        onClick=${() => onClaimBenefit && onClaimBenefit("renewal_reward")}
+                      >
+                        ${claimingKey === "renewal_reward" ? "처리 중..." : "갱신하고 리워드 받기"}
+                      </button>
+                    `}
+              </div>
+            `
+          : null}
+      </div>
+
+      <div class="cx-benefit-section">
+        <div class="cx-plan-groups">
+          ${PLAN_GROUPS.map(
+            (group) => html`
+              <div class="cx-plan-group" key=${group.label}>
+                <div class="cx-plan-group-tag ${group.tagClass}">
+                  ${group.hot ? html`<span class="cx-plan-group-hot">HOT</span>` : null}
+                  <span>${group.label}</span>
+                </div>
+                <div class="cx-plan-group-rows">
+                  ${group.tiers.map((tier) => {
+                    const tierKey = `${tier.planDays}-${tier.listPrice}`;
+                    const isCurrent = tierKey === currentTierKey;
+                    const winbackPrice = winbackDiscountPct > 0 ? tier.paidPrice * (1 - winbackDiscountPct / 100) : null;
+                    return html`
+                      <div class="cx-plan-row ${isCurrent ? "cx-plan-row-current" : ""}" key=${tierKey}>
+                        <div class="cx-plan-row-name">
+                          <div class="cx-plan-row-title">${tier.name}</div>
+                          <div class="cx-plan-row-sub">${tier.sub ? tier.sub : `가입자 ${tier.subscribers.toLocaleString()}명`}</div>
+                        </div>
+                        <div class="cx-plan-row-price">
+                          ${winbackPrice != null
+                            ? html`
+                                <span class="cx-plan-row-winback-tag">Win-back -${winbackDiscountPct}%</span>
+                                <div class="cx-plan-row-list-price">₩${Math.round(tier.paidPrice).toLocaleString()}</div>
+                                <div class="cx-plan-row-paid-price">₩${Math.round(winbackPrice).toLocaleString()}</div>
+                              `
+                            : html`
+                                ${tier.paidPrice < tier.listPrice ? html`<div class="cx-plan-row-list-price">₩${tier.listPrice.toLocaleString()}</div>` : null}
+                                <div class="cx-plan-row-paid-price">₩${Math.round(tier.paidPrice).toLocaleString()}</div>
+                              `}
+                        </div>
+                        ${isCurrent
+                          ? html`<span class="cx-plan-row-current-tag">✓ 이용중</span>`
+                          : html`
+                              <button type="button" class="cx-plan-row-btn" onClick=${() => setSelectedTierKey(tierKey)}>
+                                ${selectedTierKey === tierKey ? "선택됨 ✓" : "선택하기"}
+                              </button>
+                            `}
+                      </div>
+                    `;
+                  })}
+                </div>
+              </div>
+            `
+          )}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================== 알림 패널 (헤더 종 아이콘 클릭 시 우측에서 슬라이드) ============================== */
+
+const NOTIF_LABELS = {
+  reminder: { label: "만료 임박 리마인드", desc: "관리자가 갱신 리마인드를 보냈어요" },
+  discount_offer: { label: "할인 오퍼", desc: "관리자가 할인 오퍼를 보냈어요" },
+};
+const NOTIF_BENEFIT_LABELS = {
+  concert_raffle: { label: "콘서트 티켓 추첨 응모 완료", desc: "추첨 결과는 순차 안내될 예정이에요" },
+  annual_tier: { label: "연 단위 유지 혜택 수령", desc: "현재 등급 혜택이 지급됐어요" },
+  renewal_reward: { label: "갱신 즉시 리워드 수령", desc: "스타벅스 기프티콘이 지급됐어요" },
+};
+
+function NotificationPanel({ actions, loading, error, onOpen, onClose }) {
+  return html`
+    <div class="cx-notif-panel-overlay" onClick=${onClose}>
+      <div class="cx-notif-panel" onClick=${(e) => e.stopPropagation()}>
+        <div class="cx-notif-panel-top">
+          <div>
+            <span class="cx-eyebrow">NOTIFICATIONS</span>
+            <div class="cx-notif-panel-title">놓치지 않을 소식</div>
+          </div>
+          <button type="button" class="cx-notif-panel-close" onClick=${onClose}>✕</button>
+        </div>
+        ${loading
+          ? html`<p class="cx-muted">불러오는 중...</p>`
+          : error
+          ? html`<div class="cx-empty">${error}</div>`
+          : actions.length === 0
+          ? html`<div class="cx-empty">아직 받은 알림이 없어요.</div>`
+          : html`
+              <div class="cx-notif-panel-list">
+                ${actions.map((a) => {
+                  const meta = (a.benefit_key && NOTIF_BENEFIT_LABELS[a.benefit_key]) || NOTIF_LABELS[a.action_type] || { label: a.action_type, desc: "" };
+                  return html`
+                    <div class="cx-notif-panel-row" key=${a.id} onClick=${() => onOpen && onOpen(a)}>
+                      <span class="cx-notif-panel-dot ${a.is_read ? "cx-notif-panel-dot-read" : ""}"></span>
+                      <div class="cx-notif-panel-body">
+                        <div class="cx-notif-panel-row-title">${meta.label}</div>
+                        <div class="cx-notif-panel-row-desc">${meta.desc}</div>
+                        <div class="cx-notif-panel-row-time">${formatRelativeTime(a.sent_at)}</div>
+                      </div>
+                    </div>
+                  `;
+                })}
+              </div>
+            `}
+      </div>
     </div>
   `;
 }
 
 /* ============================== 루트 ============================== */
 
-const TABS = [
-  { key: "home", label: "홈", icon: "🏠" },
-  { key: "chart", label: "차트", icon: "🔥" },
-  { key: "recommend", label: "추천", icon: "🎧" },
-  { key: "benefits", label: "혜택", icon: "🎁" },
-  { key: "notif", label: "알림", icon: "🔔" },
+// kkbox-retention-kr(마누스) 헤더 참고 — 상단 고정 헤더의 메뉴로 노출되는 항목만.
+// "홈"(히어로+요약)은 로고를 누르면 가는 맨 위 섹션이라 메뉴에는 안 넣는다.
+const NAV_ITEMS = [
+  { key: "charts", label: "인기 차트" },
+  { key: "newmusic", label: "최신 음악" },
+  { key: "discover", label: "음악 둘러보기" },
+  { key: "benefits", label: "맞춤 혜택" },
+  { key: "billing", label: "구독권 결제" },
 ];
-
 function CustomerApp({ auth, onLogout }) {
-  const [tab, setTab] = useState("home");
+  // 진짜 탭 방식 — 헤더 메뉴를 누르면 그 섹션만 보이고 나머지는 렌더링 자체를 안 한다.
+  // 실제 데이터는 tab과 무관하게 마운트 시 한 번에 다 불러오고 있어서(useEffect([auth])),
+  // 탭을 왔다갔다 해도 다시 로딩되거나 하지 않는다.
+  const [activeSection, setActiveSection] = useState("home");
+  const [theme, setTheme] = useState("light"); // "dark" | "light"
   const [risk, setRisk] = useState(null);
   const [riskLoading, setRiskLoading] = useState(true);
   const [riskError, setRiskError] = useState("");
   const [actions, setActions] = useState([]);
   const [actionsLoading, setActionsLoading] = useState(true);
   const [actionsError, setActionsError] = useState("");
+  const [claimingKey, setClaimingKey] = useState("");
+  const [notifOpen, setNotifOpen] = useState(false);
+  const unreadCount = actions.filter((a) => !a.is_read).length;
+
+  function markActionRead(actionId) {
+    setActions((prev) => prev.map((a) => (a.id === actionId ? { ...a, is_read: true } : a)));
+    apiFetch(`/me/actions/${actionId}/read`, { method: "PATCH", token: auth.token }).catch(() => {});
+  }
+
+  function openNotification(action) {
+    if (!action.is_read) markActionRead(action.id);
+    setNotifOpen(false);
+    scrollToSection("benefits");
+  }
+
+  function claimBenefit(benefitKey) {
+    if (claimingKey) return;
+    setClaimingKey(benefitKey);
+    apiFetch("/me/benefits/claim", { method: "POST", token: auth.token, body: { benefit_key: benefitKey } })
+      .then((record) => setActions((prev) => [record, ...prev.filter((a) => a.id !== record.id)]))
+      .catch((err) => window.alert(err.message || "혜택 수령에 실패했어요. 잠시 후 다시 시도해주세요."))
+      .finally(() => setClaimingKey(""));
+  }
 
   // 실제 음원(Apple Music/iTunes) 상태
   const [comebackTracks, setComebackTracks] = useState([]);
@@ -1099,6 +1747,9 @@ function CustomerApp({ auth, onLogout }) {
   const [chart, setChart] = useState([]);
   const [chartLoading, setChartLoading] = useState(true);
   const [chartError, setChartError] = useState("");
+  const [newReleases, setNewReleases] = useState([]);
+  const [newReleasesLoading, setNewReleasesLoading] = useState(true);
+  const [newReleasesError, setNewReleasesError] = useState("");
 
   // 실제 재생 상태 (30초 미리듣기)
   const audioRef = useRef(null);
@@ -1107,14 +1758,37 @@ function CustomerApp({ auth, onLogout }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(70);
+  const [mutedVolume, setMutedVolume] = useState(70);
+  const [queueOpen, setQueueOpen] = useState(false);
+  const [shuffle, setShuffle] = useState(false);
+  const [repeatMode, setRepeatMode] = useState("off"); // "off" | "all" | "one" — 클릭할 때마다 순환
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume / 100;
+  }, [volume]);
+  function toggleMute() {
+    if (volume > 0) {
+      setMutedVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(mutedVolume || 70);
+    }
+  }
 
-  // 실제 검색 (상단 검색창 — /music/search 호출, 디바운스 적용)
+  // 실제 검색 (헤더 검색 모달 — /music/search 호출, 디바운스 적용)
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  // 헤더 배경 전환(스크롤 전엔 투명, 스크롤 후엔 딥틸 유리 질감) — 마누스 SiteHeader와 동일한 패턴.
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setHeaderScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const term = searchTerm.trim();
@@ -1152,7 +1826,11 @@ function CustomerApp({ auth, onLogout }) {
     setRiskError("");
     apiFetch("/me/risk", { token: auth.token })
       .then(setRisk)
-      .catch((err) => setRiskError(err.message))
+      .catch((err) => {
+        // 저장된 토큰이 만료/무효화된 경우 새로고침해도 로그인 화면이 뜨도록 자동 로그아웃.
+        if (err.status === 401) onLogout();
+        else setRiskError(err.message);
+      })
       .finally(() => setRiskLoading(false));
 
     setActionsLoading(true);
@@ -1181,6 +1859,13 @@ function CustomerApp({ auth, onLogout }) {
           .catch(() => setChartError("지금은 차트를 불러올 수 없어요. 잠시 후 다시 시도해주세요."))
       )
       .finally(() => setChartLoading(false));
+
+    setNewReleasesLoading(true);
+    setNewReleasesError("");
+    fetchNewReleases(24)
+      .then(setNewReleases)
+      .catch(() => setNewReleasesError("지금은 최신 음악을 불러올 수 없어요. 잠시 후 다시 시도해주세요."))
+      .finally(() => setNewReleasesLoading(false));
   }, [auth]);
 
   // 아직 아무것도 재생 안 했을 때, 플레이어바에 보여줄 기본 트랙만 조용히 세팅(자동재생 아님 — 브라우저 정책상 클릭 없이 재생 불가하기도 함)
@@ -1222,115 +1907,237 @@ function CustomerApp({ auth, onLogout }) {
     const queue = playQueue.length ? playQueue : risk ? (risk.risk_tier === "고위험" ? comebackTracks : loyalTracks) : [];
     if (!queue.length || !nowPlaying) return;
     const idx = queue.findIndex((t) => t.previewUrl === nowPlaying.previewUrl);
-    const nextIdx = idx === -1 ? 0 : (idx + delta + queue.length) % queue.length;
+    let nextIdx;
+    if (shuffle && queue.length > 1) {
+      // 셔플 on: 이전/다음 모두 현재 곡을 제외한 무작위 트랙으로 이동
+      do {
+        nextIdx = Math.floor(Math.random() * queue.length);
+      } while (nextIdx === idx);
+    } else {
+      nextIdx = idx === -1 ? 0 : (idx + delta + queue.length) % queue.length;
+    }
     playTrack(queue[nextIdx], queue);
+  }
+
+  function toggleShuffle() {
+    setShuffle((v) => !v);
+  }
+
+  function cycleRepeat() {
+    setRepeatMode((m) => (m === "off" ? "all" : m === "all" ? "one" : "off"));
+  }
+
+  // 30초 미리듣기가 끝났을 때: 한 곡 반복이면 처음부터 다시, 반복 없음이고 큐의 마지막 곡이면 정지,
+  // 그 외(전체 반복 또는 셔플, 또는 마지막 곡이 아닐 때)에는 다음 곡으로.
+  function handleTrackEnd() {
+    if (repeatMode === "one") {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
+      }
+      return;
+    }
+    if (repeatMode === "off" && !shuffle && nowPlaying) {
+      const queue = playQueue.length ? playQueue : risk ? (risk.risk_tier === "고위험" ? comebackTracks : loyalTracks) : [];
+      const idx = queue.findIndex((t) => t.previewUrl === nowPlaying.previewUrl);
+      if (queue.length && idx === queue.length - 1) {
+        setIsPlaying(false);
+        return;
+      }
+    }
+    skip(1);
+  }
+
+  // 진행바 클릭 시 클릭한 위치(%)에 해당하는 재생 지점으로 바로 이동
+  function seekTo(e) {
+    if (!audioRef.current || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    const nextTime = ratio * duration;
+    audioRef.current.currentTime = nextTime;
+    setCurrentTime(nextTime);
   }
 
   const progressPct = duration ? Math.min(100, (currentTime / duration) * 100) : 0;
 
+  // 헤더 메뉴 클릭 -> 진짜 탭 전환. 홈(히어로+요약)은 완전히 사라지고 그 탭 내용만 보인다.
+  function scrollToSection(key) {
+    setActiveSection(key);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // 로고 클릭 -> 탭에서 나가서 홈(히어로+요약)으로.
+  function scrollToTop() {
+    setActiveSection("home");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const heroCopy = risk ? personaCopy(risk) : null;
+
   return html`
-    <div class="cx-app">
-      <nav class="cx-nav">
-        <div class="cx-nav-logo">
-          <span class="cx-logo-mark">K</span>
-          <span class="cx-nav-logo-word">KKBOX Music</span>
-        </div>
-        ${TABS.map(
-          (t) => html`
-            <button key=${t.key} class="cx-navbtn ${tab === t.key ? "cx-nav-active" : ""}" onClick=${() => setTab(t.key)}>
-              <span class="cx-navicon">${t.icon}</span>
-              <span>${t.label}</span>
-            </button>
-          `
-        )}
-        <div class="cx-nav-spacer"></div>
-        ${risk ? html`
-          <div class="cx-nav-foot">
-            <div class="cx-nav-seg">구독 상태<br/><b>${formatDday(risk.lifecycle_status, risk.days_to_expire).compact}</b></div>
-          </div>
-        ` : null}
-      </nav>
+    <div class="cx-shell ${theme === "light" ? "cx-theme-light" : ""}">
+      <header class="cx-topheader ${headerScrolled ? "cx-topheader-scrolled" : ""}">
+        <div class="cx-topheader-inner">
+          <button type="button" class="cx-topheader-logo" onClick=${scrollToTop}>
+            <span class="cx-logo-mark">K</span>
+            <span class="cx-topheader-logo-word">KKBOX</span>
+          </button>
 
-      <div class="cx-topbar">
-        <div class="cx-search-wrap">
-          <div class="cx-search-input-row ${searchFocused ? "cx-search-focus" : ""}">
-            <span class="cx-search-icon">🔍</span>
-            <input
-              class="cx-search-input"
-              type="text"
-              placeholder="재생목록, 아티스트, 곡 검색"
-              value=${searchTerm}
-              onInput=${(e) => { setSearchTerm(e.target.value); setSearchOpen(true); }}
-              onFocus=${() => { setSearchFocused(true); if (searchTerm.trim()) setSearchOpen(true); }}
-              onBlur=${() => { setSearchFocused(false); setTimeout(() => setSearchOpen(false), 150); }}
-            />
-            ${searchLoading ? html`<span class="cx-search-spinner"></span>` : null}
-            ${searchTerm && !searchLoading
-              ? html`<button type="button" class="cx-search-clear" onMouseDown=${(e) => e.preventDefault()} onClick=${() => { setSearchTerm(""); setSearchResults([]); }}>✕</button>`
-              : null}
-          </div>
-          ${searchOpen && searchTerm.trim()
-            ? html`
-                <div class="cx-search-dropdown" onMouseDown=${(e) => e.preventDefault()}>
-                  ${searchLoading
-                    ? html`<div class="cx-search-note">검색 중...</div>`
-                    : searchError
-                    ? html`<div class="cx-search-note">${searchError}</div>`
-                    : !searchResults.length
-                    ? html`<div class="cx-search-note">"${searchTerm}"에 대한 검색 결과가 없어요.</div>`
-                    : searchResults.map(
-                        (t, i) => html`
-                          <div
-                            class="cx-search-row ${!t.previewUrl ? "cx-search-row-disabled" : ""}"
-                            key=${i}
-                            onClick=${() => handleSearchResultClick(t)}
-                          >
-                            ${t.artwork
-                              ? html`<img class="cx-search-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-search-art cx-search-art-empty", textContent: "🎵" })); }} />`
-                              : html`<div class="cx-search-art cx-search-art-empty">🎵</div>`}
-                            <div class="cx-search-meta">
-                              <div class="cx-search-title">${t.title}</div>
-                              <div class="cx-search-artist">${t.artist}</div>
-                            </div>
-                            <span class="cx-search-play">${t.previewUrl ? "▶" : "–"}</span>
-                          </div>
-                        `
-                      )}
-                </div>
+          <nav class="cx-topheader-nav">
+            ${NAV_ITEMS.map(
+              (item) => html`
+                <button key=${item.key} class=${activeSection === item.key ? "cx-nav-active" : ""} onClick=${() => scrollToSection(item.key)}>
+                  ${item.label}
+                </button>
               `
-            : null}
-        </div>
-        <div class="cx-topbar-actions">
-          <button class="cx-icon-btn" title="알림함" onClick=${() => setTab("notif")}>
-            🔔${actions.length > 0 ? html`<span class="cx-icon-badge">${actions.length}</span>` : null}
-          </button>
-          <button class="cx-profile-chip" title="로그아웃" onClick=${onLogout}>
-            <span class="cx-profile-avatar">${(auth.msno || "?").slice(0, 1).toUpperCase()}</span>
-            <span>로그아웃</span>
-          </button>
-        </div>
-      </div>
+            )}
+          </nav>
 
-      <div class="cx-content">
-        <div class="cx-content-inner">
-          ${tab === "home" ? html`<${HomeTab} risk=${risk} loading=${riskLoading} error=${riskError} goTab=${setTab}
-              tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />` : null}
-          ${tab === "chart" ? html`<${ChartTab} chart=${chart} loading=${chartLoading} error=${chartError} onPlay=${playTrack} />` : null}
-          ${tab === "recommend" ? html`<${RecommendTab} risk=${risk}
-              tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />` : null}
-          ${tab === "benefits" ? html`<${BenefitsTab} risk=${risk} />` : null}
-          ${tab === "notif" ? html`<${NotifTab} actions=${actions} loading=${actionsLoading} error=${actionsError} />` : null}
-          <div class="cx-footnote">구독 상태·결제·추천/혜택 로직은 실제 DB 값을, 차트·추천 음원 정보는 Apple Music(iTunes) 공개 API를 실시간으로 사용합니다. 30초 미리듣기만 재생되며 일부 곡은 미리듣기가 제공되지 않을 수 있어요.</div>
+          <div class="cx-topheader-actions">
+            <button type="button" class="cx-header-icon-btn cx-header-search" onClick=${() => setSearchModalOpen(true)}>
+              🔍<span>검색</span>
+            </button>
+            <button class="cx-icon-btn" title="알림함" onClick=${() => setNotifOpen(true)}>
+              🔔${unreadCount > 0 ? html`<span class="cx-icon-badge">${unreadCount}</span>` : null}
+            </button>
+            <button class="cx-icon-btn" title=${theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"} onClick=${() => setTheme((t) => (t === "dark" ? "light" : "dark"))}>
+              ${theme === "dark" ? "☀️" : "🌙"}
+            </button>
+            <button class="cx-profile-chip" title="로그아웃" onClick=${onLogout}>
+              <span class="cx-profile-avatar">${(auth.msno || "?").slice(0, 1).toUpperCase()}</span>
+              <span>로그아웃</span>
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
+
+      ${notifOpen ? html`
+        <${NotificationPanel}
+          actions=${actions}
+          loading=${actionsLoading}
+          error=${actionsError}
+          onOpen=${openNotification}
+          onClose=${() => setNotifOpen(false)}
+        />
+      ` : null}
+
+      <main class="cx-main">
+        ${activeSection === "home" ? html`
+          <section id="top" class="cx-hero2">
+            <div class="cx-hero2-inner">
+              <span class="cx-hero2-eyebrow">LOSSLESS MUSIC · PERSONAL REMINDER</span>
+              <h1 class="cx-hero2-title cx-display">${heroCopy ? heroCopy.title : "LISTEN, AND BE HEARD"}</h1>
+              <p class="cx-hero2-sub">${heroCopy ? heroCopy.sub : riskLoading ? "회원님 데이터를 불러오는 중이에요..." : riskError || "이용 데이터를 찾을 수 없어요."}</p>
+              ${heroCopy ? html`
+                <div class="cx-hero2-cta">
+                  <button class="cx-btn cx-btn-white" onClick=${() => scrollToSection(risk.risk_tier === "고위험" ? "benefits" : "discover")}>${heroCopy.cta}</button>
+                  <button class="cx-btn cx-btn-ghost-white" onClick=${() => setNotifOpen(true)}>알림 확인</button>
+                </div>
+              ` : null}
+            </div>
+            <span class="cx-hero2-vertical"><span>LISTEN, AND BE HEARD</span><span class="cx-vline"></span></span>
+          </section>
+        ` : null}
+
+        <div class="cx-content">
+          <div class="cx-content-inner">
+            ${activeSection === "home" ? html`
+              <section id="home-summary" class="cx-scroll-section">
+                <${HomeTab} risk=${risk} loading=${riskLoading} error=${riskError} goTab=${scrollToSection}
+                  tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack}
+                  onOpenSearch=${() => setSearchModalOpen(true)}
+                  newReleases=${newReleases} newReleasesLoading=${newReleasesLoading} />
+              </section>
+            ` : null}
+
+            <div id="tab-panel" class="cx-tabpanel">
+              ${activeSection === "discover" ? html`
+                <section class="cx-scroll-section">
+                  <${RecommendTab} risk=${risk}
+                    tracks=${risk && risk.risk_tier === "고위험" ? comebackTracks : loyalTracks} tracksLoading=${tracksLoading} onPlay=${playTrack} />
+                </section>
+              ` : null}
+              ${activeSection === "benefits" ? html`
+                <section class="cx-scroll-section">
+                  <${BenefitsTab} risk=${risk} actions=${actions} onClaimBenefit=${claimBenefit} claimingKey=${claimingKey} />
+                </section>
+              ` : null}
+              ${activeSection === "charts" ? html`
+                <section class="cx-scroll-section">
+                  <${ChartTab} chart=${chart} loading=${chartLoading} error=${chartError} onPlay=${playTrack} />
+                </section>
+              ` : null}
+              ${activeSection === "newmusic" ? html`
+                <section class="cx-scroll-section">
+                  <${NewReleasesTab} tracks=${newReleases} loading=${newReleasesLoading} error=${newReleasesError} onPlay=${playTrack} />
+                </section>
+              ` : null}
+              ${activeSection === "billing" ? html`
+                <section class="cx-scroll-section">
+                  <${BillingTab} risk=${risk} actions=${actions} onClaimBenefit=${claimBenefit} claimingKey=${claimingKey} goTab=${scrollToSection} />
+                </section>
+              ` : null}
+            </div>
+          </div>
+        </div>
+      </main>
 
       <audio
         ref=${audioRef}
         onTimeUpdate=${(e) => setCurrentTime(e.target.currentTime)}
         onLoadedMetadata=${(e) => setDuration(e.target.duration)}
-        onEnded=${() => skip(1)}
+        onEnded=${handleTrackEnd}
         style=${{ display: "none" }}
       ></audio>
+
+      ${searchModalOpen ? html`
+        <div class="cx-search-modal-overlay" onClick=${() => setSearchModalOpen(false)}>
+          <div class="cx-search-modal" onClick=${(e) => e.stopPropagation()}>
+            <div class="cx-search-modal-row">
+              <span>🔍</span>
+              <input
+                autoFocus=${true}
+                type="text"
+                placeholder="재생목록, 아티스트, 곡 검색"
+                value=${searchTerm}
+                onInput=${(e) => setSearchTerm(e.target.value)}
+              />
+              <button type="button" class="cx-search-modal-close" onClick=${() => { setSearchModalOpen(false); setSearchTerm(""); }}>✕</button>
+            </div>
+            <div class="cx-search-modal-results">
+              ${searchLoading
+                ? html`<div class="cx-search-note">검색 중...</div>`
+                : searchError
+                ? html`<div class="cx-search-note">${searchError}</div>`
+                : !searchTerm.trim()
+                ? html`<div class="cx-search-note">곡, 아티스트를 검색해보세요.</div>`
+                : !searchResults.length
+                ? html`<div class="cx-search-note">"${searchTerm}"에 대한 검색 결과가 없어요.</div>`
+                : searchResults.map(
+                    (t, i) => html`
+                      <div
+                        class="cx-search-row ${!t.previewUrl ? "cx-search-row-disabled" : ""}"
+                        key=${i}
+                        onClick=${() => { handleSearchResultClick(t); setSearchModalOpen(false); }}
+                      >
+                        ${t.artwork
+                          ? html`<img class="cx-search-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-search-art cx-search-art-empty", textContent: "🎵" })); }} />`
+                          : html`<div class="cx-search-art cx-search-art-empty">🎵</div>`}
+                        <div class="cx-search-meta">
+                          <div class="cx-search-title">${t.title}</div>
+                          <div class="cx-search-artist">${t.artist}</div>
+                        </div>
+                        <span class="cx-search-play">${t.previewUrl ? "▶" : "–"}</span>
+                      </div>
+                    `
+                  )}
+            </div>
+          </div>
+        </div>
+      ` : null}
 
       ${nowPlaying ? html`
         <div class="cx-playerbar">
@@ -1345,36 +2152,111 @@ function CustomerApp({ auth, onLogout }) {
           </div>
           <div class="cx-playerbar-mid">
             <div class="cx-playerbar-controls">
-              <span>🔀</span>
+              <span
+                class="${shuffle ? "cx-player-toggle-active" : ""}"
+                onClick=${toggleShuffle}
+                style=${{ cursor: "pointer" }}
+                title="셔플 ${shuffle ? "켜짐" : "꺼짐"}"
+              >🔀</span>
               <span onClick=${() => skip(-1)} style=${{ cursor: "pointer" }}>⏮</span>
               <span class="cx-play-fab-mid" onClick=${togglePlay} style=${{ cursor: nowPlaying.previewUrl ? "pointer" : "default", opacity: nowPlaying.previewUrl ? 1 : 0.4 }}>
                 ${isPlaying ? "⏸" : "▶"}
               </span>
               <span onClick=${() => skip(1)} style=${{ cursor: "pointer" }}>⏭</span>
-              <span>🔁</span>
+              <span
+                class="cx-player-repeat-btn ${repeatMode !== "off" ? "cx-player-toggle-active" : ""}"
+                onClick=${cycleRepeat}
+                style=${{ cursor: "pointer" }}
+                title=${repeatMode === "one" ? "한 곡 반복" : repeatMode === "all" ? "전체 반복" : "반복 꺼짐"}
+              >
+                🔁${repeatMode === "one" ? html`<span class="cx-player-repeat-one">1</span>` : null}
+              </span>
             </div>
             <div class="cx-playerbar-progress">
               <span>${formatTime(currentTime)}</span>
-              <div class="cx-progress-track"><div class="cx-progress-fill" style=${{ width: `${progressPct}%` }}></div></div>
+              <div class="cx-progress-track" onClick=${seekTo} style=${{ cursor: duration ? "pointer" : "default" }}><div class="cx-progress-fill" style=${{ width: `${progressPct}%` }}></div></div>
               <span>${formatTime(duration)}</span>
             </div>
           </div>
           <div class="cx-playerbar-vol">
-            <span>🔊</span>
-            <div class="cx-vol-track"><div class="cx-vol-fill"></div></div>
+            <button type="button" class="cx-queue-btn ${queueOpen ? "cx-queue-btn-active" : ""}" title="재생목록" onClick=${() => setQueueOpen((v) => !v)}>☰</button>
+            <span onClick=${toggleMute} style=${{ cursor: "pointer" }}>${volume === 0 ? "🔇" : volume < 50 ? "🔉" : "🔊"}</span>
+            <input
+              type="range"
+              class="cx-vol-range"
+              min="0"
+              max="100"
+              value=${volume}
+              onInput=${(e) => setVolume(Number(e.target.value))}
+              style=${{ background: `linear-gradient(to right, var(--mg) 0%, var(--mg) ${volume}%, var(--line) ${volume}%, var(--line) 100%)` }}
+            />
           </div>
+        </div>
+      ` : null}
+
+      ${queueOpen && nowPlaying ? html`
+        <div class="cx-queue-panel">
+          <div class="cx-queue-panel-title">재생목록</div>
+          ${(playQueue.length ? playQueue : (risk ? (risk.risk_tier === "고위험" ? comebackTracks : loyalTracks) : [])).map(
+            (t, i) => html`
+              <div
+                class="cx-queue-row ${t.previewUrl === nowPlaying.previewUrl ? "cx-queue-row-active" : ""}"
+                key=${i}
+                onClick=${() => { playTrack(t, playQueue.length ? playQueue : (risk ? (risk.risk_tier === "고위험" ? comebackTracks : loyalTracks) : [])); }}
+              >
+                ${t.artwork
+                  ? html`<img class="cx-search-art" src=${t.artwork} onError=${(e) => { e.target.onerror = null; e.target.replaceWith(Object.assign(document.createElement("div"), { className: "cx-search-art cx-search-art-empty", textContent: "🎵" })); }} />`
+                  : html`<div class="cx-search-art cx-search-art-empty">🎵</div>`}
+                <div class="cx-search-meta">
+                  <div class="cx-search-title">${t.title}</div>
+                  <div class="cx-search-artist">${t.artist}</div>
+                </div>
+                ${t.previewUrl === nowPlaying.previewUrl && isPlaying ? html`<span class="cx-search-play">▶</span>` : null}
+              </div>
+            `
+          )}
         </div>
       ` : null}
     </div>
   `;
 }
 
-function App() {
-  const [auth, setAuth] = useState(null); // null | { token, msno }
-  if (!auth) {
-    return html`<${LoginScreen} onLogin=${setAuth} />`;
+const AUTH_STORAGE_KEY = "cx_customer_auth";
+
+// 새로고침해도 로그인 상태가 유지되도록 localStorage에 저장해둔 토큰을 초기값으로 사용.
+// 토큰 자체가 만료되면(로그인 8시간 후) CustomerApp의 /me/risk 조회가 401을 받아 자동 로그아웃된다.
+function loadStoredAuth() {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.token && parsed.msno ? parsed : null;
+  } catch {
+    return null;
   }
-  return html`<${CustomerApp} auth=${auth} onLogout=${() => setAuth(null)} />`;
+}
+
+function App() {
+  const [auth, setAuth] = useState(loadStoredAuth); // null | { token, msno }
+
+  function handleLogin(data) {
+    try {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data));
+    } catch {}
+    setAuth(data);
+  }
+
+  function handleLogout() {
+    try {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch {}
+    setAuth(null);
+  }
+
+  if (!auth) {
+    return html`<${LoginScreen} onLogin=${handleLogin} />`;
+  }
+  return html`<${CustomerApp} auth=${auth} onLogout=${handleLogout} />`;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
