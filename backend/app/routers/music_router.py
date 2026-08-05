@@ -48,10 +48,10 @@ def _cache_set(key: str, value, ttl: int):
 
 
 def _get_with_retry(url: str, params=None, timeout: int = TIMEOUT, retries: int = 1):
-    """Apple 쪽이 가끔 타임아웃 안에 응답을 못 주는 경우가 있어(특히 200곡짜리 큰 피드),
-    한 번 더 재시도한다. "최신음악이 가끔 안 불러와지는" 원인이 대부분 이거였다 —
-    실패가 캐시되지 않는 구조라 다음 요청 때 다시 Apple을 호출하는데, 그때도 느리면
-    또 실패하는 걸 사용자는 "가끔"으로 체감하게 된다."""
+    """일시적인 타임아웃/네트워크 오류 대비용 재시도. (예전엔 200곡 요청이 느려서
+    타임아웃 나는 거라고 오판했었는데, 실제로는 이 피드가 limit>100일 때 항상 500을
+    반환하는 게 진짜 원인이었다 — 그건 new_releases()에서 limit을 100으로 낮춰 해결했고,
+    여기 재시도는 순수 네트워크 불안정 대비용으로 남겨둔다.)"""
     last_exc = None
     for _ in range(retries + 1):
         try:
@@ -86,7 +86,7 @@ def search_track(term: str = Query(..., min_length=1), limit: int = Query(1, ge=
 
 
 @router.get("/chart")
-def top_chart(limit: int = Query(100, ge=1, le=200)):
+def top_chart(limit: int = Query(100, ge=1, le=100)):
     """Apple Music 공식 대한민국 차트 + iTunes lookup으로 30초 미리듣기 URL 보강해서
     [{rank, title, artist, artwork, previewUrl}, ...] 형태로 반환. CHART_TTL 동안 캐시."""
     cache_key = f"chart:{limit}"
@@ -132,19 +132,21 @@ def top_chart(limit: int = Query(100, ge=1, le=200)):
 
 
 @router.get("/new-releases")
-def new_releases(limit: int = Query(24, ge=1, le=200)):
-    """대한민국 Apple Music 인기 차트(최대 200곡) 중에서 실제 발매일(releaseDate)이
+def new_releases(limit: int = Query(24, ge=1, le=100)):
+    """대한민국 Apple Music 인기 차트(최대 100곡) 중에서 실제 발매일(releaseDate)이
     가장 최근인 곡들만 골라 반환한다. Apple 공개 API에는 별도의 "신곡" 전용 차트가
     없어서(테스트 결과 /music/new-releases 형태의 피드는 404), 기존 인기 차트 피드를
-    그대로 재사용하되 정렬 기준만 인기순 → 발매일순으로 바꾼다. NEW_RELEASES_TTL 동안 캐시."""
+    그대로 재사용하되 정렬 기준만 인기순 → 발매일순으로 바꾼다. NEW_RELEASES_TTL 동안 캐시.
+
+    주의: 이 rss.marketingtools.apple.com 피드는 limit=100 초과 요청 시(예: 150, 200)
+    타임아웃이 아니라 아예 500 에러를 반환한다 — "가끔 안 나온다"가 아니라 항상 실패하는
+    버그였다. 그래서 100을 넘기지 않는다(le=100으로도 막아둠)."""
     cache_key = f"new-releases:{limit}"
     cached = _cache_get(cache_key)
     if cached is not None:
         return cached
     try:
-        # /chart보다 훨씬 큰(200곡) 피드라 기본 TIMEOUT(6초)로는 가끔 아슬아슬하게
-        # 못 받아오는 경우가 있어 타임아웃을 넉넉히 주고, 그래도 한 번 더 재시도한다.
-        res = _get_with_retry(f"{APPLE_CHART_URL}/200/songs.json", timeout=10, retries=1)
+        res = _get_with_retry(f"{APPLE_CHART_URL}/100/songs.json", timeout=10, retries=1)
         data = res.json()
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"최신음악 조회 실패: {e}")
