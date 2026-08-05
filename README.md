@@ -13,7 +13,7 @@
 | 구분 | 임형준 | 문성호 | 송승재 | 노민환 |
 |:---:|:---:|:---:|:---:|:---:|
 | 프로필 | <img src="docs/images/team/team-member-1.png" alt="임형준" width="140"> | <img src="docs/images/team/team-member-3.png" alt="문성호" width="140"> | <img src="docs/images/team/team-member-4.png" alt="송승재" width="140"> | <img src="docs/images/team/team-member-2.png" alt="노민환" width="140"> |
-| 담당 | 고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화<br>관리자 캠페인 | 시점 누출 개선<br>EDA·전처리<br>ML·DL 모델링<br>분석 파이프라인<br>Analytics 고도화  | ML·DL 모델링<br>생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출 | 프로젝트 초기 구성 |
+| 담당 | ML·DL 모델링<br>고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화<br>관리자 캠페인 | 시점 누출 개선<br>EDA·전처리<br>ML·DL 모델링<br>분석 파이프라인<br>Analytics 고도화  | ML·DL 모델링<br>생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출<br>Analytics 고도화 | 프로젝트 초기 구성 |
 | GitHub | [![HyeongJjun](https://img.shields.io/badge/GitHub-HyeongJjun-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/HyeongJjun) | [![MoonSungHo-D](https://img.shields.io/badge/GitHub-MoonSungHo--D-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MoonSungHo-D) | [![Genus-Jae](https://img.shields.io/badge/GitHub-Genus--Jae-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Genus-Jae) | [![minhwan123](https://img.shields.io/badge/GitHub-minhwan123-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/minhwan123) |
 
 ## ⚒️ 사용 기술
@@ -30,6 +30,32 @@
 | 협업·배포 | ![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white) ![Cloudflare](https://img.shields.io/badge/Cloudflare%20Tunnel-F38020?logo=cloudflare&logoColor=white) |
 
 <br>
+
+## 🗓️ WBS (Work Breakdown Structure)
+
+| 진행 단계 | 작업 내용 | 담당 | 상태 |
+|:---:|---|:---:|:---:|
+| 1. 기획·설계 | 프로젝트 주제 및 이탈 기준 정의<br>서비스 시나리오·폴더 구조 설계 | 전원 | ✅ |
+| 2. EDA | 회원·거래·로그 데이터 구조 확인<br>결측치·이상치·클래스 불균형 분석 | 문성호·노민환 | ✅ |
+| 3. 전처리 | 2017-01-31 관측 시점 확정<br>회원·거래·로그 피처 생성 및 데이터 병합 | 문성호 | ✅ |
+| 4. 모델링 | LightGBM·XGBoost·CatBoost·MLP 비교<br>파생 피처 추가 및 Enhanced v2 선정 | 문성호·송승재·임형준 | ✅ |
+| 5. 데이터 분석 | SQL 교차검증, SHAP·퍼널·리텐션·LTV 분석<br>고객 세그먼트와 마케팅 전략 도출 | 송승재 | ✅ |
+| 6. DB·백엔드 | MySQL 스키마·테이블 구성<br>FastAPI 인증·고객·관리자·음악 API 구현 | 임형준 | ✅ |
+| 7. 서비스 구현 | 고객·관리자 페이지 구현<br>고객 탐색·캠페인 실행·고객 알림 연결 | 임형준 | ✅ |
+| 8. 통합 검증·문서화 | 모델·DB·API·화면 통합 테스트<br>README·ERD·트러블슈팅 정리 | 전원 | ✅ |
+
+## 📋 요구사항 명세
+
+| 구분 | 핵심 요구사항 | 구현 내용 | 상태 |
+|:---:|---|---|:---:|
+| 데이터 | 미래 정보 없이 고객 행동 피처를 생성해야 한다. | 거래·로그를 2017-01-31까지 제한하고 고객 단위 모델 테이블 생성 | ✅ |
+| 모델 | 불균형 데이터에 적합한 지표로 모델을 비교해야 한다. | ROC-AUC·PR-AUC·Precision·Recall·F1 평가 및 LightGBM Enhanced v2 채택 | ✅ |
+| 분석 | 이탈확률을 고객 가치 및 행동 정보와 함께 해석해야 한다. | SHAP·LTV·생명주기·퍼널·리텐션 기반 세그먼트 분석 | ✅ |
+| 관리자 | 위험 고객군을 탐색하고 캠페인을 실행할 수 있어야 한다. | 조건 검색, 일괄 선택, 대상 검토, 캠페인 실행 및 이력 조회 | ✅ |
+| 고객 | 캠페인 대상 고객이 알림과 혜택을 확인할 수 있어야 한다. | 고객 로그인, 알림 읽음 처리, 쿠폰·프로모션 확인 | ✅ |
+| 백엔드 | 고객·관리자 화면과 DB를 안전하게 연결해야 한다. | FastAPI·JWT·SQLAlchemy 기반 API와 MySQL 서빙 DB 구성 | ✅ |
+| 재현성 | 전처리부터 서비스 실행까지 재현 가능해야 한다. | 실행 순서, 환경 설정, DB 적재 및 서버 실행 방법 문서화 | ✅ |
+| 확장성 | 향후 시간 변화와 캠페인 효과를 검증할 수 있어야 한다. | 동적 스냅샷·시간 외 검증·실제 발송·A/B 테스트를 고도화 과제로 정의 | 🔜 |
 
 ## 핵심 결과
 
@@ -203,6 +229,33 @@ EDA
 
 자세한 내용은 [DB ERD 및 실행 가이드](./DB_ERD_가이드.md)를 참고하세요.
 
+## 🖥️ 서비스 시연
+
+<table>
+  <tr>
+    <th width="50%">관리자 페이지</th>
+    <th width="50%">고객 페이지</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="./docs/DEMO.md#관리자-페이지">
+        <img src="docs/images/demo/admin-03.png" alt="관리자 페이지 시연" width="100%">
+      </a>
+    </td>
+    <td align="center">
+      <a href="./docs/DEMO.md#고객-페이지">
+        <img src="docs/images/demo/customer-02.png" alt="고객 페이지 시연" width="100%">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><a href="./docs/DEMO.md#관리자-페이지"><b>관리자 시연 전체 보기</b></a></td>
+    <td align="center"><a href="./docs/DEMO.md#고객-페이지"><b>고객 시연 전체 보기</b></a></td>
+  </tr>
+</table>
+
+관리자 고객 탐색·캠페인 실행부터 고객 알림·혜택 확인까지의 전체 흐름은 [서비스 시연 상세 문서](./docs/DEMO.md)에서 확인할 수 있습니다.
+
 ## 실행 방법
 
 ### 1. 가상환경과 패키지
@@ -290,6 +343,7 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 
 ## 문서
 
+- [서비스 시연 화면](./docs/DEMO.md)
 - [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
 - [트러블슈팅](./TROUBLESHOOTING.md)
