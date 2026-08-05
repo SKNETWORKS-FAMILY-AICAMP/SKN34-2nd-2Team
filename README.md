@@ -4,25 +4,32 @@
 
 ## 팀명: 2Team
 
+<p align="center">
+  <img src="docs/images/team/Gemini_Generated_Image_9kbxyu9kbxyu9kbx.png" alt="2Team 대표 이미지" width="720">
+</p>
+
 ## 팀 소개
 
 | 구분 | MoonSungHo | HyeongJjun | Genus-Jae | minhwan noh |
 |:---:|:---:|:---:|:---:|:---:|
-| 프로필 | <br><br><br><br><br> | <br><br><br><br><br> | <br><br><br><br><br> | <br><br><br><br><br> |
+| 프로필 | <img src="docs/images/team/team-member-1.png" alt="MoonSungHo" width="140"> | <img src="docs/images/team/team-member-2.png" alt="HyeongJjun" width="140"> | <img src="docs/images/team/team-member-3.png" alt="Genus-Jae" width="140"> | <img src="docs/images/team/team-member-4.png" alt="minhwan noh" width="140"> |
 | 담당 | 시점 누출 개선<br>ML·DL 모델링<br>Analytics 고도화<br>관리자 캠페인·문서화 | 고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화 | 생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출 | EDA·전처리<br>ML 모델링<br>분석 파이프라인<br>프로젝트 초기 구성 |
 | GitHub | 프로필 링크 입력 | 프로필 링크 입력 | 프로필 링크 입력 | 프로필 링크 입력 |
 
-## 사용 기술
+## ⚒️ 사용 기술
 
-| 영역 | 기술 |
-|---|---|
-| 언어·분석 | Python, pandas, NumPy, SQL, DuckDB |
-| 머신러닝·딥러닝 | LightGBM, XGBoost, CatBoost, scikit-learn, PyTorch |
-| 모델 해석·시각화 | SHAP, Matplotlib, Seaborn |
-| 백엔드 | FastAPI, Uvicorn, SQLAlchemy, PyMySQL, JWT |
-| 데이터베이스 | MySQL |
-| 프론트엔드 | HTML, CSS, JavaScript, React 18 |
-| 협업·배포 | Git, GitHub, Cloudflare Tunnel |
+| 구분 | 사용 도구 |
+|:---:|:---|
+| 언어 | ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![SQL](https://img.shields.io/badge/SQL-336791?logoColor=white) |
+| 데이터 처리 | ![Pandas](https://img.shields.io/badge/Pandas-150458?logo=pandas&logoColor=white) ![NumPy](https://img.shields.io/badge/NumPy-013243?logo=numpy&logoColor=white) ![DuckDB](https://img.shields.io/badge/DuckDB-FFF000?logo=duckdb&logoColor=black) |
+| 머신러닝·딥러닝 | ![LightGBM](https://img.shields.io/badge/LightGBM-2E8B57?logoColor=white) ![XGBoost](https://img.shields.io/badge/XGBoost-EC5B2A?logoColor=white) ![CatBoost](https://img.shields.io/badge/CatBoost-FFCC00?logoColor=black) ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?logo=scikitlearn&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white) |
+| 모델 해석·시각화 | ![SHAP](https://img.shields.io/badge/SHAP-5C4EE5?logoColor=white) ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?logoColor=white) ![Seaborn](https://img.shields.io/badge/Seaborn-4C72B0?logoColor=white) |
+| 백엔드 | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white) ![Uvicorn](https://img.shields.io/badge/Uvicorn-4051B5?logoColor=white) ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?logo=sqlalchemy&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-000000?logo=jsonwebtokens&logoColor=white) |
+| 데이터베이스 | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white) ![PyMySQL](https://img.shields.io/badge/PyMySQL-4479A1?logoColor=white) |
+| 프론트엔드 | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black) ![React](https://img.shields.io/badge/React%2018-61DAFB?logo=react&logoColor=black) |
+| 협업·배포 | ![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white) ![Cloudflare](https://img.shields.io/badge/Cloudflare%20Tunnel-F38020?logo=cloudflare&logoColor=white) |
+
+<br>
 
 ## 핵심 결과
 
