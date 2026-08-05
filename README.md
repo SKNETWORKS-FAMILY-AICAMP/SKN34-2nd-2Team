@@ -2,7 +2,7 @@
 
 > 과거 고객 행동으로 구독 이탈 위험을 예측하고, 고객 선별부터 캠페인 실행과 고객 알림까지 연결한 End-to-End 데이터 프로젝트
 
-## 팀명: 2Team
+## 팀명: 팀 노민환
 
 <p align="center">
   <img src="docs/images/team/Gemini_Generated_Image_9kbxyu9kbxyu9kbx.png" alt="2Team 대표 이미지" width="720">
@@ -10,11 +10,11 @@
 
 ## 팀 소개
 
-| 구분 | MoonSungHo | HyeongJjun | Genus-Jae | minhwan noh |
+| 구분 | 임형준 | 문성호 | 송승재 | 노민환 |
 |:---:|:---:|:---:|:---:|:---:|
-| 프로필 | <img src="docs/images/team/team-member-1.png" alt="MoonSungHo" width="140"> | <img src="docs/images/team/team-member-2.png" alt="HyeongJjun" width="140"> | <img src="docs/images/team/team-member-3.png" alt="Genus-Jae" width="140"> | <img src="docs/images/team/team-member-4.png" alt="minhwan noh" width="140"> |
-| 담당 | 시점 누출 개선<br>ML·DL 모델링<br>Analytics 고도화<br>관리자 캠페인·문서화 | 고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화 | 생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출 | EDA·전처리<br>ML 모델링<br>분석 파이프라인<br>프로젝트 초기 구성 |
-| GitHub | 프로필 링크 입력 | 프로필 링크 입력 | 프로필 링크 입력 | 프로필 링크 입력 |
+| 프로필 | <img src="docs/images/team/team-member-1.png" alt="임형준" width="140"> | <img src="docs/images/team/team-member-3.png" alt="문성호" width="140"> | <img src="docs/images/team/team-member-4.png" alt="송승재" width="140"> | <img src="docs/images/team/team-member-2.png" alt="노민환" width="140"> |
+| 담당 | 고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화<br>관리자 캠페인 | 시점 누출 개선<br>EDA·전처리<br>ML·DL 모델링<br>분석 파이프라인<br>Analytics 고도화  | ML·DL 모델링<br>생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출 | 프로젝트 초기 구성 |
+| GitHub | [![HyeongJjun](https://img.shields.io/badge/GitHub-HyeongJjun-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/HyeongJjun) | [![MoonSungHo-D](https://img.shields.io/badge/GitHub-MoonSungHo--D-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MoonSungHo-D) | [![Genus-Jae](https://img.shields.io/badge/GitHub-Genus--Jae-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Genus-Jae) | [![minhwan123](https://img.shields.io/badge/GitHub-minhwan123-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/minhwan123) |
 
 ## ⚒️ 사용 기술
 
