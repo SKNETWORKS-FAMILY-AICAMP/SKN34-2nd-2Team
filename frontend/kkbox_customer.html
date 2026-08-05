@@ -387,6 +387,57 @@ button { font-family: inherit; }
 .cx-plan-row-btn:hover { background: var(--mg); color: #061011; }
 .cx-plan-row-current-tag { font-size: 10.5px; font-weight: 800; color: var(--mg); white-space: nowrap; }
 
+/* 요금제 선택 후 뜨는 결제수단 팝업 (실제 PG 연동 없는 데모 결제 UI) */
+.cx-checkout-overlay {
+  position: fixed; inset: 0; z-index: 95; background: rgba(3,5,6,0.55); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.cx-checkout-modal {
+  width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; background: var(--bg-side);
+  border: 1px solid var(--line); border-radius: 16px; padding: 24px 26px; box-shadow: var(--shadow-lg);
+  animation: cx-notif-panel-in .2s ease;
+}
+.cx-checkout-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.cx-checkout-title { font-size: 15px; font-weight: 800; color: var(--text); }
+.cx-checkout-selected-plan { font-size: 11.5px; color: var(--text-soft); margin-top: 4px; }
+.cx-checkout-close {
+  flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; border: 1.5px solid var(--mg); background: none;
+  color: var(--mg); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.cx-checkout-close:hover { background: var(--mg-tint); }
+.cx-credit-box {
+  margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--surface-hover);
+}
+.cx-credit-label { font-size: 10.5px; color: var(--text-mute); }
+.cx-credit-amount { font-size: 15px; font-weight: 900; color: var(--mg); margin-top: 2px; }
+.cx-btn-ghost-dark {
+  border: 1px solid var(--line); background: none; color: var(--text); font-size: 11px; font-weight: 800;
+  padding: 7px 13px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+}
+.cx-btn-ghost-dark:hover { background: var(--surface); }
+.cx-payment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 16px; }
+.cx-payment-method {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--line); border-radius: 10px; padding: 14px 8px; background: var(--surface-hover);
+  color: var(--text-soft); font-size: 11px; font-weight: 700; cursor: pointer; transition: border-color .15s ease, color .15s ease;
+}
+.cx-payment-method:hover { border-color: var(--mg); }
+.cx-payment-method-active { border-color: var(--mg); color: var(--text); background: rgba(0,213,200,0.1); }
+.cx-payment-icon { font-size: 20px; }
+.cx-checkout-summary {
+  margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: var(--text-soft);
+}
+.cx-checkout-summary b { font-size: 19px; font-weight: 900; color: var(--text); }
+.cx-checkout-cta {
+  width: 100%; margin-top: 14px; border: none; border-radius: 10px; padding: 13px; font-size: 13px; font-weight: 800;
+  background: var(--mg); color: #061011; cursor: pointer; transition: opacity .15s ease;
+}
+.cx-checkout-cta:hover { opacity: 0.9; }
+.cx-checkout-cta:disabled { background: var(--line); color: var(--text-mute); cursor: not-allowed; }
+.cx-checkout-success { margin-top: 12px; font-size: 12px; font-weight: 700; color: var(--mg); text-align: center; }
+
 /* ---------- 혜택(쿠폰) ---------- */
 .cx-coupon { width: 100%; box-sizing: border-box; margin: 0 auto; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0a6d5c 100%); box-shadow: var(--shadow-md); }
 .cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f61d6 0%, #322a7a 100%); box-shadow: var(--shadow-md); }
@@ -938,7 +989,7 @@ function copyCouponCode(code, onDone) {
 // 깎는 게 아니라서 비워둔다.
 const COUPON_RULES = {
   "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", alt: false, discountPct: 20 },
-  "고위험/저가치": { badge: "복귀 유도 오퍼", title: "무료 청취 크레딧 5,000원", desc: "가볍게 다시 시작할 수 있는 소액 혜택", code: "COMEBACK5K", alt: true },
+  "고위험/저가치": { badge: "복귀 유도 오퍼", title: "무료 청취 크레딧 5,000원", desc: "가볍게 다시 시작할 수 있는 소액 혜택", code: "COMEBACK5K", alt: true, creditAmount: 5000 },
   "저위험/고가치": { badge: "감사 오퍼", title: "다음 달 자동 5% 적립", desc: "이탈 위험은 낮지만 고가치 고객 유지용", code: "THANKS5PT", alt: true },
   "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", alt: true, ctaLabel: "체험하기", ctaTab: "discover" },
 };
@@ -1558,6 +1609,15 @@ const BILLING_STATUS_CLASS = {
   장기만료: "cx-billing-status-expired",
 };
 
+// 결제 수단 선택 UI용 목록 — 실제 PG 연동은 없는 데모 결제라 아이콘은 이모지로 대체.
+const PAYMENT_METHODS = [
+  { key: "card", icon: "💳", label: "신용/체크카드" },
+  { key: "kakaopay", icon: "🟡", label: "카카오페이" },
+  { key: "tosspay", icon: "🔵", label: "토스페이" },
+  { key: "naverpay", icon: "🟢", label: "네이버페이" },
+  { key: "phone", icon: "📱", label: "휴대폰 결제" },
+];
+
 function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
   const [winbackCopied, setWinbackCopied] = useState(false);
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
@@ -1579,10 +1639,42 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
   const winbackDiscountPct = isWinbackTarget ? winbackCoupon.discountPct || 0 : 0;
 
   const [selectedTierKey, setSelectedTierKey] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [creditApplied, setCreditApplied] = useState(false);
+  const [paid, setPaid] = useState(false);
   const currentTierKey =
     risk.last_payment_plan_days != null && risk.last_plan_list_price != null
       ? `${risk.last_payment_plan_days}-${Math.round(risk.last_plan_list_price)}`
       : null;
+
+  // 요금제를 선택하면 결제 팝업이 뜨고, 팝업을 닫으면 "선택됨" 상태도 같이 풀린다.
+  function selectTier(tierKey) {
+    setSelectedTierKey(tierKey);
+    setSelectedPayment(null);
+    setCreditApplied(false);
+    setPaid(false);
+  }
+  function closeCheckout() {
+    setSelectedTierKey(null);
+    setSelectedPayment(null);
+    setCreditApplied(false);
+    setPaid(false);
+  }
+
+  // 크레딧은 "복귀 유도 오퍼"(무료 청취 크레딧) 세그먼트에게만 있는 정액 크레딧 — win-back 대상일 때만 노출.
+  const creditAmount = isWinbackTarget ? winbackCoupon.creditAmount || 0 : 0;
+  const selectedTier = selectedTierKey
+    ? PLAN_GROUPS.flatMap((g) => g.tiers).find((t) => `${t.planDays}-${t.listPrice}` === selectedTierKey)
+    : null;
+  const selectedTierPriceKRW = selectedTier
+    ? Math.round((winbackDiscountPct > 0 ? selectedTier.paidPrice * (1 - winbackDiscountPct / 100) : selectedTier.paidPrice) * TWD_TO_KRW)
+    : 0;
+  const finalPriceKRW = Math.max(0, selectedTierPriceKRW - (creditApplied ? creditAmount : 0));
+
+  function handlePay() {
+    if (!selectedPayment || paid) return;
+    setPaid(true);
+  }
 
   return html`
     <div>
@@ -1674,7 +1766,7 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
                         ${isCurrent
                           ? html`<span class="cx-plan-row-current-tag">✓ 이용중</span>`
                           : html`
-                              <button type="button" class="cx-plan-row-btn" onClick=${() => setSelectedTierKey(tierKey)}>
+                              <button type="button" class="cx-plan-row-btn" onClick=${() => selectTier(tierKey)}>
                                 ${selectedTierKey === tierKey ? "선택됨 ✓" : "선택하기"}
                               </button>
                             `}
@@ -1687,6 +1779,64 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
           )}
         </div>
       </div>
+
+      ${selectedTier
+        ? html`
+            <div class="cx-checkout-overlay" onClick=${closeCheckout}>
+              <div class="cx-checkout-modal" onClick=${(e) => e.stopPropagation()}>
+                <div class="cx-checkout-top">
+                  <div>
+                    <div class="cx-checkout-title">결제 수단 선택</div>
+                    <div class="cx-checkout-selected-plan">${selectedTier.name} · ₩${selectedTierPriceKRW.toLocaleString()}</div>
+                  </div>
+                  <button type="button" class="cx-checkout-close" onClick=${closeCheckout}>✕</button>
+                </div>
+
+                ${creditAmount > 0
+                  ? html`
+                      <div class="cx-credit-box">
+                        <div>
+                          <div class="cx-credit-label">보유 크레딧 (${winbackCoupon.title})</div>
+                          <div class="cx-credit-amount">${(creditApplied ? 0 : creditAmount).toLocaleString()}원</div>
+                        </div>
+                        <button type="button" class="cx-btn-ghost-dark" onClick=${() => setCreditApplied((v) => !v)}>
+                          ${creditApplied ? "사용 취소" : "전액사용"}
+                        </button>
+                      </div>
+                    `
+                  : null}
+
+                <div class="cx-payment-grid">
+                  ${PAYMENT_METHODS.map(
+                    (pm) => html`
+                      <button
+                        type="button"
+                        key=${pm.key}
+                        class="cx-payment-method ${selectedPayment === pm.key ? "cx-payment-method-active" : ""}"
+                        onClick=${() => setSelectedPayment(pm.key)}
+                      >
+                        <span class="cx-payment-icon">${pm.icon}</span>
+                        <span>${pm.label}</span>
+                      </button>
+                    `
+                  )}
+                </div>
+
+                <div class="cx-checkout-summary">
+                  <span>최종 결제 금액</span>
+                  <b>₩${finalPriceKRW.toLocaleString()}</b>
+                </div>
+
+                <button type="button" class="cx-checkout-cta" disabled=${!selectedPayment || paid} onClick=${handlePay}>
+                  ${paid ? "결제 완료 ✓" : "결제하기"}
+                </button>
+                ${paid
+                  ? html`<div class="cx-checkout-success">🎉 결제가 완료됐어요! (데모 화면이라 실제로 청구되지는 않아요)</div>`
+                  : null}
+              </div>
+            </div>
+          `
+        : null}
     </div>
   `;
 }

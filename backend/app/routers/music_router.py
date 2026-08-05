@@ -47,6 +47,22 @@ def _cache_set(key: str, value, ttl: int):
     _CACHE[key] = (time.time() + ttl, value)
 
 
+def _get_with_retry(url: str, params=None, timeout: int = TIMEOUT, retries: int = 1):
+    """Apple 쪽이 가끔 타임아웃 안에 응답을 못 주는 경우가 있어(특히 200곡짜리 큰 피드),
+    한 번 더 재시도한다. "최신음악이 가끔 안 불러와지는" 원인이 대부분 이거였다 —
+    실패가 캐시되지 않는 구조라 다음 요청 때 다시 Apple을 호출하는데, 그때도 느리면
+    또 실패하는 걸 사용자는 "가끔"으로 체감하게 된다."""
+    last_exc = None
+    for _ in range(retries + 1):
+        try:
+            res = requests.get(url, params=params, timeout=timeout)
+            res.raise_for_status()
+            return res
+        except requests.RequestException as e:
+            last_exc = e
+    raise last_exc
+
+
 @router.get("/search")
 def search_track(term: str = Query(..., min_length=1), limit: int = Query(1, ge=1, le=200)):
     """iTunes Search API 그대로 프록시 (응답 형태 동일: {resultCount, results: [...]}).
@@ -78,8 +94,7 @@ def top_chart(limit: int = Query(100, ge=1, le=200)):
     if cached is not None:
         return cached
     try:
-        res = requests.get(f"{APPLE_CHART_URL}/{limit}/songs.json", timeout=TIMEOUT)
-        res.raise_for_status()
+        res = _get_with_retry(f"{APPLE_CHART_URL}/{limit}/songs.json")
         data = res.json()
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"차트 조회 실패: {e}")
@@ -127,8 +142,9 @@ def new_releases(limit: int = Query(24, ge=1, le=200)):
     if cached is not None:
         return cached
     try:
-        res = requests.get(f"{APPLE_CHART_URL}/200/songs.json", timeout=TIMEOUT)
-        res.raise_for_status()
+        # /chart보다 훨씬 큰(200곡) 피드라 기본 TIMEOUT(6초)로는 가끔 아슬아슬하게
+        # 못 받아오는 경우가 있어 타임아웃을 넉넉히 주고, 그래도 한 번 더 재시도한다.
+        res = _get_with_retry(f"{APPLE_CHART_URL}/200/songs.json", timeout=10, retries=1)
         data = res.json()
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"최신음악 조회 실패: {e}")
