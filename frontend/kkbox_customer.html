@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KKBOX 이탈방지 고객모드 데모 (React)</title>
+<title>🎧 KKBOX</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8E%A7</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Archivo:wght@700;800;900&display=swap" rel="stylesheet">
@@ -387,7 +388,7 @@ button { font-family: inherit; }
 .cx-plan-row-current-tag { font-size: 10.5px; font-weight: 800; color: var(--mg); white-space: nowrap; }
 
 /* ---------- 혜택(쿠폰) ---------- */
-.cx-coupon { max-width: 480px; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0a6d5c 100%); box-shadow: var(--shadow-md); }
+.cx-coupon { width: 100%; box-sizing: border-box; margin: 0 auto; border-radius: 16px; padding: 22px 24px; color: #fff; background: linear-gradient(135deg, var(--mg) 0%, #0a6d5c 100%); box-shadow: var(--shadow-md); }
 .cx-coupon.cx-coupon-alt { background: linear-gradient(135deg, #6f61d6 0%, #322a7a 100%); box-shadow: var(--shadow-md); }
 .cx-coupon-badge { font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.22); padding: 4px 11px; border-radius: 10px; display: inline-block; }
 .cx-coupon-title { font-size: 19px; font-weight: 900; margin: 12px 0 4px; letter-spacing: -0.3px; }
@@ -402,10 +403,10 @@ button { font-family: inherit; }
 /* ---------- 전략 혜택 카드(콘서트 추첨/연차 혜택/갱신 리워드) ---------- */
 .cx-benefit-section { margin-top: 30px; }
 .cx-benefit-section-title { font-size: 13.5px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
-.cx-benefit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.cx-benefit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; align-items: stretch; }
 .cx-benefit-card {
   border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--surface);
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex; flex-direction: column; gap: 8px; height: 100%; box-sizing: border-box;
 }
 .cx-benefit-card-locked { opacity: 0.5; }
 .cx-benefit-icon { font-size: 20px; }
@@ -531,16 +532,28 @@ button { font-family: inherit; }
 
 /* 대형 히어로 — 원본 "LISTEN, AND BE HEARD" 구도 */
 .cx-hero2 {
-  position: relative; overflow: hidden; min-height: 86vh; display: flex; align-items: center;
+  position: relative; overflow: hidden; min-height: 56vh; display: flex; align-items: center;
   background: radial-gradient(120% 90% at 82% 78%, #0d2b2d 0%, #080b0c 55%, #05080a 100%);
-  padding: 120px 20px 70px;
+  padding: 64px 20px 48px;
 }
 .cx-hero2-inner { position: relative; width: 100%; max-width: 1440px; margin: 0 auto; }
 .cx-hero2-eyebrow { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mg); margin-bottom: 22px; }
 .cx-hero2-title {
-  font-weight: 900; letter-spacing: -0.045em; line-height: 0.94; color: #f3f7f6; margin: 0;
-  font-size: clamp(2.6rem, 8vw, 6.2rem); max-width: 1100px;
-  padding-left: 0.5em; text-indent: -0.5em;
+  font-weight: 900; letter-spacing: -0.045em; line-height: 1.12; color: #f3f7f6; margin: 0;
+  font-size: clamp(2.1rem, 6vw, 4.6rem); max-width: 1100px;
+}
+/* 강제 줄바꿈(\n)으로 나뉜 각 줄은 그 자체로 한 줄에 나오게 한다. 두 번째 줄부터는
+   문장이 더 긴 경우가 많아 폰트를 살짝 줄여서 넓은 화면은 물론 좁은 화면에서도 안 잘리게 한다. */
+.cx-hero2-line { display: block; white-space: nowrap; }
+.cx-hero2-line:not(:first-child) { font-size: clamp(1.4rem, 4vw, 3.2rem); }
+@media (max-width: 640px) {
+  .cx-hero2-line { white-space: normal; }
+}
+/* 짧은 문구(예: "꾸준히 함께해주셔서 감사해요")가 마지막 글자/이모지만 다음 줄로 밀려서
+   어색하게 두 줄이 되는 걸 막고 한 줄로 붙여준다. 화면이 좁아지면 다시 자연스럽게 줄바꿈 허용. */
+.cx-hero2-title-nowrap { white-space: nowrap; font-size: clamp(1.8rem, 5vw, 4rem); }
+@media (max-width: 640px) {
+  .cx-hero2-title-nowrap { white-space: normal; }
 }
 .cx-hero2-sub { margin-top: 26px; max-width: 640px; font-size: 13px; font-weight: 500; line-height: 1.7; color: rgba(255,255,255,0.72); }
 .cx-hero2-cta { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
@@ -571,7 +584,7 @@ button { font-family: inherit; }
 
 @media (max-width: 640px) {
   .cx-main { padding-top: 64px; }
-  .cx-hero2 { min-height: 70vh; padding: 100px 18px 56px; }
+  .cx-hero2 { min-height: 48vh; padding: 56px 18px 36px; }
 }
 </style>
 </head>
@@ -1180,10 +1193,6 @@ function LoginScreen({ onLogin }) {
             ${error ? html`<div class="cx-error">${error}</div>` : null}
             <button class="cx-submit" type="submit" disabled=${loading}>${loading ? "로그인 중..." : "로그인"}</button>
           </form>
-
-          <div class="cx-login-footnote">
-            관리자이신가요? kkbox_admin.html 파일을 열어주세요.
-          </div>
         </div>
       </div>
     </div>
@@ -1202,7 +1211,7 @@ function personaCopy(risk) {
       heroClass: "cx-hero cx-hero-danger",
       badge: "돌아와주세요",
       title: longGone
-        ? `${risk.days_since_last_txn}일 만이에요, 회원님! 그동안 놓친 곡들이 궁금하지 않으세요?`
+        ? `${risk.days_since_last_txn}일 만이에요, 회원님!\n그동안 놓친 곡들이 궁금하지 않으세요?`
         : "구독이 곧 끊길 수 있어요. 지금 확인해보세요",
       sub: `구독 ${dday.text} · 마지막 결제 ${risk.days_since_last_txn ?? "-"}일 전`,
       cta: "혜택 보러가기",
@@ -1212,6 +1221,7 @@ function personaCopy(risk) {
     heroClass: "cx-hero",
     badge: "든든한 회원님",
     title: "꾸준히 함께해주셔서 감사해요 🎧",
+    oneLine: true,
     sub: `이번 주 취향저격 추천이 준비됐어요 · 구독 ${dday.text}`,
     cta: "추천 보러가기",
   };
@@ -2068,7 +2078,7 @@ function CustomerApp({ auth, onLogout }) {
           <section id="top" class="cx-hero2">
             <div class="cx-hero2-inner">
               <span class="cx-hero2-eyebrow">LOSSLESS MUSIC · PERSONAL REMINDER</span>
-              <h1 class="cx-hero2-title cx-display">${heroCopy ? heroCopy.title : "LISTEN, AND BE HEARD"}</h1>
+              <h1 class="cx-hero2-title cx-display ${heroCopy && heroCopy.oneLine ? "cx-hero2-title-nowrap" : ""}">${(heroCopy ? heroCopy.title : "LISTEN, AND BE HEARD").split("\n").map((line, i) => html`<span class="cx-hero2-line" key=${`hero-line-${i}`}>${line}</span>`)}</h1>
               <p class="cx-hero2-sub">${heroCopy ? heroCopy.sub : riskLoading ? "회원님 데이터를 불러오는 중이에요..." : riskError || "이용 데이터를 찾을 수 없어요."}</p>
               ${heroCopy ? html`
                 <div class="cx-hero2-cta">
