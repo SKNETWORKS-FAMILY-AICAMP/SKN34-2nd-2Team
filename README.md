@@ -2,6 +2,28 @@
 
 > 과거 고객 행동으로 구독 이탈 위험을 예측하고, 고객 선별부터 캠페인 실행과 고객 알림까지 연결한 End-to-End 데이터 프로젝트
 
+## 팀명: 2Team
+
+## 팀 소개
+
+| 구분 | MoonSungHo | HyeongJjun | Genus-Jae | minhwan noh |
+|:---:|:---:|:---:|:---:|:---:|
+| 프로필 | <br><br><br><br><br> | <br><br><br><br><br> | <br><br><br><br><br> | <br><br><br><br><br> |
+| 담당 | 시점 누출 개선<br>ML·DL 모델링<br>Analytics 고도화<br>관리자 캠페인·문서화 | 고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화 | 생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출 | EDA·전처리<br>ML 모델링<br>분석 파이프라인<br>프로젝트 초기 구성 |
+| GitHub | 프로필 링크 입력 | 프로필 링크 입력 | 프로필 링크 입력 | 프로필 링크 입력 |
+
+## 사용 기술
+
+| 영역 | 기술 |
+|---|---|
+| 언어·분석 | Python, pandas, NumPy, SQL, DuckDB |
+| 머신러닝·딥러닝 | LightGBM, XGBoost, CatBoost, scikit-learn, PyTorch |
+| 모델 해석·시각화 | SHAP, Matplotlib, Seaborn |
+| 백엔드 | FastAPI, Uvicorn, SQLAlchemy, PyMySQL, JWT |
+| 데이터베이스 | MySQL |
+| 프론트엔드 | HTML, CSS, JavaScript, React 18 |
+| 협업·배포 | Git, GitHub, Cloudflare Tunnel |
+
 ## 핵심 결과
 
 | 구분 | 결과 |
@@ -19,10 +41,6 @@
 | 스코어링 고객 | 990,834명 |
 
 모델 점수만 출력하는 데서 끝나지 않고 이탈 위험 고객을 `Retention`, `긴급 갱신`, `Win-back` 캠페인으로 연결하고, 실행 결과를 고객 페이지 알림으로 전달하는 흐름을 구현했습니다.
-
-## 참여자
-
-Git 이력 기준: `MoonSungHo`, `HyeongJjun`, `Genus-Jae`, `minhwan noh`
 
 ## 문제 정의
 
@@ -154,6 +172,17 @@ EDA
 
 현재 데모는 실제 이메일이나 푸시를 발송하지 않고 `customer_actions`에 캠페인 결과를 기록해 고객 알림으로 보여줍니다.
 
+## 서비스 구현 및 배포
+
+- FastAPI가 API와 고객·관리자 HTML을 함께 제공하는 단일 배포 구조입니다.
+- 프론트엔드는 `window.location.origin`을 API 기준 주소로 사용하므로 로컬과 공개 데모 환경에서 별도 주소 수정이 필요하지 않습니다.
+- 관리자와 고객은 서로 다른 JWT 타입으로 인증하며, 라우터 의존성에서 권한을 구분합니다.
+- 오프라인 스코어링 배치는 Enhanced v2 예측과 분석 참조 테이블을 생성한 뒤 MySQL에 적재합니다.
+- 음악 검색·차트·신곡 기능은 FastAPI가 Apple 공개 API를 프록시하고 서버 메모리 캐시를 적용합니다.
+- 발표용 외부 접속은 로컬 Uvicorn 서버를 Cloudflare Quick Tunnel로 노출하는 방식으로 구성할 수 있습니다.
+
+전체 API 목록, 인증 흐름, 캠페인 시퀀스, Cloudflare 배포 과정과 Apple Music 프록시 제약은 [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)에서 확인할 수 있습니다.
+
 ## DB 구조
 
 | 테이블 | 역할 |
@@ -254,7 +283,6 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 
 ## 문서
 
-- [발표 준비 가이드](./docs/PRESENTATION_GUIDE.md)
+- [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
 - [트러블슈팅](./TROUBLESHOOTING.md)
-- [오프라인 A/B 테스트 설계](./analytics/07_ab_test_design.md)
