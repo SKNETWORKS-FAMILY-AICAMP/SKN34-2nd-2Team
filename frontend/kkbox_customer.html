@@ -540,6 +540,7 @@ button { font-family: inherit; }
 .cx-hero2-title {
   font-weight: 900; letter-spacing: -0.045em; line-height: 0.94; color: #f3f7f6; margin: 0;
   font-size: clamp(2.6rem, 8vw, 6.2rem); max-width: 1100px;
+  padding-left: 0.5em; text-indent: -0.5em;
 }
 .cx-hero2-sub { margin-top: 26px; max-width: 640px; font-size: 13px; font-weight: 500; line-height: 1.7; color: rgba(255,255,255,0.72); }
 .cx-hero2-cta { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
@@ -891,6 +892,33 @@ const { useState, useMemo, useEffect, useRef } = React;
 // FastAPI 백엔드 주소. `uvicorn app.main:app --reload --port 8000` 로 backend/ 폴더에서 실행해두면 됩니다.
 const API_BASE = window.location.origin;
 
+// KKBOX 원본 결제 데이터(avg_monthly_revenue, plan_list_price 등)는 대만달러(TWD) 기준입니다.
+// 고객 화면은 체감이 쉽도록 원화(KRW)로 근사 환산해서 보여줍니다.
+// (2026-08 기준 환율 근사치를 고정값으로 사용 — 실시간 환율 API 연동은 아님)
+const TWD_TO_KRW = 44.07;
+
+function copyCouponCode(code, onDone) {
+  const fallbackCopy = () => {
+    const ta = document.createElement("textarea");
+    ta.value = code;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand("copy"); } catch (e) { /* 무시 — 마지막 수단 */ }
+    document.body.removeChild(ta);
+    onDone();
+  };
+  // navigator.clipboard는 HTTPS/localhost 같은 "보안 컨텍스트"에서만 동작해서,
+  // 팀원들이 LAN IP(http://192.168.x.x)로 접속하는 경우엔 없을 수 있음 → 그럴 때만 폴백 사용.
+  if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
+    navigator.clipboard.writeText(code).then(onDone).catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
+}
+
 // 세그먼트(위험도×LTV, 실데이터 필드 조합)별 쿠폰 자동 매칭 — analytics/04_ltv.ipynb 세그먼트 기준
 // discountPct: 실제 요금제 가격에 적용할 수 있는 "정률 할인"이 있는 쿠폰만 채워둠(구독권 결제 탭
 // 요금제 목록에서 실제 할인가를 계산하는 데 사용). 정액 크레딧/적립형 쿠폰은 요금제 가격 자체를
@@ -899,7 +927,7 @@ const COUPON_RULES = {
   "고위험/고가치": { badge: "VIP 리텐션 오퍼", title: "20% 할인 + 1개월 무료 연장", desc: "장기 고액 결제 고객 대상 최우선 혜택", code: "VIP20FREE", alt: false, discountPct: 20 },
   "고위험/저가치": { badge: "복귀 유도 오퍼", title: "무료 청취 크레딧 5,000원", desc: "가볍게 다시 시작할 수 있는 소액 혜택", code: "COMEBACK5K", alt: true },
   "저위험/고가치": { badge: "감사 오퍼", title: "다음 달 자동 5% 적립", desc: "이탈 위험은 낮지만 고가치 고객 유지용", code: "THANKS5PT", alt: true },
-  "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", alt: true },
+  "저위험/저가치": { badge: "탐색 유도 오퍼", title: "신규 장르 추천 팩 무료 체험", desc: "청취 다양성을 넓혀 참여도 자체를 높임", code: "EXPLOREPACK", alt: true, ctaLabel: "체험하기", ctaTab: "discover" },
 };
 // 위 COUPON_RULES 중 "고위험" 두 세그먼트(VIP 리텐션 오퍼 / 복귀 유도 오퍼)가 곧
 // "이탈 고객을 위한 컴백(win-back) 전략" — 생존분석상 이탈 위험이 가장 높은 고위험군에게
@@ -1418,10 +1446,17 @@ function NewReleasesTab({ tracks, loading, error, onPlay }) {
 
 /* ============================== 혜택(쿠폰) ============================== */
 
-function BenefitsTab({ risk, actions, onClaimBenefit, claimingKey }) {
+function BenefitsTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
+  const [copied, setCopied] = useState(false);
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
   const c = COUPON_RULES[risk.segment] || COUPON_RULES["저위험/저가치"];
   const isWinback = risk.risk_tier === "고위험";
+  const handleCopy = () => {
+    copyCouponCode(c.code, () => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
   const claimedKeys = new Set((actions || []).filter((a) => a.benefit_key).map((a) => a.benefit_key));
 
   const concertEligible = isConcertRaffleEligible(risk);
@@ -1453,8 +1488,11 @@ function BenefitsTab({ risk, actions, onClaimBenefit, claimingKey }) {
         <div class="cx-coupon-title">${c.title}</div>
         <div class="cx-coupon-code">
           <span>${c.code}</span>
-          <button class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }}>복사</button>
+          <button class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }} onClick=${handleCopy}>${copied ? "복사됨!" : "복사"}</button>
         </div>
+        ${c.ctaTab && goTab
+          ? html`<button class="cx-btn cx-btn-white" style=${{ marginTop: "10px", width: "100%" }} onClick=${() => goTab(c.ctaTab)}>${c.ctaLabel} →</button>`
+          : null}
         <div class="cx-coupon-expire">⏱ 구독 ${formatDday(risk.lifecycle_status, risk.days_to_expire).text} · 회원님 전용 자동 발급 혜택</div>
       </div>
 
@@ -1511,6 +1549,7 @@ const BILLING_STATUS_CLASS = {
 };
 
 function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
+  const [winbackCopied, setWinbackCopied] = useState(false);
   if (!risk) return html`<div class="cx-empty">이용 데이터를 찾을 수 없어요.</div>`;
 
   // scored_at은 파이프라인 실행일(pd.Timestamp.now())이라 days_to_expire/days_since_last_txn(원본 데이터 기준)과
@@ -1548,7 +1587,7 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
               <div class="cx-winback-desc">회원님 세그먼트 전용 혜택이 아직 남아있어요. 코드를 적용하고 구독을 다시 시작해보세요.</div>
               <div class="cx-coupon-code cx-winback-code">
                 <span>${winbackCoupon.code}</span>
-                <button type="button" class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }}>복사</button>
+                <button type="button" class="cx-btn cx-btn-white" style=${{ padding: "5px 11px", fontSize: "10.5px" }} onClick=${() => copyCouponCode(winbackCoupon.code, () => { setWinbackCopied(true); setTimeout(() => setWinbackCopied(false), 1500); })}>${winbackCopied ? "복사됨!" : "복사"}</button>
               </div>
               <button type="button" class="cx-winback-cta" onClick=${() => goTab && goTab("benefits")}>혜택 자세히 보기 →</button>
             </div>
@@ -1559,13 +1598,13 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
         <div class="cx-billing-plan-top">
           <span class="cx-billing-plan-badge ${statusClass}">${risk.lifecycle_status || "상태확인필요"}</span>
           <div class="cx-billing-plan-price">
-            ₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue).toLocaleString() : "-"}<span>/월</span>
+            ₩${risk.avg_monthly_revenue != null ? Math.round(risk.avg_monthly_revenue * TWD_TO_KRW).toLocaleString() : "-"}<span>/월</span>
           </div>
         </div>
         <div class="cx-billing-plan-desc">구독 ${dday.text}</div>
         <div class="cx-billing-current-plan">
           <span>현재 결제 중인 요금제</span>
-          <b>${risk.last_payment_plan_days != null ? `${risk.last_payment_plan_days}일 · ₩${Math.round(risk.last_plan_list_price).toLocaleString()}` : "정보 없음"}</b>
+          <b>${risk.last_payment_plan_days != null ? `${risk.last_payment_plan_days}일 · ₩${Math.round(risk.last_plan_list_price * TWD_TO_KRW).toLocaleString()}` : "정보 없음"}</b>
           ${risk.last_is_auto_renew != null
             ? html`<span class="${risk.last_is_auto_renew ? "cx-billing-autorenew-on" : "cx-billing-autorenew-off"}">${risk.last_is_auto_renew ? "자동갱신 ON" : "자동갱신 OFF"}</span>`
             : null}
@@ -1614,12 +1653,12 @@ function BillingTab({ risk, actions, onClaimBenefit, claimingKey, goTab }) {
                           ${winbackPrice != null
                             ? html`
                                 <span class="cx-plan-row-winback-tag">Win-back -${winbackDiscountPct}%</span>
-                                <div class="cx-plan-row-list-price">₩${Math.round(tier.paidPrice).toLocaleString()}</div>
-                                <div class="cx-plan-row-paid-price">₩${Math.round(winbackPrice).toLocaleString()}</div>
+                                <div class="cx-plan-row-list-price">₩${Math.round(tier.paidPrice * TWD_TO_KRW).toLocaleString()}</div>
+                                <div class="cx-plan-row-paid-price">₩${Math.round(winbackPrice * TWD_TO_KRW).toLocaleString()}</div>
                               `
                             : html`
-                                ${tier.paidPrice < tier.listPrice ? html`<div class="cx-plan-row-list-price">₩${tier.listPrice.toLocaleString()}</div>` : null}
-                                <div class="cx-plan-row-paid-price">₩${Math.round(tier.paidPrice).toLocaleString()}</div>
+                                ${tier.paidPrice < tier.listPrice ? html`<div class="cx-plan-row-list-price">₩${Math.round(tier.listPrice * TWD_TO_KRW).toLocaleString()}</div>` : null}
+                                <div class="cx-plan-row-paid-price">₩${Math.round(tier.paidPrice * TWD_TO_KRW).toLocaleString()}</div>
                               `}
                         </div>
                         ${isCurrent
@@ -2062,7 +2101,7 @@ function CustomerApp({ auth, onLogout }) {
               ` : null}
               ${activeSection === "benefits" ? html`
                 <section class="cx-scroll-section">
-                  <${BenefitsTab} risk=${risk} actions=${actions} onClaimBenefit=${claimBenefit} claimingKey=${claimingKey} />
+                  <${BenefitsTab} risk=${risk} actions=${actions} onClaimBenefit=${claimBenefit} claimingKey=${claimingKey} goTab=${scrollToSection} />
                 </section>
               ` : null}
               ${activeSection === "charts" ? html`
