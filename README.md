@@ -313,7 +313,6 @@ EDA
 | 자료 | 포함 내용 | 보기 |
 |---|---|:---:|
 | 인공지능 데이터 전처리 결과서 | 시점 누출 통제, 원천별 정제·집계, 결측 처리, 57개 피처, 품질 검증과 재현 절차 | [상세 PDF 열기](./docs/reports/ai-data-preprocessing-report.pdf) |
-| 데이터 전처리 시각화 요약 | 관측 시점 설정, 원본 데이터 정제, 피처 생성·검증의 핵심 요약 | [요약 PDF 열기](./docs/reports/data-preprocessing.pdf) |
 | 모델링 비교 결과 | ML·DL 모델 비교, 성능 지표, 최종 LightGBM Enhanced v2 선정 근거 | [PDF 열기](./docs/reports/modeling-comparison.pdf) |
 
 ## 실행 방법
@@ -432,7 +431,6 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 ## 문서
 
 - [서비스 시연 화면](./docs/DEMO.md)
-- [데이터 전처리 과정 PDF](./docs/reports/data-preprocessing.pdf)
 - [모델링 비교 결과 PDF](./docs/reports/modeling-comparison.pdf)
 - [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
