@@ -57,6 +57,16 @@ KKBOX의 회원·결제·음악 이용 로그를 활용해 구독 만료 후 이
 3. **고객 세그먼트 및 전략 도출**: 이탈 위험도, 고객 가치, 구독 생명주기를 결합해 캠페인 대상과 액션을 구분합니다.
 4. **서비스 구현**: 예측 결과를 DB와 API에 적재하고 관리자 캠페인 실행부터 고객 알림·혜택 확인까지 연결합니다.
 
+### 필수 산출물
+
+| 산출물 | 파일 | 주요 내용 |
+|---|---|---|
+| 인공지능 데이터 전처리 결과서 | [ai-data-preprocessing-report.pdf](./docs/reports/ai-data-preprocessing-report.pdf) | 시점 누출 진단, 테이블별 정제·집계 규칙, 결측 처리, 57개 입력 피처, 품질 검증과 재현 절차 |
+| 인공지능 학습 결과서 | [modeling-comparison.pdf](./docs/reports/modeling-comparison.pdf) | ML·DL 모델 비교, LightGBM 고도화 과정, 최종 성능, SHAP·세그먼트 기반 활용 방안 |
+| 학습된 인공지능 모델 | [lightgbm_enhanced_v2.txt](./models/lightgbm_enhanced_v2.txt) | 57개 피처로 학습된 최종 LightGBM Enhanced v2 모델 |
+
+학습 모델의 재현과 검증에 필요한 [모델 메타데이터](./models/lightgbm_enhanced_v2_meta.json)와 [피처 중요도](./models/lightgbm_enhanced_v2_importance.csv)도 함께 제공합니다.
+
 <a id="tech-stack"></a>
 
 ## ⚒️ 사용 기술
@@ -190,7 +200,7 @@ EDA
 
 ## 모델과 성능
 
-최종 모델의 로컬 기준 파일은 `models/lightgbm_enhanced_v2_meta.json`입니다. `models/`는 대용량 아티팩트 정책으로 Git에서 제외되므로 재현 환경에서는 별도로 전달해야 합니다.
+최종 학습 모델은 `models/lightgbm_enhanced_v2.txt`이며, 모델 설정·피처 목록·평가 결과는 `models/lightgbm_enhanced_v2_meta.json`에서 확인할 수 있습니다. 두 파일은 필수 산출물로 GitHub 저장소에 함께 포함합니다.
 
 | 모델 | Test ROC-AUC | Test PR-AUC | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
@@ -302,7 +312,8 @@ EDA
 
 | 자료 | 포함 내용 | 보기 |
 |---|---|:---:|
-| 데이터 전처리 과정 | 관측 시점 설정, 원본 데이터 정제, 피처 생성·검증 및 시각화 해석 | [PDF 열기](./docs/reports/data-preprocessing.pdf) |
+| 인공지능 데이터 전처리 결과서 | 시점 누출 통제, 원천별 정제·집계, 결측 처리, 57개 피처, 품질 검증과 재현 절차 | [상세 PDF 열기](./docs/reports/ai-data-preprocessing-report.pdf) |
+| 데이터 전처리 시각화 요약 | 관측 시점 설정, 원본 데이터 정제, 피처 생성·검증의 핵심 요약 | [요약 PDF 열기](./docs/reports/data-preprocessing.pdf) |
 | 모델링 비교 결과 | ML·DL 모델 비교, 성능 지표, 최종 LightGBM Enhanced v2 선정 근거 | [PDF 열기](./docs/reports/modeling-comparison.pdf) |
 
 ## 실행 방법
@@ -343,7 +354,7 @@ python backend/scoring/export_reference_tables.py
 python backend/scoring/load_to_mysql.py
 ```
 
-대용량 원본 데이터와 모델 파일은 Git에 포함되지 않으므로 별도로 준비해야 합니다.
+대용량 원본 데이터와 스코어링 CSV는 Git에 포함되지 않으므로 별도로 준비해야 합니다. 최종 LightGBM 모델과 메타데이터는 `models/`에 포함되어 있습니다.
 
 ### 3. 서버 실행
 
@@ -431,6 +442,6 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 
 | 이름 | 회고 |
 |---|---|
-| 임형준 | 작성란 |
+| 임형준 | 30GB가 넘는 대용량 로그 데이터를 다루면서 메모리 문제나 시점 누출 같은 예상치 못한 어려움이 많았지만, 그만큼 직접 부딪히며 배운 것도 많았다. 프론트엔드부터 백엔드, 배포까지 전체 흐름을 직접 만들어본 건 좋은 경험이었고, 다만 시간이 조금 더 있었다면 캠페인 효과 검증이나 서비스 구조를 더 다듬어볼 수 있었을 것 같아 아쉬움이 남는다|
 | 문성호 | 작성란 |
 | 송승재 | 작성란 |
