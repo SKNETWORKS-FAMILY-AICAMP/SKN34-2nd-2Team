@@ -6,16 +6,16 @@
 
 | | |
 |---|---|
-| 1. [팀 소개](#팀-소개) | 11. [세그먼트와 캠페인](#세그먼트와-캠페인) |
-| 2. [사용 기술](#tech-stack) | 12. [서비스 기능](#서비스-기능) |
-| 3. [WBS](#wbs) | 13. [서비스 구현 및 배포](#서비스-구현-및-배포) |
-| 4. [요구사항 명세](#requirements) | 14. [DB 구조](#db-구조) |
-| 5. [핵심 결과](#핵심-결과) | 15. [서비스 시연](#service-demo) |
-| 6. [문제 정의](#문제-정의) | 16. [분석·모델링 시각화 자료](#analysis-reports) |
-| 7. [시스템 구조](#시스템-구조) | 17. [실행 방법](#실행-방법) |
-| 8. [데이터와 예측 시점](#데이터와-예측-시점) | 18. [한계와 향후 개선](#한계와-향후-개선) |
-| 9. [데이터 처리 흐름](#데이터-처리-흐름) | 19. [관련 문서](#문서) |
-| 10. [모델과 성능](#모델과-성능) | |
+| 1. [팀 소개](#팀-소개) | 11. [모델과 성능](#모델과-성능) |
+| 2. [프로젝트 개요](#project-overview) | 12. [세그먼트와 캠페인](#세그먼트와-캠페인) |
+| 3. [사용 기술](#tech-stack) | 13. [서비스 기능](#서비스-기능) |
+| 4. [WBS](#wbs) | 14. [서비스 구현 및 배포](#서비스-구현-및-배포) |
+| 5. [요구사항 명세](#requirements) | 15. [DB 구조](#db-구조) |
+| 6. [핵심 결과](#핵심-결과) | 16. [서비스 시연](#service-demo) |
+| 7. [문제 정의](#문제-정의) | 17. [분석·모델링 시각화 자료](#analysis-reports) |
+| 8. [시스템 구조](#시스템-구조) | 18. [실행 방법](#실행-방법) |
+| 9. [데이터와 예측 시점](#데이터와-예측-시점) | 19. [한계와 향후 개선](#한계와-향후-개선) |
+| 10. [데이터 처리 흐름](#데이터-처리-흐름) | 20. [관련 문서](#문서) |
 
 ## 팀명: 팀 노민환
 
@@ -30,6 +30,32 @@
 | 프로필 | <img src="docs/images/team/team-member-1.png" alt="임형준" width="140"> | <img src="docs/images/team/team-member-3.png" alt="문성호" width="140"> | <img src="docs/images/team/team-member-4.png" alt="송승재" width="140"> | <img src="docs/images/team/team-member-2.png" alt="노민환" width="140"> |
 | 담당 | ML·DL 모델링<br>고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화<br>관리자 캠페인 | 시점 누출 개선<br>EDA·전처리<br>ML·DL 모델링<br>분석 파이프라인<br>Analytics 고도화  | ML·DL 모델링<br>생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출<br>Analytics 고도화 | 프로젝트 초기 구성 |
 | GitHub | [![HyeongJjun](https://img.shields.io/badge/GitHub-HyeongJjun-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/HyeongJjun) | [![MoonSungHo-D](https://img.shields.io/badge/GitHub-MoonSungHo--D-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MoonSungHo-D) | [![Genus-Jae](https://img.shields.io/badge/GitHub-Genus--Jae-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Genus-Jae) | [![minhwan123](https://img.shields.io/badge/GitHub-minhwan123-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/minhwan123) |
+
+<a id="project-overview"></a>
+
+## 📌 프로젝트 개요
+
+### 프로젝트 명
+
+**KKBOX 고객 이탈 예측 및 리텐션 운영 시스템**
+
+### 프로젝트 소개
+
+KKBOX의 회원·결제·음악 이용 로그를 활용해 구독 만료 후 이탈 가능성을 예측하고, 예측 결과를 고객 가치와 구독 생명주기에 결합해 `Retention`, `긴급 갱신`, `Win-back` 캠페인으로 연결한 End-to-End 데이터 프로젝트입니다. 전처리와 모델링뿐 아니라 MySQL 서빙 DB, FastAPI, 관리자 캠페인 콘솔과 고객 알림·혜택 화면까지 구현했습니다.
+
+### 프로젝트 필요성(배경)
+
+- 구독형 서비스에서는 신규 고객 확보뿐 아니라 기존 고객의 이탈을 사전에 파악하고 유지하는 것이 중요합니다.
+- 전체 고객 중 이탈 고객은 6.39%로 적어 단순 Accuracy만으로는 이탈 탐지 성능을 올바르게 평가하기 어렵습니다.
+- 이탈이 확정된 이후가 아니라 실제 개입 가능한 시점의 데이터만 사용해야 의미 있는 조기 예측과 마케팅 우선순위 선정이 가능합니다.
+- 예측 점수만 제공해서는 실무 활용이 제한되므로 고객군 선별, 캠페인 실행, 고객 접점까지 연결된 운영 흐름이 필요합니다.
+
+### 프로젝트 목표
+
+1. **시점 누출 방지**: 관측 종료일을 고정해 미래 정보 없이 고객 행동 피처를 생성합니다.
+2. **이탈 예측 모델 구축**: 불균형 데이터에 적합한 PR-AUC를 중심으로 ML·DL 모델을 비교하고 최종 모델을 선정합니다.
+3. **고객 세그먼트 및 전략 도출**: 이탈 위험도, 고객 가치, 구독 생명주기를 결합해 캠페인 대상과 액션을 구분합니다.
+4. **서비스 구현**: 예측 결과를 DB와 API에 적재하고 관리자 캠페인 실행부터 고객 알림·혜택 확인까지 연결합니다.
 
 <a id="tech-stack"></a>
 
@@ -400,3 +426,11 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 - [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
 - [트러블슈팅](./TROUBLESHOOTING.md)
+
+### 팀원별 한줄 회고
+
+| 이름 | 회고 |
+|---|---|
+| 임형준 | 작성란 |
+| 문성호 | 작성란 |
+| 송승재 | 작성란 |
