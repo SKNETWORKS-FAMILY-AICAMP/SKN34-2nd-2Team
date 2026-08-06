@@ -351,7 +351,7 @@ python backend/scoring/load_to_mysql.py
 
 대용량 원본 데이터는 Git에 포함되지 않으므로 별도로 준비해야 합니다. 최종 서빙 모델과 메타데이터는 `models/`에 포함되어 있습니다.
 
-### 3. 서버 실행
+### 3-1. 서버 실행
 
 ```powershell
 cd backend
@@ -363,6 +363,25 @@ uvicorn app.main:app --reload --port 8000
 - API 문서: `http://127.0.0.1:8000/docs`
 
 프론트엔드는 현재 서버의 origin을 API 주소로 사용하므로 HTML 파일을 직접 열지 말고 FastAPI 주소로 접속해야 합니다.
+
+### 3-2. 배포 (Cloudflare Tunnel)
+
+로컬에서 실행 중인 FastAPI 서버를 코드 수정 없이 공개 HTTPS URL로 노출합니다 (Quick Tunnel, 계정 가입 불필요, 무료).
+
+```powershell
+# cloudflared 설치 확인 (Windows는 MSI로 사전 설치 필요)
+cloudflared --version
+
+# 새 터미널에서 터널 실행 (3-1의 backend 서버가 먼저 떠 있어야 함)
+cloudflared tunnel --url http://localhost:8000
+```
+
+터미널에 출력되는 `https://xxxx-xxxx.trycloudflare.com`이 공개 접속 주소입니다.
+
+- 고객 사이트: 발급된 URL 그대로
+- 관리자 사이트: 발급된 URL + `/admin-page`
+
+Quick Tunnel URL은 실행할 때마다 랜덤하게 바뀌므로, 재실행 후에는 새로 나온 URL을 다시 공유해야 합니다. 배포 원리와 주의사항은 [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md#8-fastapi-배포-과정-cloudflare-tunnel)를 참고하세요.
 
 ## 데모 순서
 
@@ -452,6 +471,11 @@ SKN34-2nd-2team/
 │
 ├─ models/ *                     학습된 모델 아티팩트 (LightGBM/XGBoost/CatBoost/RF/LogReg, meta·importance 포함)
 │
+├─ streamlit_app/                Streamlit 앱 소스는 삭제됨, data/ 산출물만 잔존
+│  └─ data/                      EDA·모델링 산출물 CSV·parquet (LTV, SHAP, 세그먼트 등)
+│
+├─ train.py                      LightGBM Enhanced v2 재학습 스크립트
+├─ infer.py                      저장된 모델로 샘플 고객 추론 스크립트
 ├─ README.md
 ├─ DB_ERD_가이드.md
 ├─ TROUBLESHOOTING.md
@@ -497,5 +521,4 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 |---|---|
 | 임형준 | 30GB가 넘는 대용량 로그 데이터를 다루면서 메모리 문제나 시점 누출 같은 예상치 못한 어려움이 많았지만, 그만큼 직접 부딪히며 배운 것도 많았다. 프론트엔드부터 백엔드, 배포까지 전체 흐름을 직접 만들어본 건 좋은 경험이었고, 다만 시간이 조금 더 있었다면 캠페인 효과 검증이나 서비스 구조를 더 다듬어볼 수 있었을 것 같아 아쉬움이 남는다. |
 | 문성호 | 작성란 |
-| 송승재 | 작성란 |
-| 노민환 | 작성란 |
+| 송승재 | 데이터를 다루며, 분석하고 특징을 파악해서 마케팅으로 이어 결론까지 도출해보며 데이터를 다룰 수 있다는 자신감을 얻고 내 아이디어가 실제로 서비스화로 구현되는 것을 보며 뿌듯함을 느끼는 프로젝트였다 |
