@@ -48,6 +48,16 @@
 
 <br>
 
+## 필수 산출물
+
+| 산출물 | 파일 | 주요 내용 |
+|---|---|---|
+| 인공지능 데이터 전처리 결과서 | [ai-data-preprocessing-report.pdf](./docs/reports/ai-data-preprocessing-report.pdf) | 시점 누출 진단, 원천별 정제·집계, 결측 처리, 57개 입력 피처, 품질 검증 |
+| 인공지능 학습 결과서 | [ai-training-result-report.pdf](./docs/reports/ai-training-result-report.pdf) | 실험 설계, ML·DL 비교, 최종 성능, Top-K·SHAP, 재현·추론 절차 |
+| 학습된 인공지능 모델 | [lightgbm_enhanced_v2.txt](./models/lightgbm_enhanced_v2.txt) | 57개 피처로 학습된 최종 LightGBM Enhanced v2 모델 |
+
+모델의 피처 순서·임계값·평가 결과는 [모델 메타데이터](./models/lightgbm_enhanced_v2_meta.json), 변수 중요도는 [피처 중요도](./models/lightgbm_enhanced_v2_importance.csv)에서 확인할 수 있습니다.
+
 <a id="wbs"></a>
 
 ## 🗓️ WBS (Work Breakdown Structure)
@@ -276,7 +286,8 @@ EDA
 
 | 자료 | 포함 내용 | 보기 |
 |---|---|:---:|
-| 데이터 전처리 과정 | 관측 시점 설정, 원본 데이터 정제, 피처 생성·검증 및 시각화 해석 | [PDF 열기](./docs/reports/data-preprocessing.pdf) |
+| 인공지능 데이터 전처리 결과서 | 시점 누출 통제, 원천별 정제·집계, 결측 처리, 57개 피처, 품질 검증과 재현 절차 | [상세 PDF 열기](./docs/reports/ai-data-preprocessing-report.pdf) |
+| 인공지능 학습 결과서 | 타깃 정의, 평가 지표, 실험 기록, 최종 모델 성능, Top-K·XAI, 재현·추론 절차 | [상세 PDF 열기](./docs/reports/ai-training-result-report.pdf) |
 | 모델링 비교 결과 | ML·DL 모델 비교, 성능 지표, 최종 LightGBM Enhanced v2 선정 근거 | [PDF 열기](./docs/reports/modeling-comparison.pdf) |
 
 ## 실행 방법
@@ -289,6 +300,15 @@ python -m venv My_venv
 python -m pip install -r requirements.txt
 python -m pip install -r requirements-extra.txt
 ```
+
+저장된 모델을 재학습하거나, 모델을 불러와 처리 테이블의 샘플 고객 5명을 추론할 수 있습니다.
+
+```powershell
+python train.py
+python infer.py --rows 5
+```
+
+`train.py`는 기존 최종 모델을 덮어쓰지 않고 `retrained_*` 파일로 저장하며, `infer.py`는 모델과 메타데이터의 57개 피처 순서 및 범주형 값을 검증한 뒤 이탈확률을 출력합니다.
 
 프로젝트 루트에 `.env`를 생성합니다.
 
@@ -317,7 +337,7 @@ python backend/scoring/export_reference_tables.py
 python backend/scoring/load_to_mysql.py
 ```
 
-대용량 원본 데이터와 모델 파일은 Git에 포함되지 않으므로 별도로 준비해야 합니다.
+대용량 원본 데이터는 Git에 포함되지 않으므로 별도로 준비해야 합니다. 최종 서빙 모델과 메타데이터는 `models/`에 포함되어 있습니다.
 
 ### 3. 서버 실행
 
@@ -410,7 +430,7 @@ SKN34-2nd-2team/
 │  ├─ KKBOX_프로젝트_통합문서.md   아키텍처 · ERD · 배포 · API 상세
 │  ├─ PRESENTATION_GUIDE.md      발표 가이드
 │  ├─ DEMO.md                    서비스 시연 캡처
-│  ├─ reports/                   전처리 · 모델링 비교 PDF 리포트
+│  ├─ reports/                   전처리 · 학습 결과서 · 모델링 비교 PDF 리포트
 │  └─ images/                    시스템 아키텍처, 데모 스크린샷, 팀 사진
 │
 ├─ data/ *                       Kaggle 원본 · 전처리 산출물 (raw/processed/dashboard, 약 30GB+)
@@ -452,7 +472,8 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 ## 문서
 
 - [서비스 시연 화면](./docs/DEMO.md)
-- [데이터 전처리 과정 PDF](./docs/reports/data-preprocessing.pdf)
+- [인공지능 데이터 전처리 결과서](./docs/reports/ai-data-preprocessing-report.pdf)
+- [인공지능 학습 결과서](./docs/reports/ai-training-result-report.pdf)
 - [모델링 비교 결과 PDF](./docs/reports/modeling-comparison.pdf)
 - [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
