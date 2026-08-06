@@ -321,6 +321,8 @@ python backend/scoring/load_to_mysql.py
 
 ### 3. 서버 실행
 
+#### 3-1. 로컬 실행
+
 ```powershell
 cd backend
 uvicorn app.main:app --reload --port 8000
@@ -331,6 +333,32 @@ uvicorn app.main:app --reload --port 8000
 - API 문서: `http://127.0.0.1:8000/docs`
 
 프론트엔드는 현재 서버의 origin을 API 주소로 사용하므로 HTML 파일을 직접 열지 말고 FastAPI 주소로 접속해야 합니다.
+
+#### 3-2. Cloudflare Tunnel로 외부 공개
+
+로컬에서 실행 중인 FastAPI를 코드 수정 없이 그대로 공개 HTTPS URL로 노출할 수 있습니다. (Quick Tunnel, 계정 가입 불필요, 무료)
+
+```powershell
+# 1) cloudflared 설치 (Windows, 최초 1회)
+#    https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.msi
+cloudflared --version
+
+# 2) 백엔드 먼저 실행 (터미널 1, backend 폴더에서)
+cd backend
+uvicorn app.main:app --port 8000
+
+# 3) 터널 실행 (터미널 2, 새 터미널)
+cloudflared tunnel --url http://localhost:8000
+```
+
+터미널에 출력되는 `https://xxxx-xxxx.trycloudflare.com` 주소로 접속합니다.
+
+- 고객 페이지: 발급된 URL 그대로
+- 관리자 페이지: 발급된 URL + `/admin-page`
+
+> Quick Tunnel URL은 재시작할 때마다 랜덤하게 바뀝니다. 프론트 HTML만 수정한 경우 새로고침만으로 반영되고, 백엔드(.py) 수정 시에는 uvicorn만 재시작하면 되며 cloudflared 터미널은 그대로 둬도 됩니다.
+
+자세한 배포 원리와 주의사항은 [프로젝트 통합 상세 문서 8장](./docs/KKBOX_프로젝트_통합문서.md#8-fastapi-배포-과정-cloudflare-tunnel)을 참고하세요.
 
 ## 데모 순서
 
