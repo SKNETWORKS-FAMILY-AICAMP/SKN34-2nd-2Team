@@ -6,16 +6,16 @@
 
 | | |
 |---|---|
-| 1. [팀 소개](#팀-소개) | 11. [모델과 성능](#모델과-성능) |
-| 2. [프로젝트 개요](#project-overview) | 12. [세그먼트와 캠페인](#세그먼트와-캠페인) |
-| 3. [사용 기술](#tech-stack) | 13. [서비스 기능](#서비스-기능) |
-| 4. [WBS](#wbs) | 14. [서비스 구현 및 배포](#서비스-구현-및-배포) |
-| 5. [요구사항 명세](#requirements) | 15. [DB 구조](#db-구조) |
-| 6. [핵심 결과](#핵심-결과) | 16. [서비스 시연](#service-demo) |
-| 7. [문제 정의](#문제-정의) | 17. [분석·모델링 시각화 자료](#analysis-reports) |
-| 8. [시스템 구조](#시스템-구조) | 18. [실행 방법](#실행-방법) |
-| 9. [데이터와 예측 시점](#데이터와-예측-시점) | 19. [한계와 향후 개선](#한계와-향후-개선) |
-| 10. [데이터 처리 흐름](#데이터-처리-흐름) | 20. [관련 문서](#문서) |
+| 1. [팀 소개](#팀-소개) | 11. [세그먼트와 캠페인](#세그먼트와-캠페인) |
+| 2. [사용 기술](#tech-stack) | 12. [서비스 기능](#서비스-기능) |
+| 3. [WBS](#wbs) | 13. [서비스 구현 및 배포](#서비스-구현-및-배포) |
+| 4. [요구사항 명세](#requirements) | 14. [DB 구조](#db-구조) |
+| 5. [핵심 결과](#핵심-결과) | 15. [서비스 시연](#service-demo) |
+| 6. [문제 정의](#문제-정의) | 16. [분석·모델링 시각화 자료](#analysis-reports) |
+| 7. [시스템 구조](#시스템-구조) | 17. [실행 방법](#실행-방법) |
+| 8. [데이터와 예측 시점](#데이터와-예측-시점) | 18. [한계와 향후 개선](#한계와-향후-개선) |
+| 9. [데이터 처리 흐름](#데이터-처리-흐름) | 19. [관련 문서](#문서) |
+| 10. [모델과 성능](#모델과-성능) | |
 
 ## 팀명: 팀 노민환
 
@@ -30,42 +30,6 @@
 | 프로필 | <img src="docs/images/team/team-member-1.png" alt="임형준" width="140"> | <img src="docs/images/team/team-member-3.png" alt="문성호" width="140"> | <img src="docs/images/team/team-member-4.png" alt="송승재" width="140"> | <img src="docs/images/team/team-member-2.png" alt="노민환" width="140"> |
 | 담당 | ML·DL 모델링<br>고객 페이지 구현<br>FastAPI·음악 API<br>모델 결과 검증<br>서비스 안정화<br>관리자 캠페인 | 시점 누출 개선<br>EDA·전처리<br>ML·DL 모델링<br>분석 파이프라인<br>Analytics 고도화  | ML·DL 모델링<br>생존분석<br>고객 세그먼트 분석<br>마케팅 전략 도출<br>Analytics 고도화 | 프로젝트 초기 구성 |
 | GitHub | [![HyeongJjun](https://img.shields.io/badge/GitHub-HyeongJjun-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/HyeongJjun) | [![MoonSungHo-D](https://img.shields.io/badge/GitHub-MoonSungHo--D-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MoonSungHo-D) | [![Genus-Jae](https://img.shields.io/badge/GitHub-Genus--Jae-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Genus-Jae) | [![minhwan123](https://img.shields.io/badge/GitHub-minhwan123-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/minhwan123) |
-
-<a id="project-overview"></a>
-
-## 📌 프로젝트 개요
-
-### 프로젝트 명
-
-**KKBOX 고객 이탈 예측 및 리텐션 운영 시스템**
-
-### 프로젝트 소개
-
-KKBOX의 회원·결제·음악 이용 로그를 활용해 구독 만료 후 이탈 가능성을 예측하고, 예측 결과를 고객 가치와 구독 생명주기에 결합해 `Retention`, `긴급 갱신`, `Win-back` 캠페인으로 연결한 End-to-End 데이터 프로젝트입니다. 전처리와 모델링뿐 아니라 MySQL 서빙 DB, FastAPI, 관리자 캠페인 콘솔과 고객 알림·혜택 화면까지 구현했습니다.
-
-### 프로젝트 필요성(배경)
-
-- 구독형 서비스에서는 신규 고객 확보뿐 아니라 기존 고객의 이탈을 사전에 파악하고 유지하는 것이 중요합니다.
-- 전체 고객 중 이탈 고객은 6.39%로 적어 단순 Accuracy만으로는 이탈 탐지 성능을 올바르게 평가하기 어렵습니다.
-- 이탈이 확정된 이후가 아니라 실제 개입 가능한 시점의 데이터만 사용해야 의미 있는 조기 예측과 마케팅 우선순위 선정이 가능합니다.
-- 예측 점수만 제공해서는 실무 활용이 제한되므로 고객군 선별, 캠페인 실행, 고객 접점까지 연결된 운영 흐름이 필요합니다.
-
-### 프로젝트 목표
-
-1. **시점 누출 방지**: 관측 종료일을 고정해 미래 정보 없이 고객 행동 피처를 생성합니다.
-2. **이탈 예측 모델 구축**: 불균형 데이터에 적합한 PR-AUC를 중심으로 ML·DL 모델을 비교하고 최종 모델을 선정합니다.
-3. **고객 세그먼트 및 전략 도출**: 이탈 위험도, 고객 가치, 구독 생명주기를 결합해 캠페인 대상과 액션을 구분합니다.
-4. **서비스 구현**: 예측 결과를 DB와 API에 적재하고 관리자 캠페인 실행부터 고객 알림·혜택 확인까지 연결합니다.
-
-### 필수 산출물
-
-| 산출물 | 파일 | 주요 내용 |
-|---|---|---|
-| 인공지능 데이터 전처리 결과서 | [ai-data-preprocessing-report.pdf](./docs/reports/ai-data-preprocessing-report.pdf) | 시점 누출 진단, 테이블별 정제·집계 규칙, 결측 처리, 57개 입력 피처, 품질 검증과 재현 절차 |
-| 인공지능 학습 결과서 | [ai-training-result-report.pdf](./docs/reports/ai-training-result-report.pdf) | 비즈니스·타깃 정의, 누수 통제, 실험 설계, ML·DL 비교, 최종 성능, Top-K·SHAP, 재현·추론 절차 |
-| 학습된 인공지능 모델 | [lightgbm_enhanced_v2.txt](./models/lightgbm_enhanced_v2.txt) | 57개 피처로 학습된 최종 LightGBM Enhanced v2 모델 |
-
-학습 모델의 재현과 검증에 필요한 [모델 메타데이터](./models/lightgbm_enhanced_v2_meta.json)와 [피처 중요도](./models/lightgbm_enhanced_v2_importance.csv)도 함께 제공합니다.
 
 <a id="tech-stack"></a>
 
@@ -200,7 +164,7 @@ EDA
 
 ## 모델과 성능
 
-최종 학습 모델은 `models/lightgbm_enhanced_v2.txt`이며, 모델 설정·피처 목록·평가 결과는 `models/lightgbm_enhanced_v2_meta.json`에서 확인할 수 있습니다. 두 파일은 필수 산출물로 GitHub 저장소에 함께 포함합니다.
+최종 모델의 로컬 기준 파일은 `models/lightgbm_enhanced_v2_meta.json`입니다. `models/`는 대용량 아티팩트 정책으로 Git에서 제외되므로 재현 환경에서는 별도로 전달해야 합니다.
 
 | 모델 | Test ROC-AUC | Test PR-AUC | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|
@@ -312,8 +276,7 @@ EDA
 
 | 자료 | 포함 내용 | 보기 |
 |---|---|:---:|
-| 인공지능 데이터 전처리 결과서 | 시점 누출 통제, 원천별 정제·집계, 결측 처리, 57개 피처, 품질 검증과 재현 절차 | [상세 PDF 열기](./docs/reports/ai-data-preprocessing-report.pdf) |
-| 인공지능 학습 결과서 | 타깃 정의, 평가 지표, 실험 기록, 최종 모델 성능, Top-K·XAI, 재현·추론 절차 | [상세 PDF 열기](./docs/reports/ai-training-result-report.pdf) |
+| 데이터 전처리 과정 | 관측 시점 설정, 원본 데이터 정제, 피처 생성·검증 및 시각화 해석 | [PDF 열기](./docs/reports/data-preprocessing.pdf) |
 | 모델링 비교 결과 | ML·DL 모델 비교, 성능 지표, 최종 LightGBM Enhanced v2 선정 근거 | [PDF 열기](./docs/reports/modeling-comparison.pdf) |
 
 ## 실행 방법
@@ -325,20 +288,6 @@ python -m venv My_venv
 .\My_venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python -m pip install -r requirements-extra.txt
-```
-
-저장된 최종 모델을 불러와 원본 처리 테이블의 샘플 고객 5명을 추론합니다.
-
-```powershell
-python infer.py --rows 5
-```
-
-`infer.py`는 모델과 메타데이터의 57개 피처 순서, 학습 당시 범주 목록을 검증한 뒤 이탈확률과 임계값 기준 예측 클래스를 출력합니다.
-
-동일한 저장 split과 최종 파라미터로 모델을 재학습할 수 있습니다. 기존 최종 모델을 보호하기 위해 기본 출력은 `retrained_*` 파일로 저장됩니다.
-
-```powershell
-python train.py
 ```
 
 프로젝트 루트에 `.env`를 생성합니다.
@@ -368,11 +317,9 @@ python backend/scoring/export_reference_tables.py
 python backend/scoring/load_to_mysql.py
 ```
 
-대용량 원본 데이터와 스코어링 CSV는 Git에 포함되지 않으므로 별도로 준비해야 합니다. 최종 LightGBM 모델과 메타데이터는 `models/`에 포함되어 있습니다.
+대용량 원본 데이터와 모델 파일은 Git에 포함되지 않으므로 별도로 준비해야 합니다.
 
 ### 3. 서버 실행
-
-#### 3-1. 로컬 실행
 
 ```powershell
 cd backend
@@ -385,32 +332,6 @@ uvicorn app.main:app --reload --port 8000
 
 프론트엔드는 현재 서버의 origin을 API 주소로 사용하므로 HTML 파일을 직접 열지 말고 FastAPI 주소로 접속해야 합니다.
 
-#### 3-2. Cloudflare Tunnel로 외부 공개
-
-로컬에서 실행 중인 FastAPI를 코드 수정 없이 그대로 공개 HTTPS URL로 노출할 수 있습니다. (Quick Tunnel, 계정 가입 불필요, 무료)
-
-```powershell
-# 1) cloudflared 설치 (Windows, 최초 1회)
-#    https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.msi
-cloudflared --version
-
-# 2) 백엔드 먼저 실행 (터미널 1, backend 폴더에서)
-cd backend
-uvicorn app.main:app --port 8000
-
-# 3) 터널 실행 (터미널 2, 새 터미널)
-cloudflared tunnel --url http://localhost:8000
-```
-
-터미널에 출력되는 `https://xxxx-xxxx.trycloudflare.com` 주소로 접속합니다.
-
-- 고객 페이지: 발급된 URL 그대로
-- 관리자 페이지: 발급된 URL + `/admin-page`
-
-> Quick Tunnel URL은 재시작할 때마다 랜덤하게 바뀝니다. 프론트 HTML만 수정한 경우 새로고침만으로 반영되고, 백엔드(.py) 수정 시에는 uvicorn만 재시작하면 되며 cloudflared 터미널은 그대로 둬도 됩니다.
-
-자세한 배포 원리와 주의사항은 [프로젝트 통합 상세 문서 8장](./docs/KKBOX_프로젝트_통합문서.md#8-fastapi-배포-과정-cloudflare-tunnel)을 참고하세요.
-
 ## 데모 순서
 
 1. 관리자 로그인 후 운영 현황과 우선 고객군을 확인합니다.
@@ -422,16 +343,101 @@ cloudflared tunnel --url http://localhost:8000
 ## 프로젝트 구조
 
 ```text
-EDA/                 원본 테이블별 탐색
-preprocessing/       시점 분할, 피처 생성, 최종 모델 테이블
-modeling/            ML 베이스라인, 비교, 파생 피처, 최종 LightGBM
-dl_modeling/         MLP 베이스라인과 클래스 가중치 실험
-analytics/           SQL 검증, 퍼널, LTV, SHAP, 세그먼트, 생존분석
-backend/app/         FastAPI 인증·고객·관리자·음악 API
-backend/scoring/     스코어링, DB 스키마와 마이그레이션
-frontend/            관리자 및 고객 페이지
-docs/                발표 및 운영 문서
+SKN34-2nd-2team/
+├─ EDA/                          원본 테이블별 탐색
+│  ├─ members_v3_eda.ipynb
+│  ├─ train_eda.ipynb
+│  ├─ transactions_eda.ipynb
+│  └─ user_logs_eda.ipynb
+│
+├─ preprocessing/                시점 분할 → 피처 생성 → 병합 → 결측치 대체 → 최종 모델 테이블
+│  ├─ 01_train_valid_test_split.ipynb   고객 단위 Stratified 70/15/15 분할
+│  ├─ 02_members_features.ipynb         회원 피처 생성
+│  ├─ 03_transactions_features.ipynb    결제 피처 생성
+│  ├─ 04_user_logs_features.ipynb       청취 로그 청크 집계
+│  ├─ 05_merge_final_table.ipynb        피처 병합
+│  ├─ 06_impute_features.ipynb          Train 기준 결측치 대체
+│  ├─ 07_preprocessing_check.ipynb      전처리 검증
+│  └─ 08_user_log_recency_enhancement.ipynb  최근 로그 경과일 파생피처
+│
+├─ modeling/                     ML 베이스라인 · 튜닝 · 비교 · 파생피처 · 최종 LightGBM
+│  ├─ 01_lightgbm_baseline.ipynb
+│  ├─ 02_optuna_tuning.ipynb
+│  ├─ 03_model_comparison.ipynb         XGBoost·CatBoost·RF·LogReg 비교
+│  ├─ 04_feature_engineering.ipynb      Enhanced v1 파생피처
+│  └─ 05_log_recency_experiment.ipynb   Enhanced v2 (최종 모델)
+│
+├─ dl_modeling/                  MLP 베이스라인과 클래스 가중치 실험
+│  ├─ 01_mlp_baseline.ipynb
+│  └─ 02_mlp_tuning.ipynb
+│
+├─ analytics/                    SQL 검증 · 퍼널 · LTV · SHAP · 세그먼트 · 생존분석
+│  ├─ 01_sql_feature_mart.ipynb         DuckDB SQL 교차검증
+│  ├─ 02_retention_cohort.ipynb
+│  ├─ 03_funnel.ipynb
+│  ├─ 04_ltv.ipynb                      LTV 근사식 · 세그먼트 정의
+│  ├─ 05_shap_xai.ipynb
+│  ├─ 06_customer_segmentation.ipynb
+│  ├─ 07_ab_test_design.md              향후 A/B 테스트 설계 문서
+│  ├─ 08_offline_marketing_insights.ipynb
+│  └─ 09_survival_analysis.ipynb        Cox 생존분석
+│
+├─ backend/
+│  ├─ db.py                      MySQL 커넥션 (SQLAlchemy, kkbox_serving)
+│  ├─ app/
+│  │  ├─ main.py                 FastAPI 진입점 — 라우터 등록 + 프론트 HTML 서빙
+│  │  ├─ auth.py                 JWT 발급 · 검증 (staff/customer, bcrypt)
+│  │  ├─ schemas.py              Pydantic 응답 모델
+│  │  └─ routers/
+│  │     ├─ auth_router.py       회원가입 · 로그인
+│  │     ├─ me_router.py         내 위험도 · 알림함 · 혜택 신청
+│  │     ├─ admin_router.py      고객 탐색 · 캠페인 생성/이력 · KPI
+│  │     └─ music_router.py      Apple Music(iTunes) 프록시
+│  └─ scoring/
+│     ├─ schema.sql              서빙 DB 스키마
+│     ├─ migrate_*.sql           캠페인 · 알림 · 요금제 필드 마이그레이션
+│     ├─ build_scoring_table.py  전체 고객(99만) 스코어링
+│     ├─ add_lifecycle_status.py 생명주기 컬럼 계산 (레거시/선택 실행)
+│     ├─ export_reference_tables.py  대시보드 참조 테이블 생성
+│     ├─ load_to_mysql.py        MySQL 적재 (TRUNCATE 후 재적재)
+│     └─ output/ *               스코어링 산출 CSV (customer_churn_scores.csv 등, 179MB)
+│
+├─ frontend/
+│  ├─ kkbox_customer.html        고객 페이지 (React 18 UMD 인라인, 단일 파일)
+│  └─ kkbox_admin.html           관리자 페이지
+│
+├─ docs/                         발표 및 운영 문서
+│  ├─ KKBOX_프로젝트_통합문서.md   아키텍처 · ERD · 배포 · API 상세
+│  ├─ PRESENTATION_GUIDE.md      발표 가이드
+│  ├─ DEMO.md                    서비스 시연 캡처
+│  ├─ reports/                   전처리 · 모델링 비교 PDF 리포트
+│  └─ images/                    시스템 아키텍처, 데모 스크린샷, 팀 사진
+│
+├─ data/ *                       Kaggle 원본 · 전처리 산출물 (raw/processed/dashboard, 약 30GB+)
+│  ├─ raw/                       Kaggle 원본 CSV (members/transactions/user_logs/train)
+│  ├─ processed/                 피처 테이블 · 모델 학습 테이블 · 캐시
+│  └─ dashboard/                 분석 대시보드용 참조 CSV
+│
+├─ models/ *                     학습된 모델 아티팩트 (LightGBM/XGBoost/CatBoost/RF/LogReg, meta·importance 포함)
+│
+├─ README.md
+├─ DB_ERD_가이드.md
+├─ TROUBLESHOOTING.md
+├─ 프로젝트_가이드.md
+├─ requirements.txt / requirements-extra.txt
+└─ .env *
 ```
+
+`*` 표시는 `.gitignore`로 Git 추적에서 제외한 항목입니다. 재현 시 별도로 준비해야 합니다.
+
+| 제외 대상 | 이유 |
+|---|---|
+| `data/` | Kaggle 원본 CSV + 전처리 산출물 (약 30GB, GitHub 용량 한계 초과) |
+| `models/` | 학습된 모델 파일 (LightGBM 등 아티팩트, 수십 MB~수백 MB) |
+| `backend/scoring/output/` | 스코어링 결과 CSV (`customer_churn_scores.csv` 179MB, GitHub 100MB 제한 초과) |
+| `.env` | MySQL 접속 정보 등 민감한 환경변수 |
+| `myvenv/` · `__pycache__/` · `.ipynb_checkpoints/` · `modeling/catboost_info/` | 가상환경·캐시·실행 중간산물 (재현 불필요) |
+| `practice-answer/` · `practice-blank/` · `deep_learning/` | 커리큘럼 개인 연습용 폴더 (팀 프로젝트와 무관) |
 
 ## 한계와 향후 개선
 
@@ -446,16 +452,8 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 ## 문서
 
 - [서비스 시연 화면](./docs/DEMO.md)
-- [인공지능 학습 결과서](./docs/reports/ai-training-result-report.pdf)
+- [데이터 전처리 과정 PDF](./docs/reports/data-preprocessing.pdf)
 - [모델링 비교 결과 PDF](./docs/reports/modeling-comparison.pdf)
 - [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
 - [트러블슈팅](./TROUBLESHOOTING.md)
-
-### 팀원별 한줄 회고
-
-| 이름 | 회고 |
-|---|---|
-| 임형준 | 30GB가 넘는 대용량 로그 데이터를 다루면서 메모리 문제나 시점 누출 같은 예상치 못한 어려움이 많았지만, 그만큼 직접 부딪히며 배운 것도 많았다. 프론트엔드부터 백엔드, 배포까지 전체 흐름을 직접 만들어본 건 좋은 경험이었고, 다만 시간이 조금 더 있었다면 캠페인 효과 검증이나 서비스 구조를 더 다듬어볼 수 있었을 것 같아 아쉬움이 남는다|
-| 문성호 | 작성란 |
-| 송승재 | 작성란 |
