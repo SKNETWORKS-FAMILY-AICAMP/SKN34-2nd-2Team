@@ -1,0 +1,4 @@
+# LightGBM text models contain byte offsets in tree_sizes.
+# Preserve LF bytes exactly on every operating system.
+models/*.txt -text
+

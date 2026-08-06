@@ -62,7 +62,7 @@ KKBOX의 회원·결제·음악 이용 로그를 활용해 구독 만료 후 이
 | 산출물 | 파일 | 주요 내용 |
 |---|---|---|
 | 인공지능 데이터 전처리 결과서 | [ai-data-preprocessing-report.pdf](./docs/reports/ai-data-preprocessing-report.pdf) | 시점 누출 진단, 테이블별 정제·집계 규칙, 결측 처리, 57개 입력 피처, 품질 검증과 재현 절차 |
-| 인공지능 학습 결과서 | [modeling-comparison.pdf](./docs/reports/modeling-comparison.pdf) | ML·DL 모델 비교, LightGBM 고도화 과정, 최종 성능, SHAP·세그먼트 기반 활용 방안 |
+| 인공지능 학습 결과서 | [ai-training-result-report.pdf](./docs/reports/ai-training-result-report.pdf) | 비즈니스·타깃 정의, 누수 통제, 실험 설계, ML·DL 비교, 최종 성능, Top-K·SHAP, 재현·추론 절차 |
 | 학습된 인공지능 모델 | [lightgbm_enhanced_v2.txt](./models/lightgbm_enhanced_v2.txt) | 57개 피처로 학습된 최종 LightGBM Enhanced v2 모델 |
 
 학습 모델의 재현과 검증에 필요한 [모델 메타데이터](./models/lightgbm_enhanced_v2_meta.json)와 [피처 중요도](./models/lightgbm_enhanced_v2_importance.csv)도 함께 제공합니다.
@@ -313,6 +313,7 @@ EDA
 | 자료 | 포함 내용 | 보기 |
 |---|---|:---:|
 | 인공지능 데이터 전처리 결과서 | 시점 누출 통제, 원천별 정제·집계, 결측 처리, 57개 피처, 품질 검증과 재현 절차 | [상세 PDF 열기](./docs/reports/ai-data-preprocessing-report.pdf) |
+| 인공지능 학습 결과서 | 타깃 정의, 평가 지표, 실험 기록, 최종 모델 성능, Top-K·XAI, 재현·추론 절차 | [상세 PDF 열기](./docs/reports/ai-training-result-report.pdf) |
 | 모델링 비교 결과 | ML·DL 모델 비교, 성능 지표, 최종 LightGBM Enhanced v2 선정 근거 | [PDF 열기](./docs/reports/modeling-comparison.pdf) |
 
 ## 실행 방법
@@ -324,6 +325,20 @@ python -m venv My_venv
 .\My_venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python -m pip install -r requirements-extra.txt
+```
+
+저장된 최종 모델을 불러와 원본 처리 테이블의 샘플 고객 5명을 추론합니다.
+
+```powershell
+python infer.py --rows 5
+```
+
+`infer.py`는 모델과 메타데이터의 57개 피처 순서, 학습 당시 범주 목록을 검증한 뒤 이탈확률과 임계값 기준 예측 클래스를 출력합니다.
+
+동일한 저장 split과 최종 파라미터로 모델을 재학습할 수 있습니다. 기존 최종 모델을 보호하기 위해 기본 출력은 `retrained_*` 파일로 저장됩니다.
+
+```powershell
+python train.py
 ```
 
 프로젝트 루트에 `.env`를 생성합니다.
@@ -431,6 +446,7 @@ A/B 테스트와 시계열 고도화는 현재 구현 기능이 아니라 발표
 ## 문서
 
 - [서비스 시연 화면](./docs/DEMO.md)
+- [인공지능 학습 결과서](./docs/reports/ai-training-result-report.pdf)
 - [모델링 비교 결과 PDF](./docs/reports/modeling-comparison.pdf)
 - [프로젝트 통합 상세 문서](./docs/KKBOX_프로젝트_통합문서.md)
 - [서빙 DB ERD 및 실행 가이드](./DB_ERD_가이드.md)
